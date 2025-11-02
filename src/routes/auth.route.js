@@ -148,15 +148,13 @@ router.route('/role-signin').post(signinValidatorRole, asyncHandler(checkForgotE
 
 router.route('/members').post(asyncHandler(jwtAuth), asyncHandler(authController.myprofiles));
 router.route('/addmember').post(asyncHandler(jwtAuth), upload.single('profile_image'), checkMemberLimit, asyncHandler(authController.addMembers));
-
 router.route('/updatemember').post(asyncHandler(jwtAuth), upload.single('profile_image'), asyncHandler(authController.updateMember));
 router.route('/deletemember').post(asyncHandler(jwtAuth), asyncHandler(authController.deleteMember));
+
 router.route('/updateUser').post(asyncHandler(jwtAuth), upload.single('profile_image'), asyncHandler(authController.updateUser));
 router.route('/updatePassword').post(asyncHandler(jwtAuth), updatePasswordValidator, asyncHandler(authController.updatePassword));
 router.route('/updateUserDoctor').post(asyncHandler(jwtAuth), upload.single('profile_image'), asyncHandler(authController.updateDoctorUser));
 router.route('/update-device-detail').post(asyncHandler(jwtAuth), asyncHandler(authController.updateDeviceDetail));
-
-
 
 router.route('/addBmi').post(asyncHandler(jwtAuth), addBmiValidator, asyncHandler(healthController.addBmi));
 router.route('/listBmi').post(asyncHandler(jwtAuth), listdata, asyncHandler(healthController.listBmi));
