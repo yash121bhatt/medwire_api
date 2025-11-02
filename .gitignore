@@ -4,6 +4,6 @@
 node_modules
 public/dicom
 public/laboratory
-public/member
+# public/member
 public/symptom
 logs
