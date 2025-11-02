@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+</head>
+<body style="background-color: #ffffff; margin: 0 !important; padding: 0 !important;">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+        <td align="center" style="background-color:#1778F2 ;">
+            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+                <tr>
+                    <td align="center" valign="top" style="padding: 80px 10px 10px 10px; margin:auto; height:130px;">
+                        <a href="#" target="_blank" style="text-decoration: none;">
+                          <img src="https://app.medwire.in/assets/images/medwire-logo.png" style="width: 250px;">
+                        </a>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td align="center" style="padding: 0px 10px 0px 10px;">
+            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+                <tr>
+                    <td bgcolor="#ffffff" align="center" valign="top" style="padding: 40px 20px 20px 20px; border-radius: 4px 4px 0px 0px; color: #111111; font-family: 'Poppins', sans-serif;   line-height: 48px;">
+                      <p style="font-size: 18px; font-weight: 900; margin: 0;">Dear {{ name }},</p>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td align="center" style="padding: 0px 10px 0px 10px;">
+            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
+              <tr>
+                <td bgcolor="#ffffff" align="center" style="padding: 0px 30px 20px 30px; color: #111111; font-family: 'Poppins', sans-serif;">
+                  <p style="margin: 0;  font-weight: 700; font-size: 15px; line-height: 25px;" >Thank you for booking Laboratory appointment using MedWire.</p>
+                  <p style="margin: 0;  font-size: 15px; padding: 10px 0px 0px ;" >Your Payment has been successful with Payment ID : {{ context.payment_order_id }}</p>
+                  <p style="margin: 0;  font-size: 15px; padding: 10px 0px 0px ;" >Appointment Details </p>
+                  <p style="margin: 0;  font-size: 15px; padding: 10px 0px 0px ;" >Laboratory Full Name : {{ context.lab_full_name }}</p>
+                  <p style="margin: 0;  font-size: 15px; padding: 10px 0px 0px ;" >Address : {{ context.address }}</p>
+                  <p style="margin: 0;  font-size: 15px; padding: 10px 0px 0px ;" >Appointment Date &Time : {{ context.appointment_date_time }}</p>
+                  <p style="margin: 0;  font-size: 15px; padding: 10px 0px 0px ;" >Appointment ID : {{ context.appointment_id }}</p>
+                </td>
+              </tr> 
+              <tr>
+                <td bgcolor="#ffffff" align="left">
+                  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                      <td bgcolor="#ffffff" align="center" style="padding: 10px 30px 20px 30px;">
+                        <table border="0" cellspacing="0" cellpadding="0">
+                          <td bgcolor="#ffffff" align="center" style="padding: 25px 30px 20px 30px; color: #111111; font-family: 'Poppins', sans-serif;">
+                            <p style="margin: 0; font-size: 14px; padding: 20px 0px 0px; font-weight: 700;  line-height: 21px;" >Kind Regards</p>
+                            <p style="margin: 0; font-size: 14px; font-weight: 700;  line-height: 25px;" >Team MedWire</p>
+                          </td>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+</body>
+</html>
