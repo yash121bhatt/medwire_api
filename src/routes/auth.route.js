@@ -137,17 +137,18 @@ router.route('/truncate').post(asyncHandler(authController.trunCate));
 
 router.route('/signup').post(signupValidator, asyncHandler(checkExistence), asyncHandler(authController.signup));
 router.route('/signin').post(signinValidator, asyncHandler(checkForgotEmail), checkEmailVerify, asyncHandler(authController.signin));
-
 router.route('/logout').post(asyncHandler(jwtAuth), asyncHandler(authController.logOut));
-router.route('/radiosignup').post(upload.single('approve_document'), asyncHandler(checkExistence), asyncHandler(authController.radiosignup));
-router.route('/role-signin').post(signinValidatorRole, asyncHandler(checkForgotEmail), checkEmailVerifyRoleSignIn, asyncHandler(authController.signinRole));
-router.route('/resendotp').post(asyncHandler(authController.resendOtp));
 router.route('/profile').post(asyncHandler(jwtAuth), asyncHandler(authController.profile));
+router.route('/resendotp').post(asyncHandler(authController.resendOtp));
 router.route('/forgotPassword').post(asyncHandler(checkForgotEmail), asyncHandler(authController.forgotPassword));
 router.route('/resetPassword').post(asyncHandler(authController.resetPassword));
 
+router.route('/radiosignup').post(upload.single('approve_document'), asyncHandler(checkExistence), asyncHandler(authController.radiosignup));
+router.route('/role-signin').post(signinValidatorRole, asyncHandler(checkForgotEmail), checkEmailVerifyRoleSignIn, asyncHandler(authController.signinRole));
+
 router.route('/members').post(asyncHandler(jwtAuth), asyncHandler(authController.myprofiles));
 router.route('/addmember').post(asyncHandler(jwtAuth), upload.single('profile_image'), checkMemberLimit, asyncHandler(authController.addMembers));
+
 router.route('/updatemember').post(asyncHandler(jwtAuth), upload.single('profile_image'), asyncHandler(authController.updateMember));
 router.route('/deletemember').post(asyncHandler(jwtAuth), asyncHandler(authController.deleteMember));
 router.route('/updateUser').post(asyncHandler(jwtAuth), upload.single('profile_image'), asyncHandler(authController.updateUser));

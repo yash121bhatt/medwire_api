@@ -167,7 +167,7 @@ exports.signup = async (req, res) => {
             if (mobile) {
                 var message = forgot_otp + ' is your OTP for Verification of your account at MedWire. Thank you.';
                 var mobile_number = mobile;
-                // await helperFunction.sendJapiSMS(mobile_number, message); // rohit
+                await helperFunction.sendJapiSMS(mobile_number, message); // rohit
             }
             res.status(200).send({
                 status_code: "200",
@@ -1312,7 +1312,7 @@ exports.PasswordOtpVerify = async (req, res) => {
 exports.resendOtp = async (req, res) => {
     try {
         const { verify_token } = req.body;
-        const decoded = await jwt.verify(verify_token, JWT_SECRET_KEY);
+        const decoded = jwt.verify(verify_token, JWT_SECRET_KEY);
         if (decoded) {
 
             const userData = await helperQuery.First({ table: 'users', where: 'id=' + decoded.id });
@@ -1325,7 +1325,7 @@ exports.resendOtp = async (req, res) => {
                     message: 'Your Session has expired please sif in again!',
                 })
             }
-            const forgot_otp = await helperFunction.generateOTP(6);
+            const forgot_otp = helperFunction.generateOTP(6);
             const id = userData?.id ?? 0;
             const email = userData.email
             const token = helperFunction.genrateToken({ id }, '365d');
@@ -1339,7 +1339,7 @@ exports.resendOtp = async (req, res) => {
                 if (userData.mobile) {
                     var message = forgot_otp + " is your OTP for Verification of your account at MedWire. Thank you.";
                     var mobile_number = userData.mobile;
-                    await helperFunction.sendJapiSMS(mobile_number, message);
+                    await helperFunction.sendJapiSMS(mobile_number, message); // rohit
                 }
 
                 const messageMT = userData.account_verify == '1' ?
