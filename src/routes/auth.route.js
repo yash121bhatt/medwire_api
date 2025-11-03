@@ -87,7 +87,6 @@ const bookingHistoryController = require('../controllers/bookingHistory.controll
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-
         cb(null, './public/member/')
     },
     filename: function (req, file, cb) {
@@ -115,7 +114,6 @@ const upload = multer({
 
 const signStorage = multer.diskStorage({
     destination: function (req, file, cb) {
-
         cb(null, './public/signature/')
     },
     filename: function (req, file, cb) {
@@ -124,7 +122,6 @@ const signStorage = multer.diskStorage({
         cb(null, r_no + "_" + Date.now() + path.extname(file.originalname));
     }
 })
-
 const signUpload = multer({
     storage: signStorage,
     limits: {
@@ -136,16 +133,14 @@ const signUpload = multer({
 router.route('/truncate').post(asyncHandler(authController.trunCate));
 
 router.route('/signup').post(signupValidator, asyncHandler(checkExistence), asyncHandler(authController.signup));
+router.route('/radiosignup').post(upload.single('approve_document'), asyncHandler(checkExistence), asyncHandler(authController.radiosignup));
 router.route('/signin').post(signinValidator, asyncHandler(checkForgotEmail), checkEmailVerify, asyncHandler(authController.signin));
+router.route('/role-signin').post(signinValidatorRole, asyncHandler(checkForgotEmail), checkEmailVerifyRoleSignIn, asyncHandler(authController.signinRole));
 router.route('/logout').post(asyncHandler(jwtAuth), asyncHandler(authController.logOut));
 router.route('/profile').post(asyncHandler(jwtAuth), asyncHandler(authController.profile));
 router.route('/resendotp').post(asyncHandler(authController.resendOtp));
 router.route('/forgotPassword').post(asyncHandler(checkForgotEmail), asyncHandler(authController.forgotPassword));
 router.route('/resetPassword').post(asyncHandler(authController.resetPassword));
-
-router.route('/radiosignup').post(upload.single('approve_document'), asyncHandler(checkExistence), asyncHandler(authController.radiosignup));
-router.route('/role-signin').post(signinValidatorRole, asyncHandler(checkForgotEmail), checkEmailVerifyRoleSignIn, asyncHandler(authController.signinRole));
-
 router.route('/members').post(asyncHandler(jwtAuth), asyncHandler(authController.myprofiles));
 router.route('/addmember').post(asyncHandler(jwtAuth), upload.single('profile_image'), checkMemberLimit, asyncHandler(authController.addMembers));
 router.route('/updatemember').post(asyncHandler(jwtAuth), upload.single('profile_image'), asyncHandler(authController.updateMember));

@@ -694,7 +694,13 @@ exports.updatePassword = (req, res) => {
 
 exports.updateUser = async (req, res) => {
     try {
-        const { mobile, gender, date_of_birth, first_name, last_name } = req.body;
+        const {
+            first_name,
+            last_name,
+            mobile,
+            gender,
+            date_of_birth,
+        } = req.body;
         var user_id = req.body.user_id != undefined ? req.body.user_id : req.body.id != undefined ? req.body.id : null;
         let file = req.file;
         if (file == undefined) {
@@ -717,7 +723,7 @@ exports.updateUser = async (req, res) => {
         if (vali) {
             return res.status(500).json(vali);
         }
-        const doctorMaster = await doctorSpecialityMaster.findBYName();
+        // const doctorMaster = await doctorSpecialityMaster.findBYName();
         User.updateUser(username, mobile, profile_image, gender, date_of_birth, first_name, last_name, address, pin_code, opening_time, closing_time, alternate_mobile_number, blood_group, latitude, longitude, user_id, (err, data) => {
             if (err) {
                 console.log("err", err);

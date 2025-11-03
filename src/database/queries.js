@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS users (
     mobile VARCHAR(20) UNIQUE NULL,
     alternate_mobile VARCHAR(20) NULL,
     gender ENUM('Male', 'Female', 'Other') NULL,
-    date_of_birth DATE NULL,
+    date_of_birth VARCHAR(255) NULL,
     profile_image VARCHAR(255) NULL,
     blood_group VARCHAR(10) NULL,
     pin_code VARCHAR(10) NULL,
@@ -48,6 +48,7 @@ CREATE TABLE IF NOT EXISTS users (
     device_token VARCHAR(255) NULL,
     device_type VARCHAR(255) NULL,
     auth_token VARCHAR(255) NULL
+    deleted_at DATETIME
 )
 `;
 

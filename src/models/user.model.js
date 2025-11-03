@@ -488,11 +488,22 @@ class User {
 
     static updateUser(username, mobile, profile_image, gender, date_of_birth, first_name, last_name, address, pin_code, opening_time, closing_time, alternate_mobile, blood_group, latitude, longitude, id, cb) {
         if (profile_image != '') {
-
-            db.query(`UPDATE users SET  username ='${username}',profile_image='${profile_image}',gender='${gender}',date_of_birth='${date_of_birth}',
-            first_name='${first_name}',last_name='${last_name}',address='${address}',pin_code='${pin_code}',
-            opening_time='${opening_time}',closing_time='${closing_time}',alternate_mobile='${alternate_mobile}',
-            blood_group='${blood_group}',latitude='${latitude}',longitude='${longitude}' WHERE id ='${id}'`,
+            db.query(`UPDATE users SET 
+                first_name='${first_name}',
+                last_name='${last_name}',
+                username ='${username}',
+                profile_image='${profile_image}',
+                gender='${gender}',
+                date_of_birth='${date_of_birth}',
+                address='${address}',
+                pin_code='${pin_code}',
+                opening_time='${opening_time}',
+                closing_time='${closing_time}',
+                alternate_mobile='${alternate_mobile}',
+                blood_group='${blood_group}',
+                latitude='${latitude}',
+                longitude='${longitude}' 
+                WHERE id ='${id}'`,
                 (err, res) => {
                     if (err) {
                         logger.error(err.message);
@@ -504,7 +515,6 @@ class User {
                     });
                 })
         } else {
-
             db.query(`UPDATE users SET  username ='${username}',gender='${gender}',date_of_birth='${date_of_birth}',
             first_name='${first_name}',last_name='${last_name}',address='${address}',pin_code='${pin_code}',
             opening_time='${opening_time}',closing_time='${closing_time}',alternate_mobile='${alternate_mobile}',
