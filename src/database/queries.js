@@ -10,16 +10,18 @@ IF
   NOT EXISTS users (
     id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
     first_name VARCHAR (100) NOT NULL,
+    last_name VARCHAR (100) NULL,
+    username VARCHAR (100) NULL,
     email VARCHAR (255) UNIQUE,
     mobile VARCHAR (20) UNIQUE,
     alternate_mobile VARCHAR (20),
     gender ENUM ('Male', 'Female', 'Other'),
-    date_of_birth DATE,-- Changed to DATE
+    date_of_birth VARCHAR (255),
     profile_image VARCHAR (255),
     blood_group VARCHAR (10),
     pin_code VARCHAR (10),
     address VARCHAR (500),
-    password VARCHAR (255) NOT NULL,
+    password VARCHAR (255) NULL,
     role_id INT NOT NULL,
     user_type VARCHAR (50) NOT NULL,
     forgot_otp VARCHAR (10),
@@ -37,7 +39,112 @@ IF
     device_token VARCHAR (255),
     device_type VARCHAR (50),
     auth_token VARCHAR (255),
+    opening_time VARCHAR (100),
+    closing_time VARCHAR (100),
+    latitude VARCHAR (255),
+    longitude VARCHAR (255),
     deleted_at DATETIME,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  );
+`;
+
+const createSuperAdmin = `
+CREATE TABLE
+IF
+  NOT EXISTS super_admin (
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    name VARCHAR (100) NOT NULL,
+    email VARCHAR (255) UNIQUE,
+    gender ENUM ('Male', 'Female', 'Other'),
+    image VARCHAR (255),
+    mobile_no VARCHAR (20) UNIQUE,
+    password VARCHAR (255) NOT NULL,
+    role VARCHAR (50) NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  );
+`;
+
+const createUsersDocuments = `
+CREATE TABLE
+IF
+  NOT EXISTS users_documents (
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    member_id INT NOT NULL,
+    document_title VARCHAR (255) NULL,
+    document_file VARCHAR (255) NULL,
+    document_date VARCHAR (255) NULL,
+    scan_doc_text VARCHAR (255) NULL,
+    type VARCHAR (255) NULL,
+    appointment_id VARCHAR (255) NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  );
+`;
+
+const createNotificationPreMedicine = `
+CREATE TABLE
+IF
+  NOT EXISTS notification_pre_medicine (
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    member_id INT NOT NULL,
+    medicine_name VARCHAR (255) NULL, 
+    medicine_type VARCHAR (255) NULL, 
+    quantity VARCHAR (255) NULL, 
+    frequency VARCHAR (255) NULL, 
+    take_time_one VARCHAR (255) NULL, 
+    take_dose_one VARCHAR (255) NULL, 
+    take_time_two VARCHAR (255) NULL, 
+    take_dose_two VARCHAR (255) NULL,
+    take_time_third VARCHAR (255) NULL,
+    take_dose_third VARCHAR (255) NULL,
+    take_time_fourth VARCHAR (255) NULL,
+    take_dose_fourth VARCHAR (255) NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  );
+`;
+
+const createUsersHWBMIDetails = `
+CREATE TABLE
+IF
+  NOT EXISTS users_hwbmi_details (
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    member_id INT NOT NULL,
+    Height VARCHAR (255) NULL,
+    Weight VARCHAR (255) NULL,
+    BMI VARCHAR (255) NULL,
+    heart_rate VARCHAR (255) NULL,
+    blood_pressure VARCHAR (255) NULL,
+    respiratory_rate VARCHAR (255) NULL,
+    oxygen_saturation VARCHAR (255) NULL,
+    temperature VARCHAR (255) NULL,
+    createdate VARCHAR (255) NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  );
+`;
+
+const createNewVisit = `
+CREATE TABLE
+IF
+  NOT EXISTS new_visit (
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    member_id INT NOT NULL,
+    appointment_id INT NOT NULL,
+    lab_id INT NOT NULL,
+    mobile VARCHAR (255) NULL,
+    online_ofline_status VARCHAR (255) NULL,
+    category VARCHAR (255) NULL,
+    sub_category VARCHAR (255) NULL,
+    type VARCHAR (255) NULL,
+    report_document VARCHAR (255) NULL,
+    dcm_document VARCHAR (255) NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
   );
@@ -112,6 +219,11 @@ module.exports = {
     dropDB,
 
     createTableUsers,
+    createSuperAdmin,
+    createUsersDocuments,
+    createNotificationPreMedicine,
+    createUsersHWBMIDetails,
+    createNewVisit,
     
     createNewUser,
     findUserByEmail,

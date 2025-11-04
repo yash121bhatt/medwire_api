@@ -3,10 +3,20 @@ const dbConnection = require("../../config/db.config");
 
 const {
     createTableUsers,
+    createSuperAdmin,
+    createUsersDocuments,
+    createNotificationPreMedicine,
+    createUsersHWBMIDetails,
+    createNewVisit,
 } = require("../queries");
 
 const tableCreationQueries = [
     { name: "users", query: createTableUsers },
+    { name: "super_admin", query: createSuperAdmin },
+    { name: "users_documents", query: createUsersDocuments },
+    { name: "notification_pre_medicine", query: createNotificationPreMedicine },
+    { name: "users_hwbmi_details", query: createUsersHWBMIDetails },
+    { name: "new_visit", query: createNewVisit },
 ];
 
 (async () => {
@@ -19,31 +29,35 @@ const tableCreationQueries = [
 
     try {
         for (const { name, query } of tableCreationQueries) {
-            // eslint-disable-next-line no-unused-vars
             await new Promise((resolve, reject) => {
                 dbConnection.query(query, (err, result) => {
                     if (err) {
+                        // --- ERROR CASE ---
                         logger.error(`Error creating table ${name}: ${err.message}`);
                         errorCount++;
                         errorTables.push(name);
-                        // यहाँ हम reject नहीं करेंगे ताकि अन्य टेबल्स की क्रिएशन जारी रहे
-                        return resolve(); // Resolve instead of Reject to continue the loop
+                        return resolve(); // अगले टेबल पर जाने के लिए resolve करें
                     }
 
-                    // 'CREATE TABLE IF NOT EXISTS' के लिए लॉजिक:
-                    // 1. rows.affectedRows > 0: Table created successfully (यानी, table नहीं थी)
-                    // 2. rows.warningCount > 0: Table already existed (यानी, IF NOT EXISTS के कारण warning आई)
-
-                    if (result.warningCount === 0) {
+                    // --- SUCCESS/WARNING LOGIC ---
+                    // Log the result to ensure transparency, as requested
+                    // console.log(result, "-----"); 
+                    
+                    // यदि warningStatus 0 है, तो कोई warning नहीं आई, मतलब टेबल अभी बनी है।
+                    // यह CREATE TABLE IF NOT EXISTS के लिए सबसे विश्वसनीय चेक है।
+                    if (result.warningStatus === 0) {
                         createdCount++;
                         createdTables.push(name);
                         logger.info(`Table ${name} created successfully! (New Table)`);
-                    } else if (result.warningCount > 0) {
+                    } 
+                    // यदि warningStatus 0 से अधिक है, तो warning आई है, मतलब टेबल पहले से थी।
+                    else if (result.warningStatus > 0) {
                         existedCount++;
                         existedTables.push(name);
                         logger.info(`Table ${name} already existed (Skipped).`);
-                    } else {
-                        // यदि कोई और स्थिति आती है, तो भी इसे created मान सकते हैं
+                    } 
+                    // Fallback (सैद्धांतिक रूप से आवश्यक नहीं)
+                    else {
                         createdCount++;
                         createdTables.push(name);
                         logger.info(`Table ${name} created successfully!`);
@@ -78,7 +92,6 @@ const tableCreationQueries = [
         }
 
     } catch (error) {
-        // यह catch block तब ट्रिगर होगा जब Promise के अंदर resolve/reject का लॉजिक बदल जाए
         logger.error(`❌ Unexpected Migration Failure: ${error.message}`);
         process.exit(1);
     }
