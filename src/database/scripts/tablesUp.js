@@ -8,6 +8,11 @@ const {
     createNotificationPreMedicine,
     createUsersHWBMIDetails,
     createNewVisit,
+    createDoctorsClinic,
+    createOperatorPermission,
+    createPlans,
+    createCommissions,
+    createAppointments,
 } = require("../queries");
 
 const tableCreationQueries = [
@@ -17,6 +22,11 @@ const tableCreationQueries = [
     { name: "notification_pre_medicine", query: createNotificationPreMedicine },
     { name: "users_hwbmi_details", query: createUsersHWBMIDetails },
     { name: "new_visit", query: createNewVisit },
+    { name: "doctors_clinic", query: createDoctorsClinic },
+    { name: "operator_permission", query: createOperatorPermission },
+    { name: "plans", query: createPlans },
+    { name: "commissions", query: createCommissions },
+    { name: "appointments", query: createAppointments },
 ];
 
 (async () => {

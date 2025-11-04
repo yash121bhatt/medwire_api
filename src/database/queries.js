@@ -43,6 +43,8 @@ IF
     closing_time VARCHAR (100),
     latitude VARCHAR (255),
     longitude VARCHAR (255),
+    status varchar(255) DEFAULT NULL,
+    approve_status varchar(255) DEFAULT NULL,
     deleted_at DATETIME,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -54,13 +56,14 @@ CREATE TABLE
 IF
   NOT EXISTS super_admin (
     id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
-    name VARCHAR (100) NOT NULL,
-    email VARCHAR (255) UNIQUE,
-    gender ENUM ('Male', 'Female', 'Other'),
-    image VARCHAR (255),
-    mobile_no VARCHAR (20) UNIQUE,
-    password VARCHAR (255) NOT NULL,
-    role VARCHAR (50) NOT NULL,
+    name varchar(100) NOT NULL,
+    email varchar(255) DEFAULT NULL,
+    gender enum('Male','Female','Other') DEFAULT NULL,
+    image_name varchar(255) DEFAULT NULL,
+    mobile_no varchar(20) DEFAULT NULL,
+    password varchar(255) NOT NULL,
+    role varchar(50) NOT NULL,
+    auth_token varchar(255) DEFAULT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
   );
@@ -150,6 +153,96 @@ IF
   );
 `;
 
+const createDoctorsClinic = `
+CREATE TABLE
+IF
+  NOT EXISTS doctors_clinic (
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    doctor_id INT NOT NULL,
+    clinic_id INT NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  );
+`;
+
+const createOperatorPermission = `
+CREATE TABLE
+IF
+  NOT EXISTS operator_permission (
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    operator_id INT NOT NULL,
+    permissions VARCHAR (255) NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  );
+`;
+
+const createPlans = `
+CREATE TABLE
+IF
+  NOT EXISTS plans (
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    created_by_id int NOT NULL,
+    plan_for varchar(255) NOT NULL,
+    benefit varchar(255) NOT NULL,
+    plan_name varchar(255) NOT NULL,
+    price varchar(255) NOT NULL,
+    validity varchar(255) NOT NULL,
+    description varchar(255) NOT NULL,
+    deleted_at datetime DEFAULT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  );
+`;
+
+const createCommissions = `
+CREATE TABLE
+IF
+  NOT EXISTS commissions (
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    user_id int not null,
+    commission_for varchar (255) null,
+    created_by_id int not null,
+    commission_percent float(8,2) not null,
+    deleted_at datetime DEFAULT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  );
+`;
+
+const createAppointments = `
+CREATE TABLE
+IF
+  NOT EXISTS appointments (
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    payment_order_id int null,
+    user_id int null,
+    member_id int null,
+    refer_by_id int null,
+    promo_code_id int null,
+    from_time varchar (255) null,
+    appointment_date varchar (255) null,
+    total_amount varchar (255) null,
+    grand_total varchar (255) null,
+    created_by_id int null,
+    patient_id int null,
+    doctor_id int null,
+    clinic_id int null,
+    type varchar (255) null,
+    consulting_fee varchar (255) null,
+    reason varchar (255) null,
+    appointments_user_type varchar (255) null,
+    status varchar (255) null,
+    payment_status varchar (255) null,
+    appointment_id int null,
+    prescription_pdf_name_for_admin varchar(255) DEFAULT NULL,
+    reason_of_reschedule varchar(255) DEFAULT NULL,
+    admin_status varchar(255) DEFAULT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  );
+`;
+
 const createNewUser = `
 INSERT INTO users(first_name,email,mobile,alternate_mobile,password,user_type,forgot_otp,role_id,created_at) VALUES(?,?,?,?,?,?,?,?,NOW())
 `;
@@ -224,6 +317,11 @@ module.exports = {
     createNotificationPreMedicine,
     createUsersHWBMIDetails,
     createNewVisit,
+    createDoctorsClinic,
+    createOperatorPermission,
+    createPlans,
+    createCommissions,
+    createAppointments,
     
     createNewUser,
     findUserByEmail,
