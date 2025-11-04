@@ -1,7 +1,7 @@
 const { json } = require("body-parser");
 const { date } = require("joi");
 const { async } = require("q");
-const btoa  = require('btoa');
+const btoa  = require("btoa");
 const { log } = require("winston");
 const helperFunction = require("../helper/helperFunction");
 const helperQuery = require("../helper/helperQuery");
@@ -9,9 +9,9 @@ const appliedCouponCodes = require("../models/applied_coupon_codes.model");
 const bookApointment = require("../models/bookApointment.model");
 const LabTest = require("../models/labtest.model");
 const Notification = require("../models/stytemNotification.model");
-const PaytmChecksum = require('../config/cheksum');
-const https = require('https');
-const moment = require('moment');
+const PaytmChecksum = require("../config/cheksum");
+const https = require("https");
+const moment = require("moment");
 const Package = require("../models/package.model");
 
 exports.CouponCodesList= async(req,res)=>{
@@ -24,14 +24,14 @@ exports.CouponCodesList= async(req,res)=>{
         }
 
         const userUsePromoId =[];
-        const userid= patient_id!=undefined && patient_id!='' ? patient_id:0;
+        const userid= patient_id!=undefined && patient_id!="" ? patient_id:0;
         const userUsePromo = await helperQuery.Get({table:"appointments",where:"(patient_id ="+userid+" OR created_by_id ="+userid+") AND promo_code_id IS NOT NULL AND promo_code_id !='0' "});
 
         for (const iterator of userUsePromo) {
             userUsePromoId.push(iterator.promo_code_id);
         }
         if (userUsePromoId.length>0) {
-            var userUsePromoIds=userUsePromoId
+            var userUsePromoIds=userUsePromoId;
         }else{
             var userUsePromoIds=[0];
         }
@@ -41,8 +41,8 @@ exports.CouponCodesList= async(req,res)=>{
         const date = new Date;
         const couponData = result.filter((item)=>{
             
-            const endDate =item.validity_end_date.slice(3,15)
-            const startDate =item.validity_start_date.slice(3,15)
+            const endDate =item.validity_end_date.slice(3,15);
+            const startDate =item.validity_start_date.slice(3,15);
             if (helperFunction.dateFormat(endDate,"yyyymmdd")>=helperFunction.dateFormat(date,"yyyymmdd") && helperFunction.dateFormat(startDate,"yyyymmdd")<=helperFunction.dateFormat(date,"yyyymmdd")) {
                 
                 return  item;
@@ -62,7 +62,7 @@ exports.CouponCodesList= async(req,res)=>{
             message:"something went to wrong!"
         }); 
     }
-}
+};
 
 exports.addCouponCode = async(req,res)=>{
     try {
@@ -81,7 +81,7 @@ exports.addCouponCode = async(req,res)=>{
             message:"something went to wrong!"
         });
     }
-}
+};
 exports.create = async(req,res)=>{
     try {
         const {created_by_id,lab_id} = req.body;
@@ -124,16 +124,16 @@ exports.create = async(req,res)=>{
             status_code:200,
             status:"success",
             message:"Successfully!"
-        })
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json({
             status_code:500,
             status:"error",
             message:"something went wrong!"
-        })
+        });
     }
-}
+};
 exports.cartItem = async(req,res)=>{
     try {
         const {created_by_id} = req.body;
@@ -162,16 +162,16 @@ exports.cartItem = async(req,res)=>{
             status:"success",
             message:"Successfully!",
             data:result,
-        })
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json({
             status_code:500,
             status:"error",
             message:"something went wrong!"
-        })
+        });
     }
-}
+};
 exports.cartlist = async(req,res)=>{
     try {
         const {created_by_id,lab_id} = req.body;
@@ -217,16 +217,16 @@ exports.cartlist = async(req,res)=>{
             status:"success",
             message:"Successfully!",
             data:result
-        })
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json({
             status_code:500,
             status:"error",
             message:"something went wrong!"
-        })
+        });
     }
-}
+};
 
 exports.bookingSummery = async (req, res) => {
     try {
@@ -238,7 +238,7 @@ exports.bookingSummery = async (req, res) => {
         }
         const data = await bookApointment.show(created_by_id);
 
-        if (coupon_code!=undefined && coupon_code!='') {
+        if (coupon_code!=undefined && coupon_code!="") {
             
             var couponExist = await helperQuery.All(`SELECT * FROM promo_code WHERE promo_code='${coupon_code}' AND created_by_id=${data[0].user_id}`);
             console.log(couponExist);
@@ -246,8 +246,8 @@ exports.bookingSummery = async (req, res) => {
                 const date = new Date;
                 var couponData = couponExist.filter((item)=>{
                     
-                    const endDate =item.validity_end_date.slice(3,15)
-                    const startDate =item.validity_start_date.slice(3,15)
+                    const endDate =item.validity_end_date.slice(3,15);
+                    const startDate =item.validity_start_date.slice(3,15);
                     if (helperFunction.dateFormat(endDate,"yyyymmdd")>=helperFunction.dateFormat(date,"yyyymmdd") && helperFunction.dateFormat(startDate,"yyyymmdd")<=helperFunction.dateFormat(date,"yyyymmdd")) {
                         
                         return  item;
@@ -281,7 +281,7 @@ exports.bookingSummery = async (req, res) => {
             }
             
             for (const [key, value] of Object.entries(cart_item)) {
-                if (Object.keys(value)[0]=='package_id') {
+                if (Object.keys(value)[0]=="package_id") {
                     const pk_id = value.package_id;
                     console.log("pk1",key,cart_item,pk_id,lab_id,pk_id);
                     
@@ -310,7 +310,7 @@ exports.bookingSummery = async (req, res) => {
             //const total_amount = item.total_amount!=undefined ? item.total_amount:null;
             const total_amount = total!=undefined ?total:null;
             const coupon_data =couponData!=undefined && couponData!=null ?couponData:null;
-            const grand_total_amount= total_amount!=undefined ? total_amount :null
+            const grand_total_amount= total_amount!=undefined ? total_amount :null;
             const status = item.status!=undefined ? item.status:null;
             const created_at = item.created_at!=undefined ? item.created_at:null;
             const updated_at = item.updated_at!=undefined ? item.updated_at:null;
@@ -323,8 +323,8 @@ exports.bookingSummery = async (req, res) => {
             result.push({cart_id,lab_id,user_id,cart_name,amount,total_amount,grand_total_amount,status,created_at,updated_at,coupon_data,lab_name,lab_image,lab_image_url,cart_item});
         };
 
-        const testId =couponData!==undefined && couponData.length>0 && couponData[0]!==undefined && couponData[0].promo_code_for_id !==undefined && couponData[0].promo_code_for_id!=='' ? couponData[0].promo_code_for_id.split(','):[];
-        const promo_code_for =couponData!==undefined && couponData.length>0 &&  couponData[0]!==undefined && couponData[0].promo_code_for !==undefined && couponData[0].promo_code_for!=='' ? couponData[0]?.promo_code_for:null;
+        const testId =couponData!==undefined && couponData.length>0 && couponData[0]!==undefined && couponData[0].promo_code_for_id !==undefined && couponData[0].promo_code_for_id!=="" ? couponData[0].promo_code_for_id.split(","):[];
+        const promo_code_for =couponData!==undefined && couponData.length>0 &&  couponData[0]!==undefined && couponData[0].promo_code_for !==undefined && couponData[0].promo_code_for!=="" ? couponData[0]?.promo_code_for:null;
         const promo_code_id= couponData !=undefined && couponData[0]?.id ? couponData[0]?.id:0;
         const user_id=created_by_id??0;
         const object =result!=undefined && result[0]!=undefined && result[0].cart_item!=undefined?result[0].cart_item:[];
@@ -348,7 +348,7 @@ exports.bookingSummery = async (req, res) => {
                                 var apCheck = proCount;
                                 updateValue(helperFunction.discount({total_amount,percentage,type,discount_price}),cartItem.test_id,0,object);
                                 await appliedCouponCodes.create({user_id,promo_code_id,test_id});
-                            }else if (checkPouponUsesvali(proCount++,maxcoupon)=='expire') {
+                            }else if (checkPouponUsesvali(proCount++,maxcoupon)=="expire") {
                                 var couponCodeE = "This coupon code's limit expired!";
                             }
                         } 
@@ -365,9 +365,9 @@ exports.bookingSummery = async (req, res) => {
                                 const total_amount =  cartItem.amount;
                                 applycouponProduct.push(cartItem);
                                 var apCheck = proCount;
-                                updateValue(helperFunction.discount({total_amount,percentage,type,discount_price}),0,cartItem.package_id,object)
+                                updateValue(helperFunction.discount({total_amount,percentage,type,discount_price}),0,cartItem.package_id,object);
                                 await appliedCouponCodes.create({user_id,promo_code_id,package_id});
-                            }else if (checkPouponUsesvali(proCount++,maxcoupon)=='expire') {
+                            }else if (checkPouponUsesvali(proCount++,maxcoupon)=="expire") {
                                 var couponCodeE = "This coupon code's limit expired!";
                             }
                             
@@ -386,11 +386,11 @@ exports.bookingSummery = async (req, res) => {
         }
 
         function  checkPouponUsesvali(currentApply=0,maxcoupon=[]) {
-                var maxUser = couponData!=undefined && couponData!='' ? couponData[0].max_uses:0;
+                var maxUser = couponData!=undefined && couponData!="" ? couponData[0].max_uses:0;
                 var total = maxcoupon.length+ currentApply;
                 if(maxcoupon.length >= parseInt(maxUser)){
                     console.log("expire");
-                    return 'expire';
+                    return "expire";
                     //"This coupon code's limit expired! when already expired";
                 }
                 else if (total >= parseInt(maxUser)) {
@@ -442,25 +442,25 @@ exports.bookingSummery = async (req, res) => {
                 status_code:500,
                 status:"error",
                 message:"Opps! There is no product in your cart, Please add some product",
-            })
+            });
         }
 
-        return res.status(couponCodeE != undefined && couponCodeE != '' && couponCodeE != null ? 400 : 200).json({
-            status_code: couponCodeE != undefined && couponCodeE != '' && couponCodeE != null ? 400 : 200,
-            status: couponCodeE != undefined && couponCodeE != '' && couponCodeE != null ? "error" : "success",
-            message: couponCodeE != undefined && couponCodeE != '' && couponCodeE != null ? couponCodeE : "Successfully!",
+        return res.status(couponCodeE != undefined && couponCodeE != "" && couponCodeE != null ? 400 : 200).json({
+            status_code: couponCodeE != undefined && couponCodeE != "" && couponCodeE != null ? 400 : 200,
+            status: couponCodeE != undefined && couponCodeE != "" && couponCodeE != null ? "error" : "success",
+            message: couponCodeE != undefined && couponCodeE != "" && couponCodeE != null ? couponCodeE : "Successfully!",
             data: result,
             applycouponProduct:applycouponProduct
-        })
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json({
             status_code: 500,
             status: "error",
             message: "something went wrong!"
-        })
+        });
     }
-}
+};
 
 exports.checkAppointment = async(req,res)=>{
     try {
@@ -477,7 +477,7 @@ exports.checkAppointment = async(req,res)=>{
             const time_slot = item.from_time!=undefined ? item.from_time:null;
             const date_slot = item.appointment_date!=undefined ? item.appointment_date:null;
             bookedSlot.push({id,user_id,time_slot,date_slot});
-        })
+        });
         const user = await helperQuery.Get({ table: "users", where: " id=" + user_id });
         if (user[0].role_id == 4) {
             var slotInterval = 30;
@@ -495,16 +495,16 @@ exports.checkAppointment = async(req,res)=>{
             message:Slots.length<=0 ? "Time slots not available":"Successfully!",
             data:bookedSlot,
             Remaining_Slots:Slots,
-        })
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json({
             status_code:500,
             status:"error",
             message:"something went wrong!"
-        })
+        });
     }
-}
+};
 exports.createAppoint= async(req,res)=>{
     try {
         const {refer_by_id, cart_id, created_by_id, from_time, appointment_date, total_amount, grand_total} =req.body;
@@ -555,12 +555,12 @@ exports.createAppoint= async(req,res)=>{
         var query = "SELECT * FROM user_carts WHERE created_by_id="+created_by_id+" AND status='0' AND appointment_id IS NULL";
         const cartdata = await helperQuery.All(query);
         console.log(cartdata);
-        if ((cartdata.length > 0) && cartdata!=null && cartdata[0]!=undefined && cartdata[0].cart_item!=undefined && cartdata[0].cart_item!=null && !(JSON.parse(cartdata[0].cart_item??'[]').length>0) ) {
+        if ((cartdata.length > 0) && cartdata!=null && cartdata[0]!=undefined && cartdata[0].cart_item!=undefined && cartdata[0].cart_item!=null && !(JSON.parse(cartdata[0].cart_item??"[]").length>0) ) {
             return res.status(500).json({
                 status_code:500,
                 status:"error",
                 message:"Opps! There is no product in your cart, Please add some product",
-            })
+            });
         }
 
         const doctorData = await helperQuery.All(`SELECT user_id FROM user_doctors WHERE id='${refer_by_id}'`);
@@ -581,10 +581,10 @@ exports.createAppoint= async(req,res)=>{
        
         const categoryData = await helperQuery.All(`SELECT category_name FROM test_categories WHERE  cat_id IN ('${catId}')`);
         for (const iterator of categoryData) {
-            category.push(iterator.category_name)
+            category.push(iterator.category_name);
         }
         
-        var payment_order_id = process.env.APP_NAME+'_'+new Date().getTime();
+        var payment_order_id = process.env.APP_NAME+"_"+new Date().getTime();
         const result = await bookApointment.createAppoint(payment_order_id,user_id,JSON.stringify(member_id),refer_by_id, promo_code_id, from_time,appointment_date, total_amount, grand_total, created_by_id,doctor_id);
         if (result.affectedRows==1) {
             const insertId= result.insertId??0;
@@ -618,37 +618,37 @@ exports.createAppoint= async(req,res)=>{
                    var email  = user_detail[0].email;
                }
                else{
-                var email = '';
+                var email = "";
                }
 
-                    var appointment_type = 'lab_patient_appointment';
+                    var appointment_type = "lab_patient_appointment";
                 if (user[0].role_id == 4) {
-                    var appointment_type = 'radio_patient_appointment';
+                    var appointment_type = "radio_patient_appointment";
                 }
 
-                var source_type = 'WEB';
-                if(req.body.source_type =='APP'){
-                   var source_type = 'APP';
+                var source_type = "WEB";
+                if(req.body.source_type =="APP"){
+                   var source_type = "APP";
                 }
 
-               var detail = 'appointment_id='+result.insertId+'&&total_amount='+grand_total+'&&email='+email+'&&payment_order_id='+payment_order_id+'&&type='+appointment_type+'&&source_type='+source_type;
+               var detail = "appointment_id="+result.insertId+"&&total_amount="+grand_total+"&&email="+email+"&&payment_order_id="+payment_order_id+"&&type="+appointment_type+"&&source_type="+source_type;
 
                 console.log(detail);
 
-               var url = process.env.APP_URL+'api/auth/payment-appointment?detail='+btoa(detail);
+               var url = process.env.APP_URL+"api/auth/payment-appointment?detail="+btoa(detail);
 
                 return res.status(200).json({
                     status_code:200,
                     status:"success",
                     message:"Successfully!",
                     data : { 
-                        'id' : result.insertId,
-                        'amount': grand_total,
-                        'email' : email,
-                        'payment_order_id' : payment_order_id,
-                        'url' : url
+                        "id" : result.insertId,
+                        "amount": grand_total,
+                        "email" : email,
+                        "payment_order_id" : payment_order_id,
+                        "url" : url
                     }
-                })
+                });
                    
               
             }
@@ -656,7 +656,7 @@ exports.createAppoint= async(req,res)=>{
                 status_code:500,
                 status:"error",
                 message:"Opps! There is no product in your cart, Please add some product",
-            })
+            });
         }
         
     } catch (error) {
@@ -666,9 +666,9 @@ exports.createAppoint= async(req,res)=>{
             status:"error",
             message:"something went wrong!"
             
-        })
+        });
     }
-}
+};
 exports.createAppointmentTxnToken = async(req,res)=>{
     try {
         
@@ -680,10 +680,10 @@ exports.createAppointmentTxnToken = async(req,res)=>{
             return res.status(500).json(vali);
         }
 
-        var call_back_url = 'http://medwire.wecoderelationship.com/patient_dynamic/#/payment-thankyou?id='+btoa(appointment_id)+'&&type=appointment';
+        var call_back_url = "http://medwire.wecoderelationship.com/patient_dynamic/#/payment-thankyou?id="+btoa(appointment_id)+"&&type=appointment";
 
       
-        var paytmParams = {}
+        var paytmParams = {};
         paytmParams.body = {
             "requestType": "Payment",
             "mid": process.env.Paytm_mid,
@@ -708,23 +708,23 @@ exports.createAppointmentTxnToken = async(req,res)=>{
         var post_data = JSON.stringify(paytmParams);
         var options = {
             /* for Staging */
-            hostname: 'securegw-stage.paytm.in',
+            hostname: "securegw-stage.paytm.in",
             /* for Production */
             // hostname: 'securegw.paytm.in',
             port: 443,
-            path: '/theia/api/v1/initiateTransaction?mid='+process.env.Paytm_mid+'&orderId='+payment_order_id,
-            method: 'POST',
+            path: "/theia/api/v1/initiateTransaction?mid="+process.env.Paytm_mid+"&orderId="+payment_order_id,
+            method: "POST",
             headers: {
-                'Content-Type': 'application/json',
-                'Content-Length': post_data.length
+                "Content-Type": "application/json",
+                "Content-Length": post_data.length
             }
         };
-        let customTxntoken =  '';  
+        let customTxntoken =  "";  
         var post_req = await https.request(options, async function(post_res) {
-            await post_res.on('data', function (chunk) {
+            await post_res.on("data", function (chunk) {
                 response += chunk;
             });                              
-            await post_res.on('end', async function(){
+            await post_res.on("end", async function(){
                 var trans_token = JSON.parse(response);
                 await helperQuery.All("update `appointments` set `txn_token` = '"+trans_token.body.txnToken+"' where `id` = '"+appointment_id+"'");
 
@@ -747,15 +747,15 @@ exports.createAppointmentTxnToken = async(req,res)=>{
                     status:"success",
                     message:"Successfully!",
                     data : { 
-                        'id' : appointment_id,
-                        'mid' : process.env.Paytm_mid,
-                        'order_id' : payment_order_id,
-                        'amount': grand_total,
-                        'callback_url' : call_back_url,
+                        "id" : appointment_id,
+                        "mid" : process.env.Paytm_mid,
+                        "order_id" : payment_order_id,
+                        "amount": grand_total,
+                        "callback_url" : call_back_url,
                         "txn_token" : data[0].txn_token,
                         "is_stage" : true
                     }
-                })
+                });
             });
         },2000);
     } catch (error) {
@@ -763,13 +763,13 @@ exports.createAppointmentTxnToken = async(req,res)=>{
             status_code:500,
             status:"error",
             message:"something went wrong!"
-        })
+        });
     }
-}
+};
 exports.appointmentList = async(req,res)=>{
     try {
         const {user_id,source_type} = req.body;
-        const role_id = req.body.role_id??'';
+        const role_id = req.body.role_id??"";
         const vali = helperFunction.customValidater(req,{user_id});
         if (vali) {
            return res.status(500).json(vali); 
@@ -799,7 +799,7 @@ exports.appointmentList = async(req,res)=>{
             const report_documentApk = item.report_document != undefined ? helperFunction.is_file_exist(item.report_document) : null;
             const visit_id = item.visit_id != undefined ? item.visit_id : null;
             const cart_id = item.cart_id!=undefined ? item.cart_id:null;
-            const cart_item = item.cart_item!=undefined && item.cart_item!='' && helperFunction.isJson(item.cart_item)==true ? JSON.parse(item.cart_item):null;
+            const cart_item = item.cart_item!=undefined && item.cart_item!="" && helperFunction.isJson(item.cart_item)==true ? JSON.parse(item.cart_item):null;
             const created_at = item.created_at!=undefined ? item.created_at:null;
             const appointments_user_type=item.appointments_user_type??null;
             const payment_status =item.payment_status!=undefined ? item.payment_status:"PENDING";
@@ -810,7 +810,7 @@ exports.appointmentList = async(req,res)=>{
             const dcm_document_url = item.dcm_document!=null ? process.env.APP_URL_DCM + "/" +item.dcm_document:null;
 
 
-            if((item.payment_status == 'Pending')||(item.payment_status == 'PENDING')||(item.payment_status == null))
+            if((item.payment_status == "Pending")||(item.payment_status == "PENDING")||(item.payment_status == null))
             {
                 var user_detail = await helperQuery.Get({table:"users",where:"id ="+item.user_id});
 
@@ -825,14 +825,14 @@ exports.appointmentList = async(req,res)=>{
                 }
 
                 if(item.payment_order_id == null){
-                    var payment_order_id =  process.env.APP_NAME+'_'+new Date().getTime()+item.id;                    
+                    var payment_order_id =  process.env.APP_NAME+"_"+new Date().getTime()+item.id;                    
                     await bookApointment.updatePaymentOrderId(payment_order_id,id);
                 }
                  else {
                      var payment_order_id =  item.payment_order_id;
                 }
-                var detail = 'appointment_id='+item.id+'&&total_amount='+item.grand_total+'&&email='+email+'&&payment_order_id='+payment_order_id+'&&type=lab_radio_booked_appointment_by_patient&&source_type='+source_type;
-                var url = process.env.APP_URL+'api/auth/payment-appointment?detail='+btoa(detail);
+                var detail = "appointment_id="+item.id+"&&total_amount="+item.grand_total+"&&email="+email+"&&payment_order_id="+payment_order_id+"&&type=lab_radio_booked_appointment_by_patient&&source_type="+source_type;
+                var url = process.env.APP_URL+"api/auth/payment-appointment?detail="+btoa(detail);
             }
             else{
                 var url = null;
@@ -848,16 +848,16 @@ exports.appointmentList = async(req,res)=>{
             status:"success",
             message:"Successfully!",
             data:data
-        })
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json({
             status_code:500,
             status:"error",
             message:"something went wrong!"
-        })
+        });
     }
-}
+};
 
 exports.checktimeslote = async(req,res)=>{
     try {
@@ -880,14 +880,14 @@ exports.checktimeslote = async(req,res)=>{
             const time_slot = item.from_time!=undefined ? item.from_time:null;
             const date_slot = item.appointment_date!=undefined ? item.appointment_date:null;
             bookedSlot.push({id,user_id,time_slot,date_slot});
-        }) 
+        }); 
 
         if (opentime==undefined ||  opentime==null || opentime=="" || opentime==undefined ||  opentime==null || opentime=="") {
             return res.status(400).json({
                 status_code:400,
                 status:"error",
                 message:"Slot Not Found!"
-            })
+            });
         }
         const slotInterval = 15;
         const Slots = helperFunction.startToEndTimeSlot(slotInterval,opentime,closetime,bookedSlot,appoin_date);
@@ -917,26 +917,26 @@ exports.checktimeslote = async(req,res)=>{
         
         
         const data =[];
-        data.push({user,Slots})
+        data.push({user,Slots});
         return res.status(200).json({
             status_code:200,
             status:"success",
             message:"Successfully!",
             data:data
-        })
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json({
             status_code:500,
             status:"error",
             message:"something went wrong!"
-        })
+        });
     }
-}
+};
 exports.LabRadioAppointmentList = async (req, res) => {
     try {
         const { user_id } = req.body;
-        const role_id = req.body.role_id ?? '';
+        const role_id = req.body.role_id ?? "";
         const vali = helperFunction.customValidater(req, { user_id });
         if (vali) {
             return res.status(500).json(vali);
@@ -959,7 +959,7 @@ exports.LabRadioAppointmentList = async (req, res) => {
             const booking_status = item.status != undefined ? item.status : null;
             const total_amount = item.total_amount != undefined ? item.total_amount : null;
             const grand_total = item.grand_total != undefined ? item.grand_total : null;
-            const status = item.status ?? '';
+            const status = item.status ?? "";
             const reason_of_reschedule = item.reason_of_reschedule ?? null;
             const doctor = item.doctor != undefined ? item.doctor : null;
             const lab_name = item.lab_name != undefined ? item.lab_name : null;
@@ -968,7 +968,7 @@ exports.LabRadioAppointmentList = async (req, res) => {
             const lab_radio_type = helperFunction.check_file_DCM(item.report_document);
             const visit_id = item.visit_id != undefined ? item.visit_id : null;
             const cart_id = item.cart_id != undefined ? item.cart_id : null;
-            const cart_item = item.cart_item != undefined && item.cart_item != '' ? JSON.parse(item.cart_item) : null;
+            const cart_item = item.cart_item != undefined && item.cart_item != "" ? JSON.parse(item.cart_item) : null;
             const created_at = item.created_at != undefined ? item.created_at : null;
             const appointments_user_type=item.appointments_user_type??null;
             const payment_status =item.payment_status!=undefined ? item.payment_status:"PENDING";
@@ -990,16 +990,16 @@ exports.LabRadioAppointmentList = async (req, res) => {
             status: "success",
             message: "Successfully!",
             data: data
-        })
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json({
             status_code: 500,
             status: "error",
             message: "something went wrong!"
-        })
+        });
     }
-}
+};
 exports.LabRadioAppointmentfind = async(req,res)=>{
     try {
         const {appointment_id} = req.body;
@@ -1010,29 +1010,29 @@ exports.LabRadioAppointmentfind = async(req,res)=>{
         const result = await bookApointment.LabRadioAppointmentfind(appointment_id);
         const data = [];
         result.map((item)=>{
-            const appointment_id = item.appointment_id??'';
-            const time_slot = item.from_time??'';
-            const appointment_date = item.appointment_date??'';
-            const user_id = item.user_id??'';
-            const reason_of_reschedule = item.reason_of_reschedule??'';
-            const status = item.status??'';
-            data.push({appointment_id,time_slot,appointment_date,user_id,reason_of_reschedule,status})
-        })
+            const appointment_id = item.appointment_id??"";
+            const time_slot = item.from_time??"";
+            const appointment_date = item.appointment_date??"";
+            const user_id = item.user_id??"";
+            const reason_of_reschedule = item.reason_of_reschedule??"";
+            const status = item.status??"";
+            data.push({appointment_id,time_slot,appointment_date,user_id,reason_of_reschedule,status});
+        });
         return res.status(200).json({
             status_code:200,
             status:"success",
             message:"Successfully!",
             data:data
-        })
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json({
             status_code:500,
             status:"error",
             message:"something went wrong!"
-        })
+        });
     }
-}
+};
 exports.LabRadioAppointmentStatusReschedule = async(req,res)=>{
     try {
         const {time_slot,appointment_date,reason_of_reschedule,appointment_id} = req.body;
@@ -1055,22 +1055,22 @@ exports.LabRadioAppointmentStatusReschedule = async(req,res)=>{
 
                 let clinicId = updated_appointment[0].clinic_id;
                 let lrId = updated_appointment[0].user_id;
-                let reschedulId =clinicId!=null && clinicId!='' ? clinicId:lrId;
+                let reschedulId =clinicId!=null && clinicId!="" ? clinicId:lrId;
 
                 const reschedulData = await helperQuery.First({table:"users",where:" id="+reschedulId});
                 const userType = reschedulData.user_type.charAt(0).toUpperCase() + reschedulData.user_type.slice(1);
-                var CurrentDate = moment().format('YYYY-MM-DD')+' & '+moment().format('hh:mm A');
+                var CurrentDate = moment().format("YYYY-MM-DD")+" & "+moment().format("hh:mm A");
 
 
                 if(user_result.length > 0){
                     var first_name = user_result[0].first_name;
                 }
                 else{
-                    var first_name = 'User';
+                    var first_name = "User";
                 }
-                data.by='custom';
-                data.title = 'Appointment Rescheduled';
-                data.type = 'reschedule_appointment';
+                data.by="custom";
+                data.title = "Appointment Rescheduled";
+                data.type = "reschedule_appointment";
                 data.appointment_date = updated_appointment[0].appointment_date;
                 data.time_slot = updated_appointment[0].from_time;
                 data.message = `Hey ${first_name} ,<br> your appointment with ${userType} ${reschedulData.first_name} on ${CurrentDate}  has been rescheduled on ${helperFunction.dateFormat(appointment_date,"yyyy/mm/dd")} & ${time_slot} `,
@@ -1083,11 +1083,11 @@ exports.LabRadioAppointmentStatusReschedule = async(req,res)=>{
                 if (p_detail) {
                     var payload = {
                         notification: {
-                            title: 'Appointment Rescheduled',
-                            body: 'Hey ' + first_name + ',\nyour appointment with '+userType+' '+reschedulData.first_name+`on ${CurrentDate}  has been rescheduled on ${helperFunction.dateFormat(appointment_date,"yyyy/mm/dd")} & ${time_slot} `,
+                            title: "Appointment Rescheduled",
+                            body: "Hey " + first_name + ",\nyour appointment with "+userType+" "+reschedulData.first_name+`on ${CurrentDate}  has been rescheduled on ${helperFunction.dateFormat(appointment_date,"yyyy/mm/dd")} & ${time_slot} `,
                         }
-                    }
-                    if ((p_detail[0].device_type == 'Android')||(p_detail[0].device_type == 'IOS')) {
+                    };
+                    if ((p_detail[0].device_type == "Android")||(p_detail[0].device_type == "IOS")) {
                         await helperFunction.pushNotification(p_detail[0].device_token, payload);
                     }
                 }
@@ -1099,16 +1099,16 @@ exports.LabRadioAppointmentStatusReschedule = async(req,res)=>{
             status:"success",
             message:"Successfully!",
             data:result
-        })
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json({
             status_code:500,
             status:"error",
             message:"something went wrong!"
-        })
+        });
     }
-}
+};
 exports.LabRadioAppointmentStatusUpdate = async(req,res)=>{
     try {
         const {status,appointment_id} = req.body;
@@ -1128,59 +1128,59 @@ exports.LabRadioAppointmentStatusUpdate = async(req,res)=>{
                 data.to_user_id = updated_appointment[0].patient_id;
                 let clinicId = updated_appointment[0].clinic_id;
                 let lrId = updated_appointment[0].user_id;
-                let reschedulId =clinicId!=null && clinicId!='' ? clinicId:lrId;
+                let reschedulId =clinicId!=null && clinicId!="" ? clinicId:lrId;
 
                 const reschedulData = await helperQuery.First({table:"users",where:" id="+reschedulId});
                 const userType = reschedulData.user_type.charAt(0).toUpperCase() + reschedulData.user_type.slice(1);
                 
-                var CurrentDate = moment().format('YYYY-MM-DD')+' & '+moment().format('hh:mm A');
+                var CurrentDate = moment().format("YYYY-MM-DD")+" & "+moment().format("hh:mm A");
 
                 let user_result = await helperQuery.Get({table:"users",where:"id ="+updated_appointment[0].patient_id});
                 if(user_result.length > 0){
                     var first_name = user_result[0].first_name;
                 }
                 else{
-                    var first_name = 'User';
+                    var first_name = "User";
                 }
                 
-                if(status == 'Approved'){
-                    data.title = 'Appointment Approved';
-                    data.by='custom';
-                    data.type = 'appointment_approved';
-                    data.message = 'Hey '+first_name+',<br> your appointment with '+userType+' '+reschedulData.first_name+' on '+CurrentDate+' has been approved.';
-                    var app_message = 'Hey '+first_name+',\nyour appointment with '+userType+' '+reschedulData.first_name+' on '+CurrentDate+' has been approved.';
+                if(status == "Approved"){
+                    data.title = "Appointment Approved";
+                    data.by="custom";
+                    data.type = "appointment_approved";
+                    data.message = "Hey "+first_name+",<br> your appointment with "+userType+" "+reschedulData.first_name+" on "+CurrentDate+" has been approved.";
+                    var app_message = "Hey "+first_name+",\nyour appointment with "+userType+" "+reschedulData.first_name+" on "+CurrentDate+" has been approved.";
                     var payload = {
                         notification : {
                             title : data.title,
                             body : app_message
                         }
-                    }  
-                    if(user_result[0].device_type !='undefined'){
-                        if((user_result[0].device_type == 'Android')||(user_result[0].device_type == 'IOS')){
+                    };  
+                    if(user_result[0].device_type !="undefined"){
+                        if((user_result[0].device_type == "Android")||(user_result[0].device_type == "IOS")){
                             await helperFunction.pushNotification(user_result[0].device_token,payload);
                         }
                     }
                 }
-                else if(status == 'Cancelled'){
-                    data.title = 'Appointment Cancelled';
-                    data.type = 'appointment_cancelled';
-                    data.by='custom';
-                    data.message = 'Hey '+first_name+',<br> your appointment with '+userType+' '+reschedulData.first_name+' on '+CurrentDate+' has been cancelled.';
-                    var app_message = 'Hey ' + first_name + ',\nyour appointment with '+userType+' '+reschedulData.first_name+`on ${CurrentDate}  has been cancelled.`;
+                else if(status == "Cancelled"){
+                    data.title = "Appointment Cancelled";
+                    data.type = "appointment_cancelled";
+                    data.by="custom";
+                    data.message = "Hey "+first_name+",<br> your appointment with "+userType+" "+reschedulData.first_name+" on "+CurrentDate+" has been cancelled.";
+                    var app_message = "Hey " + first_name + ",\nyour appointment with "+userType+" "+reschedulData.first_name+`on ${CurrentDate}  has been cancelled.`;
                     var payload = {
                         notification : {
                             title : data.title,
                             body : app_message
                         }
-                    }  
-                    if(user_result[0].device_type !='undefined'){
-                        if((user_result[0].device_type == 'Android')||(user_result[0].device_type == 'IOS')){
+                    };  
+                    if(user_result[0].device_type !="undefined"){
+                        if((user_result[0].device_type == "Android")||(user_result[0].device_type == "IOS")){
                             await helperFunction.pushNotification(user_result[0].device_token,payload);
                         }
                     }
                 }
 
-                if (status == 'Cancelled' || status == 'Approved') {
+                if (status == "Cancelled" || status == "Approved") {
                     data.appointment_date = updated_appointment[0].appointment_date;
                     data.time_slot = updated_appointment[0].from_time;
                     await Notification.AddNotification(data);
@@ -1192,20 +1192,20 @@ exports.LabRadioAppointmentStatusUpdate = async(req,res)=>{
             status:"success",
             message: "Appointment "+status+" Successfully!",
             data:result
-        })
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json({
             status_code:500,
             status:"error",
             message:"something went wrong!"
-        })
+        });
     }
-}
+};
 exports.LabRadioBillingHistory = async(req,res)=>{
     try {
         const {user_id} = req.body;
-        const role_id = req.body.role_id??'';
+        const role_id = req.body.role_id??"";
         const vali = helperFunction.customValidater(req,{user_id});
         if (vali) {
            return res.status(500).json(vali); 
@@ -1219,7 +1219,7 @@ exports.LabRadioBillingHistory = async(req,res)=>{
             const pin_code = item.pin_code!=null?item.pin_code:item.mpin_code??null;
             const user_id = item.user_id!=undefined ? item.user_id:null;
             const member_id = item.member_id!=undefined ? item.member_id:null;
-            const mamber_ids = member_id!=undefined && member_id!=null && JSON.parse(member_id) ? JSON.parse(member_id ?? '[]'):null;
+            const mamber_ids = member_id!=undefined && member_id!=null && JSON.parse(member_id) ? JSON.parse(member_id ?? "[]"):null;
             const mamber_names = mamber_ids!=undefined && mamber_ids!=null && mamber_ids.length>0 ? await helperQuery.All("SELECT first_name FROM users WHERE id IN ("+mamber_ids+")"):"Self";
             const patient_id = item.created_by_id!=undefined ? item.created_by_id:null;
             const promo_code_id = item.promo_code_id!=undefined ? item.promo_code_id:null;
@@ -1229,20 +1229,20 @@ exports.LabRadioBillingHistory = async(req,res)=>{
             const payment_status =item.payment_status!=undefined ? item.payment_status:"Pending";
 
             let user_bank_detail = await helperQuery.Get({table:"bank_detail",where:"created_by_id ="+user_id});
-            let banking_status = 'Pending';
+            let banking_status = "Pending";
             if(user_bank_detail.length > 0){
-                banking_status = 'Success';
+                banking_status = "Success";
             }
 
             const medwire_status = item.admin_status;
             const payment_id = item.payment_txt_id!=undefined ? item.payment_txt_id:null;
             const total_amount = item.total_amount!=undefined ? item.total_amount:null;
             const grand_total = item.grand_total!=undefined ? item.grand_total:null;
-            const reason_of_reschedule = item.reason_of_reschedule??'';
+            const reason_of_reschedule = item.reason_of_reschedule??"";
             const doctor = item.doctor!=undefined ? item.doctor:null;
             const lab_name = item.lab_name!=undefined ? item.lab_name:null;
             const cart_id = item.cart_id!=undefined ? item.cart_id:null;
-            const cart_item = item.cart_item!=undefined && item.cart_item!='' && helperFunction.isJson(item.cart_item)==true ? JSON.parse(item.cart_item):item.cart_item??null;
+            const cart_item = item.cart_item!=undefined && item.cart_item!="" && helperFunction.isJson(item.cart_item)==true ? JSON.parse(item.cart_item):item.cart_item??null;
             const created_at = item.created_at!=undefined ? item.created_at:null;
             const appointments_user_type=item.appointments_user_type??null;
             data.push({user_id,appointment_id,patient_id,patient_name,medwire_id,pin_code,
@@ -1258,25 +1258,25 @@ exports.LabRadioBillingHistory = async(req,res)=>{
             status:"success",
             message:"Successfully!",
             data:data
-        })
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json({
             status_code:500,
             status:"error",
             message:"something went wrong!"
-        })
+        });
     }
-}
+};
 
 exports.allDoctorSearch = async (req, res) => {
     try {
         const { user_id, doctor_name, speciality, clinic_name } = req.body;
         const pcode = await helperQuery.All(`SELECT*FROM users WHERE id='${user_id}' LIMIT 1`);
         if ((clinic_name != undefined && clinic_name != "") || (doctor_name != undefined && doctor_name != "") || (speciality != undefined && speciality != "")) {
-            var pin_code = req.body.pin_code != undefined && req.body.pin_code != 'undefined' && req.body.pin_code != '' ? req.body.pin_code : null;
+            var pin_code = req.body.pin_code != undefined && req.body.pin_code != "undefined" && req.body.pin_code != "" ? req.body.pin_code : null;
         } else {
-            var pin_code = req.body.pin_code != undefined && req.body.pin_code != 'undefined' && req.body.pin_code != '' ? req.body.pin_code : pcode != undefined && pcode.length > 0 ? pcode[0]?.pin_code : '0';
+            var pin_code = req.body.pin_code != undefined && req.body.pin_code != "undefined" && req.body.pin_code != "" ? req.body.pin_code : pcode != undefined && pcode.length > 0 ? pcode[0]?.pin_code : "0";
         }
 
         const result = await bookApointment.allDoctorSearch({ doctor_name, speciality, clinic_name, pin_code });
@@ -1291,7 +1291,7 @@ exports.allDoctorSearch = async (req, res) => {
             status: "success",
             message: result.length > 0 ? "Successfully!" : "Opps! There is no clinic or doctor in your area",
             data: data
-        })
+        });
 
     } catch (error) {
         console.log(error);
@@ -1299,9 +1299,9 @@ exports.allDoctorSearch = async (req, res) => {
             status_code: 500,
             status: "error",
             message: "something went wrong!"
-        })
+        });
     }
-}
+};
 
 exports.doctorSpecialities = async(req,res)=>{
     try {
@@ -1311,54 +1311,54 @@ exports.doctorSpecialities = async(req,res)=>{
             status:"success",
             message:"Successfully!",
             data:result
-        })
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json({
             status_code:500,
             status:"error",
             message:"something went wrong!"
-        })
+        });
     }
-}
+};
 exports.allclinicList = async(req,res)=>{
     try {
         const data = [];
         const result = await bookApointment.allclinicList();
         result.map((item)=>{
             data.push({
-                clinic_id:item.id??'-',
-                permanent_id:item.patient_id??'-',
-                clinic_name:item.first_name??'-',
-                permanent_id:item.patient_id??'-',
-                email:item.email??'-',
-                mobile:item.mobile??'-',
-                address:item.address??'-',
-                pin_code:item.pin_code??'-',
-                online_offline_status:item.online_offline_status??'-',
-                created_at:item.created_at??'-',
+                clinic_id:item.id??"-",
+                permanent_id:item.patient_id??"-",
+                clinic_name:item.first_name??"-",
+                permanent_id:item.patient_id??"-",
+                email:item.email??"-",
+                mobile:item.mobile??"-",
+                address:item.address??"-",
+                pin_code:item.pin_code??"-",
+                online_offline_status:item.online_offline_status??"-",
+                created_at:item.created_at??"-",
             });
         });
         return res.status(200).json({
             status_code:200,
             status:"success",
             data:data
-        })
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json({
             status_code:500,
             status:"error",
             message:"something went wrong!"
-        })
+        });
     }
-}
+};
 exports.addAppointmentForDoctor = async (req, res) => {
     try {
         const { patient_id, time_slot, type, consulting_fee, appointment_date, total_amount, grand_total } = req.body;
         var reason = req.body.reason;
 
-        if (typeof reason === 'object') {
+        if (typeof reason === "object") {
             var reason = JSON.stringify(reason);
         } else {
             console.log("string");
@@ -1391,7 +1391,7 @@ exports.addAppointmentForDoctor = async (req, res) => {
         const promo_code_id = req.body.promo_code_id != undefined && req.body.promo_code_id != "" ? req.body.promo_code_id : 0;
 
 
-        var payment_order_id = process.env.APP_NAME + '_' + new Date().getTime();
+        var payment_order_id = process.env.APP_NAME + "_" + new Date().getTime();
 
 
         var user_detail = await helperQuery.Get({ table: "users", where: "id =" + patient_id });
@@ -1409,28 +1409,28 @@ exports.addAppointmentForDoctor = async (req, res) => {
         }
 
 
-        var created_at = moment().format('YYYY-MM-DD HH:mm:ss');
+        var created_at = moment().format("YYYY-MM-DD HH:mm:ss");
         const result = await bookApointment.addAppointmentForDoctor({ clinic_id, doctor_id, patient_id, user_id, member_id, created_by_id, promo_code_id, time_slot, type, consulting_fee, reason, appointment_date, total_amount, grand_total, payment_order_id, created_at });
 
-        var source_type = 'WEB';
-        if (req.body.source_type == 'APP') {
-            var source_type = 'APP';
+        var source_type = "WEB";
+        if (req.body.source_type == "APP") {
+            var source_type = "APP";
         }
 
-        var detail = 'appointment_id=' + result.insertId + '&&total_amount=' + grand_total + '&&email=' + email + '&&payment_order_id=' + payment_order_id + '&&type=appointment&&source_type=' + source_type;
-        var url = process.env.APP_URL + 'api/auth/payment-appointment?detail=' + btoa(detail);
+        var detail = "appointment_id=" + result.insertId + "&&total_amount=" + grand_total + "&&email=" + email + "&&payment_order_id=" + payment_order_id + "&&type=appointment&&source_type=" + source_type;
+        var url = process.env.APP_URL + "api/auth/payment-appointment?detail=" + btoa(detail);
 
         const drData = await helperQuery.First({ table: "users", where: "id=" + doctor_id });
         const noticData = {
-            message: "booked appointment with Dr. " + drData.first_name ?? '-',
+            message: "booked appointment with Dr. " + drData.first_name ?? "-",
             by: "clinic",
             from_user_id: patient_id,
             to_user_id: clinic_id,
-            title: 'Doctor Appointment Booked',
+            title: "Doctor Appointment Booked",
             type: "Doctor_appointment_booked",
             appointment_date: appointment_date,
             time_slot: time_slot,
-        }
+        };
         Notification.AddNotification(noticData);
 
         const user_detail2 = await helperQuery.Get({ table: "users", where: " id=" + clinic_id });
@@ -1438,11 +1438,11 @@ exports.addAppointmentForDoctor = async (req, res) => {
         if (user_detail2.length > 0) {
             var payload = {
                 notification: {
-                    title: 'Doctor Appointment Booked',
-                    body: "booked appointment with Dr. " + drData.first_name ?? '-'
+                    title: "Doctor Appointment Booked",
+                    body: "booked appointment with Dr. " + drData.first_name ?? "-"
                 }
-            }
-            if ((user_detail2[0].device_type == 'Android')||(user_detail2[0].device_type == 'IOS')) {
+            };
+            if ((user_detail2[0].device_type == "Android")||(user_detail2[0].device_type == "IOS")) {
                 await helperFunction.pushNotification(user_detail2[0].device_token, payload);
             }
         }
@@ -1452,19 +1452,19 @@ exports.addAppointmentForDoctor = async (req, res) => {
             status: "success",
             message: "Successfully!",
             data: {
-                'id': result.insertId,
-                'url': url
+                "id": result.insertId,
+                "url": url
 
             }
-        })
+        });
     } catch (error) {
         return res.status(500).json({
             status_code: 500,
             status: "error",
             message: "something went wrong!"
-        })
+        });
     }
-}
+};
 exports.clinicAddAppointmentForDoctor = async (req, res) => {
     try {
         const { clinic_id, doctor_id, patient_id, time_slot, type, consulting_fee, reason, appointment_date, total_amount, payment_status,grand_total } = req.body;
@@ -1482,23 +1482,23 @@ exports.clinicAddAppointmentForDoctor = async (req, res) => {
         const created_by_id = req.body.created_by_id != undefined && req.body.created_by_id != "" ? req.body.created_by_id : patient_id??0;
         const promo_code_id = req.body.promo_code_id != undefined && req.body.promo_code_id != "" ? req.body.promo_code_id : 0; 
         
-        var created_at = moment().format('YYYY-MM-DD HH:mm:ss'); 
+        var created_at = moment().format("YYYY-MM-DD HH:mm:ss"); 
 
         const result = await bookApointment.clinicAddAppointmentForDoctor({ clinic_id, doctor_id, patient_id, user_id, member_id, created_by_id, promo_code_id, time_slot, type, consulting_fee, reason, appointment_date, total_amount,payment_status, grand_total,created_at });
         return res.status(200).json({
             status_code: 200,
             status: "success",
             message: "Successfully!",
-        })
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json({
             status_code: 500,
             status: "error",
             message: "something went wrong!"
-        })
+        });
     }
-}
+};
 exports.AppointmentForDoctorList = async(req,res)=>{
     try {
         const {user_id} = req.body;
@@ -1512,16 +1512,16 @@ exports.AppointmentForDoctorList = async(req,res)=>{
             status:"success",
             message:"Successfully!",
             data:result
-        })
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json({
             status_code:500,
             status:"error",
             message:"something went wrong!"
-        })
+        });
     }
-}
+};
 exports.getAllAppointmentForDoctorList = async(req,res)=>{
     try {
         const result = await bookApointment.AppointmentForAllDoctor();
@@ -1530,15 +1530,15 @@ exports.getAllAppointmentForDoctorList = async(req,res)=>{
             status:"success",
             message:"Successfully!",
             data:result
-        })
+        });
     } catch (error) {
         return res.status(500).json({
             status_code:500,
             status:"error",
             message:"something went wrong!"
-        })
+        });
     }
-}
+};
 exports.doctorDetail = async(req,res)=>{
     try {
         const id = req.body.id;
@@ -1549,7 +1549,7 @@ exports.doctorDetail = async(req,res)=>{
             status:"success",
             message:"Successfully!",
             data:resutl
-        })
+        });
 
     } catch (error) {
         console.log(error);
@@ -1557,9 +1557,9 @@ exports.doctorDetail = async(req,res)=>{
             status_code:500,
             status:"error",
             message:"something went wrong!"
-        })
+        });
     }
-}
+};
 exports.patientBillingHistoryLabRadio = async(req,res)=>{
     try {
         const {role_id,user_id} = req.body;
@@ -1577,7 +1577,7 @@ exports.patientBillingHistoryLabRadio = async(req,res)=>{
             const pin_code = item.pin_code!=null?item.pin_code:item.mpin_code??null;
             const user_id = item.user_id!=undefined ? item.user_id:null;
             const member_id = item.member_id!=undefined ? item.member_id:null;
-            const mamber_ids = member_id!=undefined && member_id!=null && JSON.parse(member_id) ? JSON.parse(member_id ?? '[]'):null;
+            const mamber_ids = member_id!=undefined && member_id!=null && JSON.parse(member_id) ? JSON.parse(member_id ?? "[]"):null;
             const mamber_names = mamber_ids!=undefined && mamber_ids!=null && mamber_ids.length>0 ? await helperQuery.All("SELECT first_name FROM users WHERE id IN ("+mamber_ids+")"):"Self";
             const patient_id = item.created_by_id!=undefined ? item.created_by_id:null;
             const promo_code_id = item.promo_code_id!=undefined ? item.promo_code_id:null;
@@ -1591,11 +1591,11 @@ exports.patientBillingHistoryLabRadio = async(req,res)=>{
             const payment_id = item.payment_txt_id!=undefined ? item.payment_txt_id:null;
             const total_amount = item.total_amount!=undefined ? item.total_amount:null;
             const grand_total = item.grand_total!=undefined ? item.grand_total:null;
-            const reason_of_reschedule = item.reason_of_reschedule??'';
+            const reason_of_reschedule = item.reason_of_reschedule??"";
             const doctor = item.doctor!=undefined ? item.doctor:null;
             const lab_name = item.lab_name!=undefined ? item.lab_name:null;
             const cart_id = item.cart_id!=undefined ? item.cart_id:null;
-            const cart_item = item.cart_item!=undefined && item.cart_item!='' && helperFunction.isJson(item.cart_item)==true ? JSON.parse(item.cart_item):item.cart_item;
+            const cart_item = item.cart_item!=undefined && item.cart_item!="" && helperFunction.isJson(item.cart_item)==true ? JSON.parse(item.cart_item):item.cart_item;
             const created_at = item.created_at!=undefined ? item.created_at:null;
             const lab_address = item.lab_address??null;
             data.push({user_id,appointment_id,patient_id,patient_name,medwire_id,pin_code,
@@ -1611,16 +1611,16 @@ exports.patientBillingHistoryLabRadio = async(req,res)=>{
             status:"success",
             message:"Successfully!",
             data:data
-        })
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json({
             status_code:500,
             status:"error",
             message:"something went wrong!"
-        })
+        });
     }
-}
+};
 exports.viewDoctorAvailability = async (req, res) => {
     const { doctor_id,clinic_id, date } = req.body;
     var valid = helperFunction.customValidater(req, { doctor_id,clinic_id, date });
@@ -1632,7 +1632,7 @@ exports.viewDoctorAvailability = async (req, res) => {
     if (St.length>0) {
         St.map((item)=>{
             const Stime = item.from_time??"00:00";
-            bookedSlots.push({Stime})
+            bookedSlots.push({Stime});
         });
         
     }
@@ -1640,8 +1640,8 @@ exports.viewDoctorAvailability = async (req, res) => {
         if (err) {
             res.status(500).send({
                 status_code: 500,
-                status: 'error',
-                message: 'Something Went Wrong'
+                status: "error",
+                message: "Something Went Wrong"
             });
             return;
         }
@@ -1649,15 +1649,15 @@ exports.viewDoctorAvailability = async (req, res) => {
             helperFunction.check_today_current_slote();
             res.status(200).send({
                 status_code: 200,
-                status: 'success',
+                status: "success",
                 message: "Doctor availability fetch Successfully",
                 totalAvlailableSlots: data.length,
                 result: data,
                 bookedSlots:bookedSlots
             });
         }
-    })
-}
+    });
+};
 
 function searchDataInArrayObj(search,doctor_name,clinic_name,pin_code,array)
 {
@@ -1665,7 +1665,7 @@ function searchDataInArrayObj(search,doctor_name,clinic_name,pin_code,array)
 
     for (let index = 0; index < array.length; index++) {
         // console.log(array[index].speciality_name.split(','));
-        let specialityData = array[index].speciality_name.split(','); 
+        let specialityData = array[index].speciality_name.split(","); 
         for(let j=0; j<specialityData.length; j++){
             if (doctor_name!=undefined && doctor_name!=""
                 && clinic_name!=undefined && clinic_name!=""

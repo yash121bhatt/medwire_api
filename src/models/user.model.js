@@ -1,14 +1,14 @@
-const { date } = require('joi');
-const db = require('../config/db.config');
-const { createNewUser: createNewUserQuery, findUserByEmail: findUserByEmailQuery, createNewradioUserQuery: createNewradioUserQuery, findUserByIdQuery: findUserByIdQuery, verifyOtp: verifyOtp, findMemberByIdQuery: findMemberByIdQuery, resetPassword: resetPassword, createMember: createMember, updateUser: updateUser, updatePassword: updatePassword, oldPassword: oldPassword, updateMember: updateMember, createDoctor: createDoctor, addDoctorFeeQuery: addDoctorFeeQuery, addDoctorSpeciality: addDoctorSpeciality, addDoctorDegree: addDoctorDegree, updateDoctorSpeciality: updateDoctorSpeciality, updateDoctorDegree: updateDoctorDegree, addDoctorSchedule: addDoctorSchedule, updateDoctorSchedule: updateDoctorSchedule, addDoctorAvailability: addDoctorAvailability, updateDoctorAvailability: updateDoctorAvailability } = require('../database/queries');
-const { logger } = require('../utils/logger');
-const helperFunction = require('../helper/helperFunction');
-const { transporter: transporter, mailOptions: mailOptions, autoGenPassword: autoGenPassword } = require('../helper/helper');
+const { date } = require("joi");
+const db = require("../config/db.config");
+const { createNewUser: createNewUserQuery, findUserByEmail: findUserByEmailQuery, createNewradioUserQuery: createNewradioUserQuery, findUserByIdQuery: findUserByIdQuery, verifyOtp: verifyOtp, findMemberByIdQuery: findMemberByIdQuery, resetPassword: resetPassword, createMember: createMember, updateUser: updateUser, updatePassword: updatePassword, oldPassword: oldPassword, updateMember: updateMember, createDoctor: createDoctor, addDoctorFeeQuery: addDoctorFeeQuery, addDoctorSpeciality: addDoctorSpeciality, addDoctorDegree: addDoctorDegree, updateDoctorSpeciality: updateDoctorSpeciality, updateDoctorDegree: updateDoctorDegree, addDoctorSchedule: addDoctorSchedule, updateDoctorSchedule: updateDoctorSchedule, addDoctorAvailability: addDoctorAvailability, updateDoctorAvailability: updateDoctorAvailability } = require("../database/queries");
+const { logger } = require("../utils/logger");
+const helperFunction = require("../helper/helperFunction");
+const { transporter: transporter, mailOptions: mailOptions, autoGenPassword: autoGenPassword } = require("../helper/helper");
 const requestPromise = require("request-promise");
 const jwt = require("jsonwebtoken");
-const helperQuery = require('../helper/helperQuery');
-const { async } = require('q');
-const moment = require('moment');
+const helperQuery = require("../helper/helperQuery");
+const { async } = require("q");
+const moment = require("moment");
 
 
 class User {
@@ -22,53 +22,53 @@ class User {
     }
 
     static findAllInsightAppointments(from_date, to_date, user_id, role_id, age_group, gender, pin_code, filter_by, appointment_date, month, year, cb) {
-        var filter_condition = '';
-        if (filter_by == 'day') {
-            if (appointment_date != '') {
+        var filter_condition = "";
+        if (filter_by == "day") {
+            if (appointment_date != "") {
                 filter_condition = " where ap.appointment_date =" + "'" + appointment_date + "'";
             }
         }
-        if (filter_by == 'month') {
-            if (month != '') {
+        if (filter_by == "month") {
+            if (month != "") {
                 filter_condition = " where MONTH(ap.appointment_date) =" + "'" + month + "'";
             }
         }
-        if (filter_by == 'year') {
-            if (year != '') {
+        if (filter_by == "year") {
+            if (year != "") {
                 filter_condition = " where YEAR(ap.appointment_date) =" + "'" + year + "'";
             }
         }
-        if (from_date != '' && from_date != undefined && to_date != '' && to_date != undefined) {
+        if (from_date != "" && from_date != undefined && to_date != "" && to_date != undefined) {
             filter_condition = " where ap.appointment_date BETWEEN " + "'" + from_date + "' AND " + "'" + to_date + "'";
         }
-        if (gender != '' && gender != undefined) {
-            filter_condition += "and u.gender=" + "'" + gender + "'"
+        if (gender != "" && gender != undefined) {
+            filter_condition += "and u.gender=" + "'" + gender + "'";
         }
-        if (user_id != '' && user_id != undefined) {
-            filter_condition += "and ap.user_id=" + "'" + user_id + "'"
+        if (user_id != "" && user_id != undefined) {
+            filter_condition += "and ap.user_id=" + "'" + user_id + "'";
         }
-        if (pin_code != '' && pin_code != undefined) {
-            filter_condition += "and u2.pin_code=" + "'" + pin_code + "'"
+        if (pin_code != "" && pin_code != undefined) {
+            filter_condition += "and u2.pin_code=" + "'" + pin_code + "'";
         }
-        if (age_group != '' && age_group != undefined) {
-            if (age_group == 'below_5') {
+        if (age_group != "" && age_group != undefined) {
+            if (age_group == "below_5") {
                 filter_condition += "and TIMESTAMPDIFF(YEAR,DATE_FORMAT(STR_TO_DATE(u.date_of_birth,'%a %M %D %Y'), '%Y-%m-%d'),CURDATE()) < 5";
             }
-            if (age_group == 'between_5_and_18') {
+            if (age_group == "between_5_and_18") {
                 filter_condition += "and TIMESTAMPDIFF(YEAR,DATE_FORMAT(STR_TO_DATE(u.date_of_birth,'%a %M %D %Y'), '%Y-%m-%d'),CURDATE()) BETWEEN 5 AND 18";
             }
-            if (age_group == 'above_18') {
+            if (age_group == "above_18") {
                 filter_condition += "and TIMESTAMPDIFF(YEAR,DATE_FORMAT(STR_TO_DATE(u.date_of_birth,'%a %M %D %Y'), '%Y-%m-%d'),CURDATE()) > 18";
             }
         }
         if (role_id == 3) {
-            var query = `SELECT COUNT(CASE WHEN u.gender = 'Male' THEN u.id END) AS total_males,COUNT(CASE WHEN u.gender = 'Female' THEN u.id END) AS total_females,COUNT(ap.id) as total_booking ,u2.id as lab_id,u2.first_name as lab_name,u2.pin_code as pin_code FROM appointments as ap inner join users as u on ap.created_by_id = u.id  inner join users u2 on ap.user_id = u2.id ` + filter_condition + ` and u2.role_id = 3 and ap.payment_status = 'Success' GROUP BY ap.user_id ORDER BY ap.id DESC`;
+            var query = "SELECT COUNT(CASE WHEN u.gender = 'Male' THEN u.id END) AS total_males,COUNT(CASE WHEN u.gender = 'Female' THEN u.id END) AS total_females,COUNT(ap.id) as total_booking ,u2.id as lab_id,u2.first_name as lab_name,u2.pin_code as pin_code FROM appointments as ap inner join users as u on ap.created_by_id = u.id  inner join users u2 on ap.user_id = u2.id " + filter_condition + " and u2.role_id = 3 and ap.payment_status = 'Success' GROUP BY ap.user_id ORDER BY ap.id DESC";
         }
         if (role_id == 4) {
-            var query = `SELECT COUNT(CASE WHEN u.gender = 'Male' THEN u.id END) AS total_males,COUNT(CASE WHEN u.gender = 'Female' THEN u.id END) AS total_females,COUNT(ap.id) as total_booking ,COUNT(u.id) as total_patients,u2.id as radiology_id,u2.first_name as radiology_name,u2.pin_code as pin_code FROM appointments as ap inner join users as u on ap.created_by_id = u.id inner join users u2 on ap.user_id = u2.id ` + filter_condition + ` and u2.role_id = 4 and ap.payment_status = 'Success' GROUP BY ap.user_id ORDER BY ap.id DESC`;
+            var query = "SELECT COUNT(CASE WHEN u.gender = 'Male' THEN u.id END) AS total_males,COUNT(CASE WHEN u.gender = 'Female' THEN u.id END) AS total_females,COUNT(ap.id) as total_booking ,COUNT(u.id) as total_patients,u2.id as radiology_id,u2.first_name as radiology_name,u2.pin_code as pin_code FROM appointments as ap inner join users as u on ap.created_by_id = u.id inner join users u2 on ap.user_id = u2.id " + filter_condition + " and u2.role_id = 4 and ap.payment_status = 'Success' GROUP BY ap.user_id ORDER BY ap.id DESC";
         }
         if (role_id == 8) {
-            var query = `SELECT COUNT(CASE WHEN u.gender = 'Male' THEN u.id END) AS total_males,COUNT(CASE WHEN u.gender = 'Female' THEN u.id END) AS total_females,COUNT(ap.id) as total_booking ,COUNT(u.id) as total_patients,u2.id as clinic_id,u2.first_name as clinic_name,u2.pin_code as pin_code FROM appointments as ap inner join users as u on ap.created_by_id = u.id inner join users u2 on ap.clinic_id = u2.id ` + filter_condition + ` and u2.role_id = 8 and ap.payment_status = 'Success' GROUP BY ap.user_id ORDER BY ap.id DESC`;
+            var query = "SELECT COUNT(CASE WHEN u.gender = 'Male' THEN u.id END) AS total_males,COUNT(CASE WHEN u.gender = 'Female' THEN u.id END) AS total_females,COUNT(ap.id) as total_booking ,COUNT(u.id) as total_patients,u2.id as clinic_id,u2.first_name as clinic_name,u2.pin_code as pin_code FROM appointments as ap inner join users as u on ap.created_by_id = u.id inner join users u2 on ap.clinic_id = u2.id " + filter_condition + " and u2.role_id = 8 and ap.payment_status = 'Success' GROUP BY ap.user_id ORDER BY ap.id DESC";
         }
 
         console.log(query);
@@ -85,7 +85,7 @@ class User {
             } else {
                 cb({ kind: "not_found" }, null);
             }
-        })
+        });
     }
     static radiocreate(username, email, mobile, password, user_type, role_id, adhar_card, approve_document, forgot_otp, cb) {
         db.query(createNewradioUserQuery,
@@ -98,7 +98,7 @@ class User {
                     return;
                 }
                 if (res.insertId) {
-                    if (role_id == '2') {
+                    if (role_id == "2") {
                         var permanent_id = "MW" + mobile + "/" + "01";
                         db.query("UPDATE users set permanent_id = ? where id = ? ", [permanent_id, res.insertId], (err, res) => {
                             if (err) {
@@ -180,7 +180,7 @@ class User {
                     return;
                 }
                 if (res.insertId) {
-                    if (role_id == '2') {
+                    if (role_id == "2") {
                         var permanent_id = "MW" + mobile + "/" + "01";
                         db.query("UPDATE users set permanent_id = ? where id = ? ", [permanent_id, res.insertId], (err, res) => {
                             if (err) {
@@ -214,7 +214,7 @@ class User {
                 return;
             }
             cb({ kind: "not_found" }, null);
-        })
+        });
     }
     static findByEmailForMObile(email, cb) {
         db.query(`SELECT * FROM users WHERE (email = '${email}' OR mobile = '${email}') AND role_id=2`, [email], (err, res) => {
@@ -228,7 +228,7 @@ class User {
                 return;
             }
             cb({ kind: "not_found" }, null);
-        })
+        });
     }
     static findByEmailAndRole(email, role_id, cb) {
         db.query(`SELECT * FROM users WHERE (email = '${email}' OR mobile = '${email}') And role_id='${role_id}' and deleted_at IS NULL`, [email, role_id], (err, res) => {
@@ -245,7 +245,7 @@ class User {
             } else {
                 cb({ kind: "not_found" }, null);
             }
-        })
+        });
     }
     static findByEmailAndMobile(email, mobile, cb) {
         db.query(`SELECT * FROM users WHERE email = '${email}' OR mobile = '${mobile}'`, [email, mobile], (err, res) => {
@@ -259,7 +259,7 @@ class User {
                 return;
             }
             cb({ kind: "not_found" }, null);
-        })
+        });
     }
     static findById(id, cb) {
         db.query(findUserByIdQuery, id, (err, res) => {
@@ -280,34 +280,34 @@ class User {
                 const alternate_mobile = item.alternate_mobile;
                 const imgName = item.profile_image;
 
-                const userType = item.created_by_id != '0' && item.created_by_id != null ? '' : 'self';
+                const userType = item.created_by_id != "0" && item.created_by_id != null ? "" : "self";
 
-                if (item.profile_image == null || item.profile_image == '') {
-                    var img = process.env.APP_URL + 'member/demouser.png';
+                if (item.profile_image == null || item.profile_image == "") {
+                    var img = process.env.APP_URL + "member/demouser.png";
                 }
                 else {
-                    var img = process.env.APP_URL + 'member/' + item.profile_image;
+                    var img = process.env.APP_URL + "member/" + item.profile_image;
                 }
                 const first_name = item.first_name;
                 const adhar_card = item.adhar_card;
                 const date_of_birth = item.date_of_birth;
-                const age = helperFunction.getFullAge(item.date_of_birth ?? '00/00/0000');
+                const age = helperFunction.getFullAge(item.date_of_birth ?? "00/00/0000");
                 const gender = item.gender;
                 const approve_document = item.approve_document;
-                var doc_name = (item.approve_document == null) ? '' : item.approve_document;
+                var doc_name = (item.approve_document == null) ? "" : item.approve_document;
                 var doc_link_path = process.env.APP_URL + "member/" + doc_name;
                 const password = item.password;
                 const blood_group = item.blood_group ?? null;
                 const online_offline_status = item.online_offline_status ?? null;
                 const opening_time = item.opening_time != undefined ? item.opening_time : null;
                 const closing_time = item.closing_time != undefined ? item.closing_time : null;
-                const permanent_id = item.permanent_id !== undefined ? item.permanent_id : '';
+                const permanent_id = item.permanent_id !== undefined ? item.permanent_id : "";
                 const latitude = item.latitude ?? null;
                 const longitude = item.longitude ?? null;
                 response.push({ id, role_id, first_name, email, mobile, experience_in_year, adhar_card, pin_code, address, alternate_mobile, date_of_birth, age, gender, img, imgName, approve_document, doc_link_path, password, opening_time, closing_time, online_offline_status, permanent_id, blood_group, latitude, longitude, userType });
             }
             cb(null, response);
-        })
+        });
     }
     static memberfindById(id, cb) {
         var created_by_id = id;
@@ -322,10 +322,10 @@ class User {
                 const id = item.id;
                 const imgName = item.profile_image;
                 if ((item.profile_image == null) || (item.profile_image == "")) {
-                    var img = process.env.APP_URL + 'member/demouser.png';
+                    var img = process.env.APP_URL + "member/demouser.png";
                 }
                 else {
-                    var img = process.env.APP_URL + 'member/' + imgName;
+                    var img = process.env.APP_URL + "member/" + imgName;
                 }
                 const first_name = item.first_name;
                 const last_name = item.last_name;
@@ -334,22 +334,22 @@ class User {
                 const date_of_birth = item.date_of_birth;
                 const gender = item.gender;
                 const blood_group = item.blood_group ?? null;
-                const permanent_id = item.permanent_id !== undefined ? item.permanent_id : '';
+                const permanent_id = item.permanent_id !== undefined ? item.permanent_id : "";
                 const address = item.address ?? null;
                 const pin_code = item.pin_code ?? null;
                 const latitude = item.latitude ?? null;
                 const longitude = item.longitude ?? null;
 
-                const userType = item.created_by_id != '0' && item.created_by_id != null ? '' : 'self';
-                const age = helperFunction.getFullAge(item.date_of_birth ?? '00/00/0000');
+                const userType = item.created_by_id != "0" && item.created_by_id != null ? "" : "self";
+                const age = helperFunction.getFullAge(item.date_of_birth ?? "00/00/0000");
                 response.push({ id, age, first_name, last_name, mobile, adhar_card, date_of_birth, gender, img, imgName, blood_group, permanent_id, address, pin_code, latitude, longitude, userType });
 
             }
             cb(null, response);
-        })
+        });
     }
     static otpVerify(email, forgot_otp, role_id, cb) {
-        const userData = { email: email, forgot_otp: forgot_otp, role_id: role_id }
+        const userData = { email: email, forgot_otp: forgot_otp, role_id: role_id };
         db.query(verifyOtp, [forgot_otp, email, email, role_id
         ], (err, res) => {
             if (err) {
@@ -369,7 +369,7 @@ class User {
                 return;
             }
             if (res.affectedRows == 0) {
-                const message = 'Otp Not Matched';
+                const message = "Otp Not Matched";
                 cb(message, null);
                 return;
             }
@@ -397,7 +397,7 @@ class User {
                 } else {
                     totalMember = "/0" + totalMember;
                 }
-                var permanent_id = "MW" + mobile_number + '' + totalMember;
+                var permanent_id = "MW" + mobile_number + "" + totalMember;
                 db.query(`INSERT INTO users(first_name,date_of_birth,user_type,role_id,gender,profile_image,blood_group,created_by_id,permanent_id,created_at) 
                 VALUES(?,?,?,?,?,?,?,?,?,NOW())
                 `,
@@ -415,13 +415,13 @@ class User {
                             profile_image: profile_image,
                             created_by_id: created_by_id
                         });
-                    })
+                    });
             }
 
-        })
+        });
     }
     static updateMember(first_name, mobile, date_of_birth, gender, profile_image, blood_group, id, cb) {
-        if (profile_image != '') {
+        if (profile_image != "") {
             db.query(`UPDATE users SET first_name = ?, date_of_birth = ?, gender = ?, profile_image=?, blood_group=? WHERE id = ?
             `, [first_name, date_of_birth, gender, profile_image, blood_group, id], (err, res) => {
                 if (err) {
@@ -432,7 +432,7 @@ class User {
                 cb(null, {
                     id: id
                 });
-            })
+            });
         } else {
             db.query(`UPDATE users SET first_name = ?, date_of_birth = ?, gender = ?, blood_group=? WHERE id = ?
                 `, [first_name, date_of_birth, gender, blood_group, id], (err, res) => {
@@ -444,12 +444,12 @@ class User {
                 cb(null, {
                     id: id
                 });
-            })
+            });
         }
     }
     static deleteMember(id, created_by_id, cb) {
-        console.log(id, created_by_id)
-        db.query(`DELETE FROM users WHERE id= ? AND created_by_id = ?`, [id, created_by_id], (err, res) => {
+        console.log(id, created_by_id);
+        db.query("DELETE FROM users WHERE id= ? AND created_by_id = ?", [id, created_by_id], (err, res) => {
             if (err) {
                 logger.error(err.message);
                 cb(err, null);
@@ -458,7 +458,7 @@ class User {
             cb(null, {
                 id: id
             });
-        })
+        });
 
     }
     static oldPasswordCheck(password, id, cb) {
@@ -471,7 +471,7 @@ class User {
             cb(null, {
                 id: id
             });
-        })
+        });
     }
     static updatePassword(password, id, cb) {
         db.query(updatePassword, [password, id], (err, res) => {
@@ -483,11 +483,11 @@ class User {
             cb(null, {
                 id: id
             });
-        })
+        });
     }
 
     static updateUser(username, mobile, profile_image, gender, date_of_birth, first_name, last_name, address, pin_code, opening_time, closing_time, alternate_mobile, blood_group, latitude, longitude, id, cb) {
-        if (profile_image != '') {
+        if (profile_image != "") {
             db.query(`UPDATE users SET 
                 first_name='${first_name}',
                 last_name='${last_name}',
@@ -513,7 +513,7 @@ class User {
                     cb(null, {
                         id: id
                     });
-                })
+                });
         } else {
             db.query(`UPDATE users SET  username ='${username}',gender='${gender}',date_of_birth='${date_of_birth}',
             first_name='${first_name}',last_name='${last_name}',address='${address}',pin_code='${pin_code}',
@@ -528,7 +528,7 @@ class User {
                     cb(null, {
                         id: id
                     });
-                })
+                });
         }
     }
 
@@ -544,7 +544,7 @@ class User {
                     return;
                 }
                 cb(null, res);
-            })
+            });
         }
         if (days == 30) {
             db.query("", [user_id, type, days], (err, res) => {
@@ -556,7 +556,7 @@ class User {
                 cb(null, {
                     id: id
                 });
-            })
+            });
         }
         if (days == 365) {
             db.query("", [user_id, type, days], (err, res) => {
@@ -568,12 +568,12 @@ class User {
                 cb(null, {
                     id: id
                 });
-            })
+            });
         }
     }
     static checkOtpVerify(email, forgot_otp, cb) {
-        const userData = { email, forgot_otp }
-        db.query(`SELECT first_name,email,mobile,gender,user_type FROM users WHERE email= ? AND forgot_otp=?`,
+        const userData = { email, forgot_otp };
+        db.query("SELECT first_name,email,mobile,gender,user_type FROM users WHERE email= ? AND forgot_otp=?",
             [
                 email,
                 forgot_otp
@@ -731,7 +731,7 @@ class User {
                                             }
                                         });
                                     }
-                                })
+                                });
                                 // for (var i = 0; i < specialities.length; i++) {
                                 //     db.query(addDoctorSpeciality, [res.insertId, specialities[i], clinic_id], (err, res) => {
                                 //         if (err) {
@@ -766,15 +766,15 @@ class User {
                                     password: password
                                 });
                             }
-                        })
+                        });
                     }
-                })
+                });
             }
-        })
+        });
     }
     static addDoctors(staff_id, clinic_id, full_name, email_id, date_of_birth, mobile_number, alternate_mobile_number, gender, experience_in_year, role_id, profile_image, decrypted_password, password) {
         return new Promise(async (resolve, reject) => {
-            var user_type = 'doctor';
+            var user_type = "doctor";
             const clinicData = await helperQuery.All(`SELECT first_name FROM users WHERE id = '${clinic_id}'`);
             if (clinicData) {
                 var created_by_name = clinicData[0].first_name;
@@ -787,7 +787,7 @@ class User {
             if ((res.length > 0) && (res[0].role_id == 5)) {
                 var doctor_id = res[0].id;
                 var doctor_password = res[0].password;
-                db.query(`SELECT * FROM doctors_clinic WHERE doctor_id = ?  and clinic_id = ? `, [doctor_id, clinic_id], (err, dcres) => {
+                db.query("SELECT * FROM doctors_clinic WHERE doctor_id = ?  and clinic_id = ? ", [doctor_id, clinic_id], (err, dcres) => {
                     if (dcres.length > 0) {
                         resolve({ kind: "already_added" });
                         return;
@@ -795,7 +795,7 @@ class User {
                         db.query(`SELECT * FROM plan_purchase_history WHERE user_id = '${clinic_id}' and status = 'active'`, [clinic_id], (err, pphres) => {
                             if (err) {
                                 logger.error(err.message);
-                                console.log("plan_purchase_history", err)
+                                console.log("plan_purchase_history", err);
                             }
                             if (pphres.length > 0) {
                                 var total_limit = pphres[0].total_limit;
@@ -806,11 +806,11 @@ class User {
 
                                     if (err) {
                                         logger.error(err.message);
-                                        console.log("plan_purchase_history update", err)
+                                        console.log("plan_purchase_history update", err);
                                     }
                                 });
                             }
-                        })
+                        });
                         var logo = process.env.APP_LOGO;
                         var app_name = process.env.APP_NAME;
                         var user_login_url = process.env.USER_LOGIN_URL;
@@ -819,7 +819,7 @@ class User {
                             from: process.env.MAIL_FROM_ADDRESS,
                             to: email_id,
                             subject: "You have been Registered by  " + created_by_name + " on MedWire",
-                            template: 'invitation',
+                            template: "invitation",
                             context: { full_name, email_id, logo, app_name, decrypted_password, user_login_url, created_by_name }
                         }, function (error, info) {
                             if (error) {
@@ -840,7 +840,7 @@ class User {
                             password: password
                         });
                     }
-                })
+                });
 
             } else {
 
@@ -861,7 +861,7 @@ class User {
                                 from: process.env.MAIL_FROM_ADDRESS,
                                 to: email_id,
                                 subject: "You have been Registered by  " + created_by_name + " on MedWire",
-                                template: 'new_invitation',
+                                template: "new_invitation",
                                 context: { full_name, email_id, logo, app_name, created_by_name, decrypted_password, user_login_url }
                             }, function (error, info) {
                                 if (error) {
@@ -890,7 +890,7 @@ class User {
 
                                 }
 
-                            })
+                            });
                             return resolve({
                                 id: res.insertId,
                                 full_name: full_name,
@@ -904,9 +904,9 @@ class User {
                                 password: password
                             });
                         }
-                    })
+                    });
             }
-        })
+        });
     }
     static addClinicDoctorForAddDoctor(doctId, clinic_id) {
         return new Promise((resolve, reject) => {
@@ -940,7 +940,7 @@ class User {
                 const email = item.email;
                 const mobile_number = parseInt(item.mobile);
                 const alternate_mobile_number = parseInt(item.alternate_mobile);
-                const profile_image_name = (item.profile_image == null) ? '' : item.profile_image;
+                const profile_image_name = (item.profile_image == null) ? "" : item.profile_image;
                 const profile_image_path = process.env.APP_URL + "member/" + profile_image_name;
                 const full_name = item.first_name;
                 const date_of_birth = item.date_of_birth;
@@ -953,7 +953,7 @@ class User {
             setTimeout(function () {
                 cb(null, response);
             }, 100);
-        })
+        });
     }
     static findDoctorByIdAndRole(id, cb) {
         db.query(`SELECT users.signature,users.id,users.mobile,users.alternate_mobile,users.email,
@@ -973,7 +973,7 @@ class User {
                 const email = item.email;
                 const mobile_number = parseInt(item.mobile);
                 const alternate_mobile_number = parseInt(item.alternate_mobile);
-                const profile_image_name = (item.profile_image == null) ? '' : item.profile_image;
+                const profile_image_name = (item.profile_image == null) ? "" : item.profile_image;
                 const profile_image_path = process.env.APP_URL + "member/" + profile_image_name;
                 const full_name = item.first_name;
                 const date_of_birth = item.date_of_birth;
@@ -987,11 +987,11 @@ class User {
             setTimeout(function () {
                 cb(null, response);
             }, 100);
-        })
+        });
     }
     static findDoctorByIdAndRoleAsynca(id) {
         return new Promise((resolve, reject) => {
-            db.query(`SELECT users.signature,users.id,users.mobile,users.alternate_mobile,users.email,users.profile_image,users.first_name,users.last_name,users.date_of_birth,users.gender,users.experience_in_year,GROUP_CONCAT(DISTINCT doctor_degrees.id) as degrees_ids,doctor_degrees.degree_name,GROUP_CONCAT(DISTINCT doctor_specialities.id) as speciality_ids, GROUP_CONCAT(DISTINCT doctor_specialities.speciality_name) as specialities, GROUP_CONCAT(DISTINCT doctor_degrees.degree_name) as degrees FROM users inner join doctor_specialities ON users.id = doctor_specialities.doctor_id inner join doctor_degrees ON users.id = doctor_degrees.doctor_id WHERE users.id = ?  and users.deleted_at IS NULL`, [id], (err, res) => {
+            db.query("SELECT users.signature,users.id,users.mobile,users.alternate_mobile,users.email,users.profile_image,users.first_name,users.last_name,users.date_of_birth,users.gender,users.experience_in_year,GROUP_CONCAT(DISTINCT doctor_degrees.id) as degrees_ids,doctor_degrees.degree_name,GROUP_CONCAT(DISTINCT doctor_specialities.id) as speciality_ids, GROUP_CONCAT(DISTINCT doctor_specialities.speciality_name) as specialities, GROUP_CONCAT(DISTINCT doctor_degrees.degree_name) as degrees FROM users inner join doctor_specialities ON users.id = doctor_specialities.doctor_id inner join doctor_degrees ON users.id = doctor_degrees.doctor_id WHERE users.id = ?  and users.deleted_at IS NULL", [id], (err, res) => {
                 if (err) {
                     logger.error(err.message);
                     return reject(err);
@@ -1003,7 +1003,7 @@ class User {
                         const email = item.email;
                         const mobile_number = parseInt(item.mobile);
                         const alternate_mobile_number = parseInt(item.alternate_mobile);
-                        const profile_image_name = (item.profile_image == null) ? '' : item.profile_image;
+                        const profile_image_name = (item.profile_image == null) ? "" : item.profile_image;
                         const profile_image_path = process.env.APP_URL + "member/" + profile_image_name;
                         const full_name = item.first_name;
                         const date_of_birth = item.date_of_birth;
@@ -1016,12 +1016,12 @@ class User {
                     }
                     return resolve(response);
                 }
-            })
+            });
         });
     }
     static findAllClinicStaffDoctors(clinic_id, added_by, cb) {
-        var staff_name = '';
-        var query = `SELECT distinct u.id,u.email,u.mobile,u.alternate_mobile,u.profile_image,u.first_name,u.adhar_card,u.date_of_birth,u.experience_in_year,u.gender,u.added_by,u.enquiry_date FROM users as u left join doctors_clinic as dc on u.id = dc.doctor_id WHERE dc.clinic_id = ${clinic_id} AND u.added_by = ${added_by} and u.role_id = 5  order by u.id desc`
+        var staff_name = "";
+        var query = `SELECT distinct u.id,u.email,u.mobile,u.alternate_mobile,u.profile_image,u.first_name,u.adhar_card,u.date_of_birth,u.experience_in_year,u.gender,u.added_by,u.enquiry_date FROM users as u left join doctors_clinic as dc on u.id = dc.doctor_id WHERE dc.clinic_id = ${clinic_id} AND u.added_by = ${added_by} and u.role_id = 5  order by u.id desc`;
         db.query(query, (err, res) => {
             if (err) {
                 logger.error(err.message);
@@ -1034,14 +1034,14 @@ class User {
                 const email = item.email;
                 const mobile_number = parseInt(item.mobile);
                 const alternate_mobile_number = parseInt(item.alternate_mobile);
-                const profile_image_name = (item.profile_image == null) ? '' : item.profile_image;
+                const profile_image_name = (item.profile_image == null) ? "" : item.profile_image;
                 const profile_image_path = process.env.APP_URL + "member/" + profile_image_name;
                 const full_name = item.first_name;
                 const aadhar_card_number = parseInt(item.adhar_card);
                 const date_of_birth = item.date_of_birth;
                 const gender = item.gender;
-                var specialities = '';
-                var degrees = '';
+                var specialities = "";
+                var degrees = "";
                 const experience_in_year = item.experience_in_year;
                 var added_by = item.added_by;
 
@@ -1052,7 +1052,7 @@ class User {
                             return 0;
                         }
                         if (data) {
-                            response[key]['staff_name'] = data[0].first_name
+                            response[key]["staff_name"] = data[0].first_name;
                         }
                     });
                 }
@@ -1060,33 +1060,33 @@ class User {
                 response.push({ id, full_name, gender, date_of_birth, email, mobile_number, alternate_mobile_number, date_of_birth, gender, profile_image_name, profile_image_path, experience_in_year });
 
 
-                db.query(`SELECT GROUP_CONCAT(speciality_name) as specialities from doctor_specialities where doctor_id = ? and deleted_at IS NULL`, [id], (err, res1) => {
+                db.query("SELECT GROUP_CONCAT(speciality_name) as specialities from doctor_specialities where doctor_id = ? and deleted_at IS NULL", [id], (err, res1) => {
                     if (err) {
                         logger.error(err.message);
                         cb(err, null);
                         return;
                     }
                     specialities = res1[0].specialities;
-                    response[key]['specialities'] = specialities;
-                })
-                db.query(`SELECT GROUP_CONCAT(degree_name) as degrees from doctor_degrees where doctor_id = ? and deleted_at IS NULL`, [id], (err, res1) => {
+                    response[key]["specialities"] = specialities;
+                });
+                db.query("SELECT GROUP_CONCAT(degree_name) as degrees from doctor_degrees where doctor_id = ? and deleted_at IS NULL", [id], (err, res1) => {
                     if (err) {
                         logger.error(err.message);
                         cb(err, null);
                         return;
                     }
                     degrees = res1[0].degrees;
-                    response[key]['degrees'] = degrees;
-                })
+                    response[key]["degrees"] = degrees;
+                });
             }
             setTimeout(function () {
                 cb(null, response);
             }, 100);
-        })
+        });
     }
     static findAllClinicDoctors(clinic_id, cb) {
-        var staff_name = '';
-        db.query(`SELECT distinct u.id,u.email,u.mobile,u.alternate_mobile,u.profile_image,u.first_name,u.adhar_card,u.date_of_birth,u.experience_in_year,u.gender,u.added_by FROM users as u left join doctors_clinic as dc on u.id = dc.doctor_id WHERE dc.clinic_id = ? and u.role_id = 5 order by dc.id desc`, [clinic_id], (err, res) => {
+        var staff_name = "";
+        db.query("SELECT distinct u.id,u.email,u.mobile,u.alternate_mobile,u.profile_image,u.first_name,u.adhar_card,u.date_of_birth,u.experience_in_year,u.gender,u.added_by FROM users as u left join doctors_clinic as dc on u.id = dc.doctor_id WHERE dc.clinic_id = ? and u.role_id = 5 order by dc.id desc", [clinic_id], (err, res) => {
             if (err) {
                 logger.error(err.message);
                 cb(err, null);
@@ -1098,14 +1098,14 @@ class User {
                 const email = item.email;
                 const mobile_number = parseInt(item.mobile);
                 const alternate_mobile_number = parseInt(item.alternate_mobile);
-                const profile_image_name = (item.profile_image == null) ? '' : item.profile_image;
+                const profile_image_name = (item.profile_image == null) ? "" : item.profile_image;
                 const profile_image_path = process.env.APP_URL + "member/" + profile_image_name;
                 const full_name = item.first_name;
                 const aadhar_card_number = parseInt(item.adhar_card);
                 const date_of_birth = item.date_of_birth;
                 const gender = item.gender;
-                var specialities = '';
-                var degrees = '';
+                var specialities = "";
+                var degrees = "";
                 const experience_in_year = item.experience_in_year;
                 var added_by = item.added_by;
 
@@ -1116,43 +1116,43 @@ class User {
                             return 0;
                         }
                         if (data) {
-                            response[key]['staff_name'] = data[0].first_name
+                            response[key]["staff_name"] = data[0].first_name;
                         }
                     });
                 }
 
                 response.push({ id, full_name, gender, date_of_birth, email, mobile_number, alternate_mobile_number, date_of_birth, gender, profile_image_name, profile_image_path, experience_in_year, staff_name });
 
-                db.query(`SELECT GROUP_CONCAT(speciality_name) as specialities from doctor_specialities where doctor_id = ? and deleted_at IS NULL`, [id], (err, res1) => {
+                db.query("SELECT GROUP_CONCAT(speciality_name) as specialities from doctor_specialities where doctor_id = ? and deleted_at IS NULL", [id], (err, res1) => {
                     if (err) {
                         logger.error(err.message);
                         cb(err, null);
                         return;
                     }
                     specialities = res1[0].specialities;
-                    response[key]['specialities'] = specialities;
-                })
-                db.query(`SELECT GROUP_CONCAT(degree_name) as degrees from doctor_degrees where doctor_id = ? and deleted_at IS NULL`, [id], (err, res1) => {
+                    response[key]["specialities"] = specialities;
+                });
+                db.query("SELECT GROUP_CONCAT(degree_name) as degrees from doctor_degrees where doctor_id = ? and deleted_at IS NULL", [id], (err, res1) => {
                     if (err) {
                         logger.error(err.message);
                         cb(err, null);
                         return;
                     }
                     degrees = res1[0].degrees;
-                    response[key]['degrees'] = degrees;
-                })
+                    response[key]["degrees"] = degrees;
+                });
 
             }
             setTimeout(function () {
                 cb(null, response);
             }, 100);
-        })
+        });
     }
     static updateDoctor(staff_id, doctor_id, clinic_id, full_name, email_id, date_of_birth, mobile_number, alternate_mobile_number, gender, experience_in_year, specialities, degrees, profile_image, cb) {
         var updated_at = helperFunction.getCurrentDateTime();
-        var specialities = specialities.split(",")
+        var specialities = specialities.split(",");
         var degrees = degrees.split(",");
-        var deleted_at = 'IS NULL';
+        var deleted_at = "IS NULL";
 
         db.query(`SELECT * FROM users WHERE (email = ? OR mobile = ?) and role_id = ? and created_by_id = ? and id!=? and deleted_at ${deleted_at}`, [email_id, mobile_number, 5, clinic_id, doctor_id, deleted_at], (err, res) => {
 
@@ -1167,7 +1167,7 @@ class User {
                 cb({ kind: "already_added" }, null);
                 return;
             } else {
-                db.query(`delete  from doctor_degrees WHERE doctor_id= ? and created_by_id = ?`, [doctor_id, clinic_id], (err, res) => {
+                db.query("delete  from doctor_degrees WHERE doctor_id= ? and created_by_id = ?", [doctor_id, clinic_id], (err, res) => {
                     if (err) {
                         logger.error(err.message);
                         cb(err, null);
@@ -1182,11 +1182,11 @@ class User {
                                     cb(err, null);
                                     return;
                                 }
-                            })
+                            });
                         }
                     }
                 });
-                db.query(`delete from doctor_specialities  WHERE doctor_id= ? and created_by_id = ?`, [doctor_id, clinic_id], (err, res) => {
+                db.query("delete from doctor_specialities  WHERE doctor_id= ? and created_by_id = ?", [doctor_id, clinic_id], (err, res) => {
                     if (err) {
                         logger.error(err.message);
                         cb(err, null);
@@ -1200,12 +1200,12 @@ class User {
                                     cb(err, null);
                                     return;
                                 }
-                            })
+                            });
                         }
                     }
                 });
-                if (profile_image != '') {
-                    db.query(`UPDATE users SET first_name =?,date_of_birth=?,gender=?,mobile=?,alternate_mobile=?,email=?,experience_in_year = ?,profile_image = ?,updated_at = ?,added_by=? WHERE id =?`, [full_name, date_of_birth, gender, mobile_number, alternate_mobile_number, email_id, experience_in_year, profile_image, updated_at, staff_id, doctor_id], (err, res) => {
+                if (profile_image != "") {
+                    db.query("UPDATE users SET first_name =?,date_of_birth=?,gender=?,mobile=?,alternate_mobile=?,email=?,experience_in_year = ?,profile_image = ?,updated_at = ?,added_by=? WHERE id =?", [full_name, date_of_birth, gender, mobile_number, alternate_mobile_number, email_id, experience_in_year, profile_image, updated_at, staff_id, doctor_id], (err, res) => {
                         if (err) {
                             logger.error(err.message);
                             cb(err, null);
@@ -1214,9 +1214,9 @@ class User {
                         if (res) {
                             cb(null, { id: doctor_id });
                         }
-                    })
+                    });
                 } else {
-                    db.query(`UPDATE users SET first_name =?,date_of_birth=?,gender=?,mobile=?,alternate_mobile = ?,email=?,experience_in_year = ?,updated_at = ?,added_by=? WHERE id =?`, [full_name, date_of_birth, gender, mobile_number, alternate_mobile_number, email_id, experience_in_year, updated_at, staff_id, doctor_id], (err, res) => {
+                    db.query("UPDATE users SET first_name =?,date_of_birth=?,gender=?,mobile=?,alternate_mobile = ?,email=?,experience_in_year = ?,updated_at = ?,added_by=? WHERE id =?", [full_name, date_of_birth, gender, mobile_number, alternate_mobile_number, email_id, experience_in_year, updated_at, staff_id, doctor_id], (err, res) => {
                         if (err) {
                             logger.error(err.message);
                             cb(err, null);
@@ -1225,14 +1225,14 @@ class User {
                         if (res) {
                             cb(null, { id: doctor_id });
                         }
-                    })
+                    });
                 }
             }
         });
     }
     static deleteStaffDoctor(id, created_by_id, staff_id, cb) {
         var deleted_at = helperFunction.getCurrentDateTime();
-        var query = `update users set deleted_at = '${deleted_at}', added_by=${staff_id} WHERE id= ${id} and created_by_id = ${created_by_id} `
+        var query = `update users set deleted_at = '${deleted_at}', added_by=${staff_id} WHERE id= ${id} and created_by_id = ${created_by_id} `;
         db.query(query, (err, res) => {
             if (err) {
                 logger.error(err.message);
@@ -1240,21 +1240,21 @@ class User {
                 return;
             }
         });
-        db.query(`delete from doctors_clinic WHERE doctor_id = ? and clinic_id = ? `, [id, created_by_id], (err, res) => {
+        db.query("delete from doctors_clinic WHERE doctor_id = ? and clinic_id = ? ", [id, created_by_id], (err, res) => {
             if (err) {
                 logger.error(err.message);
                 cb(err, null);
                 return;
             }
         });
-        db.query(`update doctor_degrees set deleted_at = ? WHERE doctor_id= ? and created_by_id = ? `, [deleted_at, id, created_by_id], (err, res) => {
+        db.query("update doctor_degrees set deleted_at = ? WHERE doctor_id= ? and created_by_id = ? ", [deleted_at, id, created_by_id], (err, res) => {
             if (err) {
                 logger.error(err.message);
                 cb(err, null);
                 return;
             }
         });
-        db.query(`update doctor_specialities set deleted_at = ? WHERE doctor_id= ? and created_by_id = ? `, [deleted_at, id, created_by_id], (err, res) => {
+        db.query("update doctor_specialities set deleted_at = ? WHERE doctor_id= ? and created_by_id = ? ", [deleted_at, id, created_by_id], (err, res) => {
             if (err) {
                 logger.error(err.message);
                 cb(err, null);
@@ -1265,7 +1265,7 @@ class User {
     }
     static deleteDoctor(id, created_by_id, cb) {
         var deleted_at = helperFunction.getCurrentDateTime();
-        db.query(`delete from doctors_clinic WHERE doctor_id = ? and clinic_id = ? `, [id, created_by_id], (err, res) => {
+        db.query("delete from doctors_clinic WHERE doctor_id = ? and clinic_id = ? ", [id, created_by_id], (err, res) => {
             if (err) {
                 logger.error(err.message);
                 cb(err, null);
@@ -1308,21 +1308,21 @@ class User {
                 });
             }
         });
-        db.query(`update doctor_degrees set deleted_at = ? WHERE doctor_id= ? and created_by_id = ? `, [deleted_at, id, created_by_id], (err, res) => {
+        db.query("update doctor_degrees set deleted_at = ? WHERE doctor_id= ? and created_by_id = ? ", [deleted_at, id, created_by_id], (err, res) => {
             if (err) {
                 logger.error(err.message);
                 cb(err, null);
                 return;
             }
         });
-        db.query(`update doctor_specialities set deleted_at = ? WHERE doctor_id= ? and created_by_id = ? `, [deleted_at, id, created_by_id], (err, res) => {
+        db.query("update doctor_specialities set deleted_at = ? WHERE doctor_id= ? and created_by_id = ? ", [deleted_at, id, created_by_id], (err, res) => {
             if (err) {
                 logger.error(err.message);
                 cb(err, null);
                 return;
             }
         });
-        db.query(`update doctor_fees set deleted_at = ? WHERE doctor_id= ? and created_by_id = ? `, [deleted_at, id, created_by_id], (err, res) => {
+        db.query("update doctor_fees set deleted_at = ? WHERE doctor_id= ? and created_by_id = ? ", [deleted_at, id, created_by_id], (err, res) => {
             if (err) {
                 logger.error(err.message);
                 cb(err, null);
@@ -1332,7 +1332,7 @@ class User {
         cb(null, { id: id });
     }
     static updateProfile(full_name, email_id, address, pin_code, profile_image, latitude, longitude, user_id, cb) {
-        db.query(`UPDATE users SET first_name =?,email=?,address=?,pin_code=?,profile_image=?,latitude=?,longitude=?  WHERE id =?`, [full_name, email_id, address, pin_code, profile_image, latitude, longitude, user_id], (err, res) => {
+        db.query("UPDATE users SET first_name =?,email=?,address=?,pin_code=?,profile_image=?,latitude=?,longitude=?  WHERE id =?", [full_name, email_id, address, pin_code, profile_image, latitude, longitude, user_id], (err, res) => {
             if (err) {
                 logger.error(err.message);
                 cb(err, null);
@@ -1344,7 +1344,7 @@ class User {
         });
     }
     static findByIdAndRole(id, role_id, cb) {
-        var deleted_at = 'IS NULL'
+        var deleted_at = "IS NULL";
         db.query(`SELECT * FROM users WHERE id = '${id}' And role_id='${role_id}' and deleted_at ${deleted_at}`, [id, role_id, deleted_at], (err, res) => {
             if (err) {
                 logger.error(err.message);
@@ -1357,12 +1357,12 @@ class User {
             }
             cb({ kind: "not_found" }, null);
             return;
-        })
+        });
     }
 
     static findByIdAndRoleAsync(id, role_id) {
         return new Promise((resolve, reject) => {
-            var deleted_at = 'IS NULL'
+            var deleted_at = "IS NULL";
             db.query(`SELECT * FROM users WHERE id = '${id}' And role_id='${role_id}' and deleted_at ${deleted_at}`, [id, role_id, deleted_at], (err, res) => {
                 if (err) {
                     return reject(err);
@@ -1373,12 +1373,12 @@ class User {
                 } else {
                     return resolve({ kind: "not_found" });
                 }
-            })
+            });
         });
     }
     static findDoctorByIdAndRoleAsync(id, role_id) {
         return new Promise((resolve, reject) => {
-            var deleted_at = 'IS NULL'
+            var deleted_at = "IS NULL";
             db.query(`SELECT * FROM users WHERE id = '${id}' And role_id='${role_id}' and deleted_at ${deleted_at}`, [id, role_id, deleted_at], (err, res) => {
                 if (err) {
                     return reject(err);
@@ -1389,11 +1389,11 @@ class User {
                 } else {
                     return resolve({ kind: "not_found" });
                 }
-            })
+            });
         });
     }
     static uploadSignature(signature, user_id, cb) {
-        db.query(`UPDATE users SET signature =? WHERE id =?`, [signature, user_id], (err, res) => {
+        db.query("UPDATE users SET signature =? WHERE id =?", [signature, user_id], (err, res) => {
             if (err) {
                 logger.error(err.message);
                 cb(err, null);
@@ -1402,7 +1402,7 @@ class User {
             cb(null, {
                 id: user_id
             });
-        })
+        });
     }
     static findByEmailAndMobileForUpdate(email, mobile_number, user_id, cb) {
         var query = `SELECT * FROM users WHERE (email = '${email}' OR mobile = '${mobile_number}') and id!='${user_id}' AND status = 'Approve'`;
@@ -1420,7 +1420,7 @@ class User {
                 cb({ kind: "not_found" }, null);
                 return;
             }
-        })
+        });
     }
     static findByEmailAndMobileForUpdateNew(email, mobile_number, created_by_id, cb) {
         var query = `SELECT * FROM users WHERE (email = '${email}' OR mobile = '${mobile_number}') and created_by_id='${created_by_id}'`;
@@ -1476,7 +1476,7 @@ class User {
                 return;
             }
 
-        })
+        });
     }
     static findAllClinics(doctor_id, cb) {
         db.query(`SELECT u.id,u.email,u.mobile,u.alternate_mobile,u.profile_image,u.first_name 
@@ -1495,14 +1495,14 @@ class User {
                     const id = item.id;
                     const email = item.email;
                     const mobile_number = parseInt(item.mobile);
-                    const profile_image_name = (item.profile_image == null) ? '' : item.profile_image;
+                    const profile_image_name = (item.profile_image == null) ? "" : item.profile_image;
                     const profile_image_path = process.env.APP_URL + "member/" + profile_image_name;
                     const full_name = item.first_name;
                     response.push({ id, full_name, email, mobile_number, profile_image_name, profile_image_path });
                 }
                 cb(null, response);
 
-            })
+            });
     }
     static onlineStaffOfflineStatus(status, user_id, added_by) {
         return new Promise((resolve, reject) => {
@@ -1527,7 +1527,7 @@ class User {
         });
     }
     static addDoctorWeeklySchedule(doctor_id, clinic_id, daysData, cb) {
-        db.query(`SELECT * FROM doctor_schedule WHERE doctor_id = ? AND clinic_id = ?`, [doctor_id, clinic_id], (err, res) => {
+        db.query("SELECT * FROM doctor_schedule WHERE doctor_id = ? AND clinic_id = ?", [doctor_id, clinic_id], (err, res) => {
             if (err) {
                 logger.error(err.message);
                 cb(err, null);
@@ -1542,10 +1542,10 @@ class User {
                             cb(err, null);
                             return;
                         }
-                    })
+                    });
                 }
                 cb(null, res);
-                return
+                return;
             }
             else {
                 for (var i = 0; i < 7; i++) {
@@ -1557,34 +1557,34 @@ class User {
                                 cb(err, null);
                                 return;
                             }
-                        })
+                        });
                 }
                 cb(null, res);
-                return
+                return;
             }
-        })
+        });
     }
     static addDoctorAvailability(doctor_id, clinic_id, date, days_status, morning_shift_status, afternoon_shift_status, evening_shift_status, cb) {
         const d = new Date(date);
         let day_name;
         if (d.getDay() == 1) {
-            day_name = "Monday"
+            day_name = "Monday";
         } else if (d.getDay() == 2) {
-            day_name = "Tuesday"
+            day_name = "Tuesday";
         } else if (d.getDay() == 3) {
-            day_name = "Wednesday"
+            day_name = "Wednesday";
         } else if (d.getDay() == 4) {
-            day_name = "Thursday"
+            day_name = "Thursday";
         } else if (d.getDay() == 5) {
-            day_name = "Friday"
+            day_name = "Friday";
         } else if (d.getDay() == 6) {
-            day_name = "Saturday"
+            day_name = "Saturday";
         } else if (d.getDay() == 0) {
-            day_name = "Sunday"
+            day_name = "Sunday";
         }
-        let dateD = helperFunction.dateFormat(date, "yyyy-mm-dd")
+        let dateD = helperFunction.dateFormat(date, "yyyy-mm-dd");
 
-        db.query(`SELECT * FROM doctor_schedule_date WHERE date = ? and doctor_id = ? and clinic_id = ?`, [dateD, doctor_id, clinic_id], (err, res) => {
+        db.query("SELECT * FROM doctor_schedule_date WHERE date = ? and doctor_id = ? and clinic_id = ?", [dateD, doctor_id, clinic_id], (err, res) => {
             if (res.length > 0) {
                 let data = res[0];
                 db.query(updateDoctorAvailability, [dateD, days_status, morning_shift_status, afternoon_shift_status, evening_shift_status, day_name, data.id],
@@ -1613,32 +1613,32 @@ class User {
                             cb(null, res);
                             return;
                         }
-                    })
+                    });
             }
-        })
+        });
     }
     static viewDoctorAvailability(doctor_id, clinic_id, date, cb) {
         let result = [];
         const d = new Date(date);
         let day_name;
         if (d.getDay() == 1) {
-            day_name = "Monday"
+            day_name = "Monday";
         } else if (d.getDay() == 2) {
-            day_name = "Tuesday"
+            day_name = "Tuesday";
         } else if (d.getDay() == 3) {
-            day_name = "Wednesday"
+            day_name = "Wednesday";
         } else if (d.getDay() == 4) {
-            day_name = "Thursday"
+            day_name = "Thursday";
         } else if (d.getDay() == 5) {
-            day_name = "Friday"
+            day_name = "Friday";
         } else if (d.getDay() == 6) {
-            day_name = "Saturday"
+            day_name = "Saturday";
         } else if (d.getDay() == 0) {
-            day_name = "Sunday"
+            day_name = "Sunday";
         }
 
-        let dateD = helperFunction.dateFormat(date, "yyyy-mm-dd")
-        db.query(`SELECT * FROM doctor_schedule_date WHERE date = ? and doctor_id = ? and clinic_id= ?`, [dateD, doctor_id, clinic_id], (err, res) => {
+        let dateD = helperFunction.dateFormat(date, "yyyy-mm-dd");
+        db.query("SELECT * FROM doctor_schedule_date WHERE date = ? and doctor_id = ? and clinic_id= ?", [dateD, doctor_id, clinic_id], (err, res) => {
             if (res.length > 0) {
                 result = res;
             } if (err) {
@@ -1649,7 +1649,7 @@ class User {
         let morningSlots = [];
         let afternoonSlots = [];
         let eveningSlots = [];
-        var slotInterval = 15
+        var slotInterval = 15;
 
         function slot(res, opentime, closetime) {
             let TimeSlot = helperFunction.timeSlot({ slotInterval, opentime, closetime });
@@ -1661,7 +1661,7 @@ class User {
                 const to = TimeSlot[i + 1] ?? null;
 
                 if (from != null && to != null) {
-                    const Stime = helperFunction.railwayToNormalTimeConvert(from) + '-' + helperFunction.railwayToNormalTimeConvert(to);
+                    const Stime = helperFunction.railwayToNormalTimeConvert(from) + "-" + helperFunction.railwayToNormalTimeConvert(to);
                     Solt.push({ Stime });
                 }
             }
@@ -1670,7 +1670,7 @@ class User {
                     unique.push(o);
                 }
                 return unique;
-            }, [])
+            }, []);
             for (const item of res) {
                 for (const iterator of Slots) {
                     if (item.time_slot == iterator.Stime) {
@@ -1681,7 +1681,7 @@ class User {
             }
             return Slots;
         }
-        db.query(`SELECT * FROM doctor_schedule WHERE days = ? and doctor_id = ? and clinic_id = ?`, [day_name, doctor_id, clinic_id], (err, res) => {
+        db.query("SELECT * FROM doctor_schedule WHERE days = ? and doctor_id = ? and clinic_id = ?", [day_name, doctor_id, clinic_id], (err, res) => {
             if (res) {
                 if (res.length > 0) {
                     let data = res[0];
@@ -1707,7 +1707,7 @@ class User {
                         eveningSlots: eveningSlots,
                         dayStatus: dayStatus,
                         availability: result
-                    }
+                    };
                     cb(null, resultData);
                     return;
                 }
@@ -1721,7 +1721,7 @@ class User {
         });
     }
     static viewDoctorWeeklySchedule(doctor_id, clinic_id, cb) {
-        db.query(`SELECT * FROM doctor_schedule WHERE doctor_id = ? AND clinic_id=?`, [doctor_id, clinic_id], (err, res) => {
+        db.query("SELECT * FROM doctor_schedule WHERE doctor_id = ? AND clinic_id=?", [doctor_id, clinic_id], (err, res) => {
             if (res.length > 0) {
                 let result = [];
                 for (let i = 0; i < res.length; i++) {
@@ -1729,29 +1729,29 @@ class User {
                         result[0] = res[i];
                     }
                     if (res[i].days == "Tuesday") {
-                        result[1] = res[i]
+                        result[1] = res[i];
                     }
                     if (res[i].days == "Wednesday") {
                         result[2] = res[i];
                     }
                     if (res[i].days == "Thursday") {
-                        result[3] = res[i]
+                        result[3] = res[i];
                     }
                     if (res[i].days == "Friday") {
                         result[4] = res[i];
                     }
                     if (res[i].days == "Saturday") {
-                        result[5] = res[i]
+                        result[5] = res[i];
                     }
                     if (res[i].days == "Sunday") {
-                        result[6] = res[i]
+                        result[6] = res[i];
                     }
                 }
 
                 cb(null, result);
                 return;
             } else if (res.length == 0) {
-                let defaultResult = [{ status: "0" }, { status: "0" }, { status: "0" }, { status: "0" }, { status: "0" }, { status: "0" }, { status: "0" }]
+                let defaultResult = [{ status: "0" }, { status: "0" }, { status: "0" }, { status: "0" }, { status: "0" }, { status: "0" }, { status: "0" }];
                 cb(null, defaultResult);
                 return;
             } if (err) {
@@ -1769,7 +1769,7 @@ class User {
                         return reject(err);
                     }
                     return resolve(res);
-                })
+                });
         });
     }
     static requestProfileAccess(doctor_id, patient_id, member_id, length, cb) {
@@ -1800,7 +1800,7 @@ class User {
 
                 const checkMemberExistence = await helperQuery.All(`SELECT id FROM users WHERE created_by_id = '${patient_id}' and id = '${member_id}'`);
                 if (checkMemberExistence.length > 0) {
-                    db.query(`INSERT into profile_access(doctor_id,patient_id,member_id,status,requested_at) values(?,?,?,?,NOW())`, [doctor_id, patient_id, member_id, 'Pending'], async (err, res) => {
+                    db.query("INSERT into profile_access(doctor_id,patient_id,member_id,status,requested_at) values(?,?,?,?,NOW())", [doctor_id, patient_id, member_id, "Pending"], async (err, res) => {
                         if (err) {
                             logger.error(err.message);
                             cb(err, null);
@@ -1814,10 +1814,10 @@ class User {
 
                             var user_name = (member_detail.length > 0) ? member_detail[0].first_name : "";
 
-                            var doctor_name = (doctor_detail.length > 0) ? doctor_detail[0].first_name : '';
+                            var doctor_name = (doctor_detail.length > 0) ? doctor_detail[0].first_name : "";
 
                             var type = "profile_request_access";
-                            var title = 'Profile Access';
+                            var title = "Profile Access";
                             var app_message = "Hey " + user_name + ",\nDr. " + doctor_name + " has requested to access your MedWire profile.";
                             var message = "Hey " + user_name + ",<br> Dr. " + doctor_name + " has requested to access your MedWire profile.";
 
@@ -1829,14 +1829,14 @@ class User {
                                         title: title,
                                         body: app_message
                                     }
-                                }
-                                if ((user_detail[0].device_type == 'Android') || (user_detail[0].device_type == 'IOS')) {
+                                };
+                                if ((user_detail[0].device_type == "Android") || (user_detail[0].device_type == "IOS")) {
                                     await helperFunction.pushNotification(user_detail[0].device_token, payload);
                                 }
                             }
 
-                            var created_at = moment().format('YYYY-MM-DD HH:mm');
-                            db.query(`INSERT INTO system_notifications(from_user_id,to_user_id,title,type,message,created_at) VALUES(?,?,?,?,?,?)`, [doctor_id, patient_id, title, type, message, created_at], (err, res) => {
+                            var created_at = moment().format("YYYY-MM-DD HH:mm");
+                            db.query("INSERT INTO system_notifications(from_user_id,to_user_id,title,type,message,created_at) VALUES(?,?,?,?,?,?)", [doctor_id, patient_id, title, type, message, created_at], (err, res) => {
                                 if (err) {
                                     logger.error(err.message);
                                     cb(err, null);
@@ -1849,7 +1849,7 @@ class User {
                         }
                     });
                 } else {
-                    db.query(`INSERT into profile_access(doctor_id,patient_id,status,requested_at) values(?,?,?,NOW())`, [doctor_id, patient_id, 'Pending'], async (err, res) => {
+                    db.query("INSERT into profile_access(doctor_id,patient_id,status,requested_at) values(?,?,?,NOW())", [doctor_id, patient_id, "Pending"], async (err, res) => {
                         if (err) {
                             logger.error(err.message);
                             cb(err, null);
@@ -1862,12 +1862,12 @@ class User {
 
                             const user_detail = await helperQuery.Get({ table: "users", where: " id=" + patient_id });
 
-                            var user_name = (user_detail.length > 0) ? user_detail[0].first_name : '';
+                            var user_name = (user_detail.length > 0) ? user_detail[0].first_name : "";
 
-                            var doctor_name = (doctor_detail.length > 0) ? doctor_detail[0].first_name : '';
+                            var doctor_name = (doctor_detail.length > 0) ? doctor_detail[0].first_name : "";
 
 
-                            var title = 'Profile Access';
+                            var title = "Profile Access";
                             var type = "profile_request_access";
 
                             var app_message = "Hey " + user_name + ",\nDr. " + doctor_name + " has requested to access your MedWire profile.";
@@ -1880,15 +1880,15 @@ class User {
                                         title: title,
                                         body: app_message
                                     }
-                                }
-                                if ((user_detail[0].device_type == 'Android') || (user_detail[0].device_type == 'IOS')) {
+                                };
+                                if ((user_detail[0].device_type == "Android") || (user_detail[0].device_type == "IOS")) {
                                     await helperFunction.pushNotification(user_detail[0].device_token, payload);
                                 }
                                 console.log(payload);
                             }
 
-                            var created_at = moment().format('YYYY-MM-DD HH:mm:ss');
-                            db.query(`INSERT INTO system_notifications(from_user_id,to_user_id,title,type,message,created_at) VALUES(?,?,?,?,?,?)`, [doctor_id, patient_id, title, type, message, created_at], (err, res) => {
+                            var created_at = moment().format("YYYY-MM-DD HH:mm:ss");
+                            db.query("INSERT INTO system_notifications(from_user_id,to_user_id,title,type,message,created_at) VALUES(?,?,?,?,?,?)", [doctor_id, patient_id, title, type, message, created_at], (err, res) => {
                                 if (err) {
                                     logger.error(err.message);
                                     cb(err, null);
@@ -1929,8 +1929,8 @@ class User {
                     for (const [key, item] of Object.entries(res)) {
                         var member_id = item.member_id;
                         var time_interval = item.time_interval;
-                        var pin_code = item.pin_code != undefined && item.pin_code != 'undefined' && item.pin_code != '' ? item.pin_code : null;
-                        var mobile = item.mobile
+                        var pin_code = item.pin_code != undefined && item.pin_code != "undefined" && item.pin_code != "" ? item.pin_code : null;
+                        var mobile = item.mobile;
                         var email = item.email ?? null;
                         var doctor_name = item.doctor_name;
                         var status = item.status;
@@ -1939,13 +1939,13 @@ class User {
                         if (item.member_id != undefined && item.member_id != null) {
                             const udata = await helperQuery.First({ table: "users", where: "id=" + item.member_id + " AND role_id=2" });
                             //    console.log(udata);
-                            var image = udata.profile_image != null && udata.profile_image != undefined ? udata.profile_image : 'demouser.png';
+                            var image = udata.profile_image != null && udata.profile_image != undefined ? udata.profile_image : "demouser.png";
                             var patient_name = udata.first_name;
                             var gender = udata.gender;
 
                             var medwire_id = udata.permanent_id;
                         } else {
-                            var image = item.profile_image != null && item.profile_image != undefined ? item.profile_image : 'demouser.png';
+                            var image = item.profile_image != null && item.profile_image != undefined ? item.profile_image : "demouser.png";
                             var patient_name = item.patient_name;
                             var gender = item.gender;
                             var medwire_id = item.medwire_id;
@@ -1997,12 +1997,12 @@ class User {
                             if (item.member_id != undefined && item.member_id != null) {
                                 const udata = await helperQuery.First({ table: "users", where: "id=" + item.member_id + " AND role_id=2" });
                                 // console.log(udata);
-                                var image = udata.profile_image != null && udata.profile_image != undefined ? udata.profile_image : 'demouser.png';
+                                var image = udata.profile_image != null && udata.profile_image != undefined ? udata.profile_image : "demouser.png";
                                 var patient_name = udata.first_name;
                                 var gender = udata.gender;
                                 var medwire_id = udata.permanent_id;
                             } else {
-                                var image = item.profile_image != null && item.profile_image != undefined ? item.profile_image : 'demouser.png';
+                                var image = item.profile_image != null && item.profile_image != undefined ? item.profile_image : "demouser.png";
                                 var patient_name = item.patient_name;
                                 var gender = item.gender;
                                 var medwire_id = item.medwire_id;
@@ -2044,11 +2044,11 @@ class User {
                     var patient_id = user_id;
                     var patient_created_by_id = created_by_id;
 
-                    db.query(`select * from users WHERE id = ? `, [patient_created_by_id], (err, res1) => {
+                    db.query("select * from users WHERE id = ? ", [patient_created_by_id], (err, res1) => {
                         if (res1.length > 0) {
-                            response[key]['mobile'] = res1[0].mobile;
+                            response[key]["mobile"] = res1[0].mobile;
                         } else {
-                            response[key]['mobile'] = '';
+                            response[key]["mobile"] = "";
                         }
                     });
                 }
@@ -2064,7 +2064,7 @@ class User {
 
     static changeProfileAccessRequestStatus(request_id, status, time_interval, cb) {
         var updated_at = helperFunction.getCurrentDateTime();
-        db.query(`UPDATE profile_access set status = ? , updated_at = ? , time_interval = ? WHERE id = ?`, [status, updated_at, time_interval, request_id], async (err, res) => {
+        db.query("UPDATE profile_access set status = ? , updated_at = ? , time_interval = ? WHERE id = ?", [status, updated_at, time_interval, request_id], async (err, res) => {
             if (err) {
                 console.log(err);
                 logger.error(err.message);
@@ -2076,18 +2076,18 @@ class User {
 
                 if (profile_access_detail.length > 0) {
 
-                    var patient_id = profile_access_detail[0].member_id == null || profile_access_detail[0].member_id == '' ? profile_access_detail[0].patient_id : profile_access_detail[0].member_id;
+                    var patient_id = profile_access_detail[0].member_id == null || profile_access_detail[0].member_id == "" ? profile_access_detail[0].patient_id : profile_access_detail[0].member_id;
                     var doctor_id = profile_access_detail[0].doctor_id;
 
-                    const patient_detail = await helperQuery.Get({ table: "users", where: " id=" + patient_id })
+                    const patient_detail = await helperQuery.Get({ table: "users", where: " id=" + patient_id });
 
                     var patient_name = patient_detail[0].first_name;
 
-                    if (status == 'Accept') {
-                        var title = 'Profile Access';
+                    if (status == "Accept") {
+                        var title = "Profile Access";
                         var type = "accept_profile_request_access";
                     } else {
-                        var title = 'Profile Access';
+                        var title = "Profile Access";
                         var type = "reject_profile_request_access";
                     }
 
@@ -2109,14 +2109,14 @@ class User {
                                 title: title,
                                 body: app_message
                             }
-                        }
-                        if ((user_detail[0].device_type == 'Android') || (user_detail[0].device_type == 'IOS')) {
+                        };
+                        if ((user_detail[0].device_type == "Android") || (user_detail[0].device_type == "IOS")) {
                             await helperFunction.pushNotification(user_detail[0].device_token, payload);
                         }
                     }
 
-                    var created_at = moment().format('YYYY-MM-DD HH:mm:ss');
-                    db.query(`INSERT INTO system_notifications(from_user_id,to_user_id,title,type,message,created_at) VALUES(?,?,?,?,?,?)`, [patient_id, doctor_id, title, type, message, created_at], (err, res) => {
+                    var created_at = moment().format("YYYY-MM-DD HH:mm:ss");
+                    db.query("INSERT INTO system_notifications(from_user_id,to_user_id,title,type,message,created_at) VALUES(?,?,?,?,?,?)", [patient_id, doctor_id, title, type, message, created_at], (err, res) => {
                         if (err) {
                             logger.error(err.message);
                             cb(err, null);
@@ -2163,14 +2163,14 @@ class User {
 
                 const checkMemberExistence = await helperQuery.All(`SELECT id FROM users WHERE created_by_id = '${patient_id}' and id = '${member_id}'`);
                 if (checkMemberExistence.length > 0) {
-                    db.query(`update profile_access set patient_id = ? , member_id = ?,  status = ? , updated_at = ? , requested_at = NOW() where id =?`, [patient_id, member_id, 'Pending', updated_at, request_id], (err, res) => {
+                    db.query("update profile_access set patient_id = ? , member_id = ?,  status = ? , updated_at = ? , requested_at = NOW() where id =?", [patient_id, member_id, "Pending", updated_at, request_id], (err, res) => {
                         if (err) {
                             logger.error(err.message);
                             cb(err, null);
                             return;
                         }
                         if (res) {
-                            db.query(`select first_name from users where id = ? `, [doctor_id], async (err, res1) => {
+                            db.query("select first_name from users where id = ? ", [doctor_id], async (err, res1) => {
                                 if (err) {
                                     logger.error(err.message);
                                     cb(err, null);
@@ -2178,7 +2178,7 @@ class User {
                                 }
                                 if (res1) {
                                     var user_name = "";
-                                    db.query(`select first_name from users where id = ? `, [member_id], async (err, res2) => {
+                                    db.query("select first_name from users where id = ? ", [member_id], async (err, res2) => {
                                         if (err) {
                                             logger.error(err.message);
                                             cb(err, null);
@@ -2187,9 +2187,9 @@ class User {
                                         if (res2) {
                                             user_name = res2 != undefined && res2.length > 0 ? res2[0].first_name : "";
                                         }
-                                    })
-                                    var doctor_name = res1 != undefined && res1.length > 0 ? res1[0].first_name : '';
-                                    var title = 'Profile Access';
+                                    });
+                                    var doctor_name = res1 != undefined && res1.length > 0 ? res1[0].first_name : "";
+                                    var title = "Profile Access";
                                     var type = "profile_request_access";
 
 
@@ -2205,14 +2205,14 @@ class User {
                                                 title: title,
                                                 body: app_message
                                             }
-                                        }
-                                        if ((user_detail[0].device_type == 'Android') || (user_detail[0].device_type == 'IOS')) {
+                                        };
+                                        if ((user_detail[0].device_type == "Android") || (user_detail[0].device_type == "IOS")) {
                                             await helperFunction.pushNotification(user_detail[0].device_token, payload);
                                         }
                                     }
 
-                                    var created_at = moment().format('YYYY-MM-DD HH:mm:ss');
-                                    db.query(`INSERT INTO system_notifications(from_user_id,to_user_id,title,type,message,created_at) VALUES(?,?,?,?,?,?)`, [doctor_id, patient_id, title, type, message, created_at], (err, res) => {
+                                    var created_at = moment().format("YYYY-MM-DD HH:mm:ss");
+                                    db.query("INSERT INTO system_notifications(from_user_id,to_user_id,title,type,message,created_at) VALUES(?,?,?,?,?,?)", [doctor_id, patient_id, title, type, message, created_at], (err, res) => {
                                         if (err) {
                                             logger.error(err.message);
                                             cb(err, null);
@@ -2227,14 +2227,14 @@ class User {
 
                     });
                 } else {
-                    db.query(`update profile_access set patient_id = ? , member_id = ?,  status = ? , updated_at = ? , requested_at = NOW() where id =?`, [patient_id, member_id, 'Pending', updated_at, request_id], (err, res) => {
+                    db.query("update profile_access set patient_id = ? , member_id = ?,  status = ? , updated_at = ? , requested_at = NOW() where id =?", [patient_id, member_id, "Pending", updated_at, request_id], (err, res) => {
                         if (err) {
                             logger.error(err.message);
                             cb(err, null);
                             return;
                         }
                         if (res) {
-                            db.query(`select first_name from users where id = ? `, [doctor_id], async (err, res1) => {
+                            db.query("select first_name from users where id = ? ", [doctor_id], async (err, res1) => {
                                 if (err) {
                                     logger.error(err.message);
                                     cb(err, null);
@@ -2242,7 +2242,7 @@ class User {
                                 }
                                 if (res1) {
                                     var user_name = "";
-                                    db.query(`select first_name from users where id = ? `, [member_id], async (err, res2) => {
+                                    db.query("select first_name from users where id = ? ", [member_id], async (err, res2) => {
                                         if (err) {
                                             logger.error(err.message);
                                             cb(err, null);
@@ -2251,9 +2251,9 @@ class User {
                                         if (res2) {
                                             user_name = res2 != undefined && res2.length > 0 ? res2[0].first_name : "";
                                         }
-                                    })
-                                    var doctor_name = res1 != undefined && res1.length > 0 ? res1[0].first_name : '';
-                                    var title = 'Profile Access';
+                                    });
+                                    var doctor_name = res1 != undefined && res1.length > 0 ? res1[0].first_name : "";
+                                    var title = "Profile Access";
                                     var type = "profile_request_access";
 
                                     var app_message = "Hey " + user_name + ",\nDr. " + doctor_name + " has requested to access your MedWire profile.";
@@ -2268,14 +2268,14 @@ class User {
                                                 title: title,
                                                 body: app_message
                                             }
-                                        }
-                                        if ((user_detail[0].device_type == 'Android') || (user_detail[0].device_type == 'IOS')) {
+                                        };
+                                        if ((user_detail[0].device_type == "Android") || (user_detail[0].device_type == "IOS")) {
                                             await helperFunction.pushNotification(user_detail[0].device_token, payload);
                                         }
                                     }
 
-                                    var created_at = moment().format('YYYY-MM-DD HH:mm:ss');
-                                    db.query(`INSERT INTO system_notifications(from_user_id,to_user_id,title,type,message,created_at) VALUES(?,?,?,?,?,?)`, [doctor_id, patient_id, title, type, message, created_at], (err, res) => {
+                                    var created_at = moment().format("YYYY-MM-DD HH:mm:ss");
+                                    db.query("INSERT INTO system_notifications(from_user_id,to_user_id,title,type,message,created_at) VALUES(?,?,?,?,?,?)", [doctor_id, patient_id, title, type, message, created_at], (err, res) => {
                                         if (err) {
                                             logger.error(err.message);
                                             cb(err, null);
@@ -2297,7 +2297,7 @@ class User {
     }
     static deleteProfileAccess(request_id, cb) {
         var deleted_at = helperFunction.getCurrentDateTime();
-        db.query(`UPDATE profile_access set  deleted_at= ? WHERE id = ?`, [deleted_at, request_id], (err, res) => {
+        db.query("UPDATE profile_access set  deleted_at= ? WHERE id = ?", [deleted_at, request_id], (err, res) => {
             if (err) {
                 logger.error(err.message);
                 cb(err, null);
@@ -2310,7 +2310,7 @@ class User {
         });
     }
     static sendMeetingNotification(cb) {
-        db.query(`select * from appointments WHERE type ='online' and str_to_date(appointment_date,'%Y-%m-%d') =  curdate()`, [], (err, res) => {
+        db.query("select * from appointments WHERE type ='online' and str_to_date(appointment_date,'%Y-%m-%d') =  curdate()", [], (err, res) => {
             if (err) {
                 logger.error(err.message);
                 cb(err, null);
@@ -2343,10 +2343,10 @@ class User {
                     var ampm = (date_ob.getHours() >= 12) ? "PM" : "AM";
                     var current_day_time_after_10_minute = hours + ":" + (minutes + 10) + ampm;
 
-                    console.log("start_time", start_time)
-                    console.log("current_day_time_after_10_minute", current_day_time_after_10_minute)
+                    console.log("start_time", start_time);
+                    console.log("current_day_time_after_10_minute", current_day_time_after_10_minute);
                     if (start_time == current_day_time_after_10_minute) {
-                        console.log("inside if")
+                        console.log("inside if");
                         var options = {
                             method: "POST",
                             uri: "https://api.zoom.us/v2/users/" + email + "/meetings",
@@ -2463,7 +2463,7 @@ class User {
                 if (res) {
                     return resolve(res);
                 }
-            })
+            });
         });
     }
 
@@ -2478,12 +2478,12 @@ class User {
                 if (res) {
                     return resolve(res);
                 }
-            })
+            });
         });
     }
     static otpSave({ email, forgot_otp, id }) {
         return new Promise((resolve, reject) => {
-            db.query(`UPDATE users SET forgot_otp = ? WHERE email= ? AND id=?`,
+            db.query("UPDATE users SET forgot_otp = ? WHERE email= ? AND id=?",
                 [
                     forgot_otp,
                     email, id
@@ -2493,11 +2493,11 @@ class User {
                     }
                     return resolve(res);
                 });
-        })
+        });
     }
     static saveOtpSave({ forgot_otp, id }) {
         return new Promise((resolve, reject) => {
-            db.query(`UPDATE users SET forgot_otp = ? WHERE id=?`,
+            db.query("UPDATE users SET forgot_otp = ? WHERE id=?",
                 [
                     forgot_otp,
                     email, id
@@ -2507,7 +2507,7 @@ class User {
                     }
                     return resolve(res);
                 });
-        })
+        });
     }
 
     static findByEmailAndMobileAndRole(email, mobile, role_id, cb) {
@@ -2525,10 +2525,10 @@ class User {
                 cb({ kind: "not_found" }, null);
             }
 
-        })
+        });
     }
     static updateDoctorUser({ mobile, gender, date_of_birth, first_name, address, experience_in_year, pin_code, alternate_mobile, user_id, profile_image }) {
-        if (profile_image != '') {
+        if (profile_image != "") {
             var query = `UPDATE users SET  mobile ='${mobile}',profile_image='${profile_image}',gender='${gender}',date_of_birth='${date_of_birth}',
             first_name='${first_name}',address='${address}',pin_code='${pin_code}',
             experience_in_year='${experience_in_year}',	alternate_mobile='${alternate_mobile != undefined && alternate_mobile != null ? "" + alternate_mobile : null}' WHERE id ='${user_id}'`;
@@ -2546,7 +2546,7 @@ class User {
                     if (res) {
                         return resolve(res);
                     };
-                })
+                });
         });
     }
     static saveLogiToken(auth_token, id) {
@@ -2558,7 +2558,7 @@ class User {
                     }
                     return resolve(res);
                 });
-        })
+        });
     }
     static logOut(id) {
         return new Promise((resolve, reject) => {
@@ -2571,20 +2571,20 @@ class User {
                         return resolve(res);
                     }
                 });
-        })
+        });
     }
     static getSignature(user_id, cb) {
-        db.query(`select signature from users WHERE id =?`, [user_id], (err, res) => {
+        db.query("select signature from users WHERE id =?", [user_id], (err, res) => {
             if (err) {
                 logger.error(err.message);
                 cb(err, null);
                 return;
             }
-            var signature = (res[0].signature) ? res[0].signature : '';
-            if (process.env.APP_ENV == 'Production') {
-                var signature_file_path = process.env.APP_URL + 'signature/' + signature;
+            var signature = (res[0].signature) ? res[0].signature : "";
+            if (process.env.APP_ENV == "Production") {
+                var signature_file_path = process.env.APP_URL + "signature/" + signature;
             } else {
-                var signature_file_path = process.env.APP_URL + 'public/signature/' + signature;
+                var signature_file_path = process.env.APP_URL + "public/signature/" + signature;
             }
             cb(null, {
                 signature_file_name: signature,

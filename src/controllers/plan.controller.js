@@ -1,8 +1,8 @@
-const User = require('../models/user.model');
-const Plan = require('../models/plan.model');
-const helperFunction = require('../helper/helperFunction');
-const helperQuery = require('../helper/helperQuery');
-const { async } = require('q');
+const User = require("../models/user.model");
+const Plan = require("../models/plan.model");
+const helperFunction = require("../helper/helperFunction");
+const helperQuery = require("../helper/helperQuery");
+const { async } = require("q");
 
 exports.userPlanPurchaseHistory = async (req,res) => { 
     const {user_id} = req.body;
@@ -14,19 +14,19 @@ exports.userPlanPurchaseHistory = async (req,res) => {
     if (result) {     
         return res.status(200).send({
             status_code : 200,
-            status: 'success',
-            message: 'Plan purchase history are showing',
+            status: "success",
+            message: "Plan purchase history are showing",
             data: result
         });
     }
     else{
         return res.status(500).send({
             status_code : 500,
-            status: 'error',
+            status: "error",
             message: err.message
         });
     }        
-}
+};
 exports.getAllPlans = async(req,res) => { 
     const {role,user_id} = req.body;
 
@@ -41,14 +41,14 @@ exports.getAllPlans = async(req,res) => {
                 if (err.kind === "not_found") {
                     res.status(404).send({
                         status_code : 404,
-                        status: 'error',
-                        message: 'Role does not exist'
+                        status: "error",
+                        message: "Role does not exist"
                     });
                     return;
                 }
                 res.status(500).send({
                     status_code : 500,
-                    status: 'error',
+                    status: "error",
                     message: err.message
                 });
                 return;
@@ -69,14 +69,14 @@ exports.getAllPlans = async(req,res) => {
                         if (err.kind === "not_found") {
                             res.status(404).send({
                                 status_code : 404,
-                                status: 'error',
-                                message: 'No Plans Found'
+                                status: "error",
+                                message: "No Plans Found"
                             });
                             return;
                         }
                         res.status(500).send({
                             status_code : 500,
-                            status: 'error',
+                            status: "error",
                             message: err.message
                         });
                         return;
@@ -84,7 +84,7 @@ exports.getAllPlans = async(req,res) => {
                     if(data) {
                         res.status(200).send({
                                     status_code :200,
-                                    status: 'success',
+                                    status: "success",
                                     message : "Plan record found Successfully",
                                     data: listdata,
                                     listdata:data
@@ -102,8 +102,8 @@ exports.getAllPlans = async(req,res) => {
                 message:"something went to wrong!"
             }); 
         }
-    })       
-}
+    });       
+};
 exports.purchasePlan = async(req,res) => { 
     const {plan_id,user_id} = req.body;
 
@@ -118,15 +118,15 @@ exports.purchasePlan = async(req,res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code : 404,
-                    status: 'error',
-                    message: 'Plan does not exist'
+                    status: "error",
+                    message: "Plan does not exist"
                 });
                 return;
             }           
 
             res.status(500).send({
                 status_code : 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -141,15 +141,15 @@ exports.purchasePlan = async(req,res) => {
                     if (err.kind === "already_purchased") {
                         res.status(200).send({
                             status_code : 200,
-                            status: 'success',
-                            message: 'You have already purchased this plan'
+                            status: "success",
+                            message: "You have already purchased this plan"
                         });
                         return;
                     } 
                      
                     res.status(500).send({
                         status_code : 500,
-                        status: 'error',
+                        status: "error",
                         message: err.message
                     });
                     return;
@@ -171,16 +171,16 @@ exports.purchasePlan = async(req,res) => {
                         }   
                     }
 
-                    var payment_order_id = process.env.APP_NAME+'_'+new Date().getTime();
+                    var payment_order_id = process.env.APP_NAME+"_"+new Date().getTime();
 
-                    var detail = 'plan_purchase_id='+result[0].id+'&&total_amount='+result[0].total_amount+'&&email='+email+'&&payment_order_id='+result[0].payment_order_id+'&&type=plan&&user_id='+user_id;
+                    var detail = "plan_purchase_id="+result[0].id+"&&total_amount="+result[0].total_amount+"&&email="+email+"&&payment_order_id="+result[0].payment_order_id+"&&type=plan&&user_id="+user_id;
         
 
-                    var url = process.env.APP_URL+'api/auth/payment-plan?detail='+btoa(detail);
+                    var url = process.env.APP_URL+"api/auth/payment-plan?detail="+btoa(detail);
 
                     res.status(200).send({
                                 status_code :200,
-                                status: 'success',
+                                status: "success",
                                 message : "Plan has been purchased Successfully",
                                url : url,
                             });
@@ -190,8 +190,8 @@ exports.purchasePlan = async(req,res) => {
             }); 
         }
 
-    })       
-}
+    });       
+};
 exports.renewPlan = async(req,res) => { 
     const {plan_purchase_id} = req.body;
 
@@ -205,8 +205,8 @@ exports.renewPlan = async(req,res) => {
             if (err.kind === "plan_purchase_not_found") {
                 res.status(404).send({
                     status_code : 404,
-                    status: 'error',
-                    message: 'Plan Purchase Id does not exist'
+                    status: "error",
+                    message: "Plan Purchase Id does not exist"
                 });
                 return;
             }   
@@ -214,14 +214,14 @@ exports.renewPlan = async(req,res) => {
             if (err.kind === "plan_not_found") {
                 res.status(404).send({
                     status_code : 404,
-                    status: 'error',
-                    message: 'Plan does not exist'
+                    status: "error",
+                    message: "Plan does not exist"
                 });
                 return;
             }            
             res.status(500).send({
                 status_code : 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -232,18 +232,18 @@ exports.renewPlan = async(req,res) => {
             var user_detail = await helperQuery.Get({table:"users",where:"id ="+result[0].user_id});
        
             var email  = user_detail[0].email;      
-            var payment_order_id = process.env.APP_NAME+'_'+new Date().getTime();
+            var payment_order_id = process.env.APP_NAME+"_"+new Date().getTime();
 
-            var detail = 'plan_purchase_id='+result[0].id+'&&total_amount='+result[0].total_amount+'&&email='+email+'&&payment_order_id='+result[0].payment_order_id+'&&type=plan&&user_id='+result[0].user_id;
+            var detail = "plan_purchase_id="+result[0].id+"&&total_amount="+result[0].total_amount+"&&email="+email+"&&payment_order_id="+result[0].payment_order_id+"&&type=plan&&user_id="+result[0].user_id;
 
-            var url = process.env.APP_URL + 'api/auth/payment-plan?detail=' + btoa(detail);
+            var url = process.env.APP_URL + "api/auth/payment-plan?detail=" + btoa(detail);
             res.status(200).send({
                         status_code :200,
-                        status: 'success',
+                        status: "success",
                         message : "Plan has been renewed Successfully",
                         url: url
                     });
             return;
         }
     });      
-}
+};

@@ -12,10 +12,10 @@ exports.labRadioCountDetail = async (req, res) => {
 		return res.status(404).json(valid);
 	}
 	let data = {};
-	let today_patients = await Laboratory.labRadioCountPatientDetail(user_id,'today');
-	let total_patients = await Laboratory.labRadioCountPatientDetail(user_id,'');
-	let today_appiontments = await Laboratory.labRadioCountAppointmentDetail(user_id,'today');
-	let total_appiontments = await Laboratory.labRadioCountAppointmentDetail(user_id,'');
+	let today_patients = await Laboratory.labRadioCountPatientDetail(user_id,"today");
+	let total_patients = await Laboratory.labRadioCountPatientDetail(user_id,"");
+	let today_appiontments = await Laboratory.labRadioCountAppointmentDetail(user_id,"today");
+	let total_appiontments = await Laboratory.labRadioCountAppointmentDetail(user_id,"");
 
 
 	data.today_patient =  today_patients.today_patients;
@@ -125,7 +125,7 @@ exports.newVisit = (req, res) => {
           res.status(404).send({
             status_code: "404",
             status: "error",
-            message: `Data Not Exist`,
+            message: "Data Not Exist",
           });
           return;
         }
@@ -155,7 +155,7 @@ exports.visitList = (req, res) => {
         res.status(404).send({
           status_code: "404",
           status: "error",
-          message: `Data Not Exist`,
+          message: "Data Not Exist",
         });
         return;
       }
@@ -188,16 +188,16 @@ exports.uploadReport = (req, res) => {
       if (err) {
         if (err.kind) {
           if (err.kind === "not_found") {
-            var message = `Data Not Exist`;
+            var message = "Data Not Exist";
           }
           if (err.kind === "plan_limit_reached") {
-            var message = `Sorry! You plan limit has been expire`;
+            var message = "Sorry! You plan limit has been expire";
           }
           if (err.kind === "no_plan_found") {
-            var message = `Sorry! You don't have plan.please purchase plan`;
+            var message = "Sorry! You don't have plan.please purchase plan";
           }
           if (err.kind === "no_default_plan_found") {
-            var message = `Sorry! No default plan Added yet`;
+            var message = "Sorry! No default plan Added yet";
           }
           console.log(err);
           return res.status(404).send({

@@ -1,35 +1,30 @@
-const { json } = require('body-parser');
-const Joi = require('joi');
-const validatorHandler = require('../middlewares/validatorHandler');
-
+const Joi = require("joi");
+const validatorHandler = require("../middlewares/validatorHandler");
 
 const getDoctorDetailsValidation = (req, res, next) => {
     const schema = Joi.object().keys({
         user_id: Joi.number().required(),
-        staff_id:Joi.optional()
+        staff_id: Joi.optional()
     });
     validatorHandler(req, res, next, schema);
 };
-
 
 const listDoctorValidation = (req, res, next) => {
     const schema = Joi.object().keys({
         clinic_id: Joi.number().required(),
-        staff_id : Joi.optional()
+        staff_id: Joi.optional()
     });
     validatorHandler(req, res, next, schema);
 };
-
 
 const deleteDoctorValidation = (req, res, next) => {
     const schema = Joi.object().keys({
         user_id: Joi.number().required(),
         created_by_id: Joi.number().required(),
-        staff_id:Joi.optional()
+        staff_id: Joi.optional()
     });
     validatorHandler(req, res, next, schema);
 };
-
 
 const addDoctorFeeValidation = (req, res, next) => {
     const schema = Joi.object().keys({
@@ -43,7 +38,6 @@ const addDoctorFeeValidation = (req, res, next) => {
     validatorHandler(req, res, next, schema);
 };
 
-
 const updateDoctorFeeValidation = (req, res, next) => {
     const schema = Joi.object().keys({
         fee_id: Joi.number().required(),
@@ -55,7 +49,6 @@ const updateDoctorFeeValidation = (req, res, next) => {
     });
     validatorHandler(req, res, next, schema);
 };
-
 
 const deleteDoctorFeeValidation = (req, res, next) => {
     const schema = Joi.object().keys({

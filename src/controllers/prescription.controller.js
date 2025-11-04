@@ -1,13 +1,13 @@
-const User = require('../models/user.model');
-const Prescription = require('../models/prescription.model');
-const ClinicOrHospital = require('../models/clinicorhospital.model');
-const helperFunction = require('../helper/helperFunction');
+const User = require("../models/user.model");
+const Prescription = require("../models/prescription.model");
+const ClinicOrHospital = require("../models/clinicorhospital.model");
+const helperFunction = require("../helper/helperFunction");
 
 exports.managePrescriptionHeader = (req,res) => { 
     const {staff_id,clinic_name,email_id,clinic_timing,clinic_id} = req.body;
-    var clinic_logo = ''; 
-    var mobile_number = req.body.mobile_number !=undefined && req.body.mobile_number !='undefined' ? req.body.mobile_number:null;
-    var alternate_mobile_number = req.body.alternate_mobile_number !=undefined && req.body.alternate_mobile_number !='undefined' ? req.body.alternate_mobile_number:null;
+    var clinic_logo = ""; 
+    var mobile_number = req.body.mobile_number !=undefined && req.body.mobile_number !="undefined" ? req.body.mobile_number:null;
+    var alternate_mobile_number = req.body.alternate_mobile_number !=undefined && req.body.alternate_mobile_number !="undefined" ? req.body.alternate_mobile_number:null;
     var valid = helperFunction.customValidater(req,{clinic_name,alternate_mobile_number,email_id,clinic_timing,clinic_id});
     if(valid){
         return res.status(500).json(valid);
@@ -19,7 +19,7 @@ exports.managePrescriptionHeader = (req,res) => {
         var clinic_logo = req.file.filename;
 
     } else {
-        var clinic_logo = '';
+        var clinic_logo = "";
     }
 
     // if(req.body.alternate_mobile_number.length == '10'){ 
@@ -39,14 +39,14 @@ exports.managePrescriptionHeader = (req,res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code : 404,
-                    status: 'error',
-                    message: `Clinic / Hospital does not exist`
+                    status: "error",
+                    message: "Clinic / Hospital does not exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code : 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -62,7 +62,7 @@ exports.managePrescriptionHeader = (req,res) => {
                 const prescriptionNewUpdatedResponse = await Prescription.getStaffDetail(clinic_id,added_by);
                     res.status(200).send({
                         status_code : 200,
-                        status: 'success',
+                        status: "success",
                         message : "Prescription Header  Details Saved Successfully",
                         data: await Prescription.getStaffDetail(clinic_id,added_by)
                     });
@@ -81,7 +81,7 @@ exports.managePrescriptionHeader = (req,res) => {
                         
                         res.status(200).send({
                             status_code : 200,
-                            status: 'success',
+                            status: "success",
                             message : "Prescription Header Details Saved Successfully",
                             data: prescriptionUpdatedResponse
                         });
@@ -93,7 +93,7 @@ exports.managePrescriptionHeader = (req,res) => {
         }
 
     });       
-}
+};
 
 exports.managePrescriptionFooter = (req,res) => { 
         const {staff_id,clinic_address,clinic_id} = req.body;
@@ -102,14 +102,14 @@ exports.managePrescriptionFooter = (req,res) => {
                 if (err.kind === "not_found") {
                     res.status(404).send({
                         status_code : 404,
-                        status: 'error',
-                        message: `Clinic / Hospital does not exist`
+                        status: "error",
+                        message: "Clinic / Hospital does not exist"
                     });
                     return;
                 }
                 res.status(500).send({
                     status_code : 500,
-                    status: 'error',
+                    status: "error",
                     message: err.message
                 });
                 return;
@@ -124,7 +124,7 @@ exports.managePrescriptionFooter = (req,res) => {
                     const prescriptionNewUpdatedResponse = await Prescription.getStaffDetail(clinic_id,added_by);
                         res.status(200).send({
                             status_code : 200,
-                            status: 'success',
+                            status: "success",
                             message : "Prescription Footer Details Saved Successfully",
                             data: await Prescription.getStaffDetail(clinic_id,added_by)
                         });
@@ -140,7 +140,7 @@ exports.managePrescriptionFooter = (req,res) => {
 
                             res.status(200).send({
                                 status_code : 200,
-                                status: 'success',
+                                status: "success",
                                 message : "Prescription Footer Details Saved Successfully",
                                 data: prescriptionUpdatedResponse
                             });
@@ -152,8 +152,8 @@ exports.managePrescriptionFooter = (req,res) => {
 
             }
         
-        })
-}
+        });
+};
 
 
 // get prescription detail by vineet shirdhonkar
@@ -173,14 +173,14 @@ exports.getPrescriptionDetail = (req,res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code : 404,
-                    status: 'success',
-                    message: `Clinic / Hospital does not exist`
+                    status: "success",
+                    message: "Clinic / Hospital does not exist"
                 });
                 return;
             }          
             res.status(500).send({
                 status_code : 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -193,7 +193,7 @@ exports.getPrescriptionDetail = (req,res) => {
                  if (data) {
                         res.status(200).send({
                             status_code : 200,
-                            status: 'success',
+                            status: "success",
                             message : "Data Found Successfully",
                             data: (prescriptionResponse[0]) ? prescriptionResponse[0] : []
                         });
@@ -205,7 +205,7 @@ exports.getPrescriptionDetail = (req,res) => {
                  if (data) {
                         res.status(200).send({
                             status_code : 200,
-                            status: 'success',
+                            status: "success",
                             message : "Data Found Successfully",
                             data: (prescriptionResponse[0]) ? prescriptionResponse[0] : []
                         });
@@ -216,4 +216,4 @@ exports.getPrescriptionDetail = (req,res) => {
             
         }
     });     
-}
+};

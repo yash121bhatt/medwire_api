@@ -1,7 +1,5 @@
-const Joi = require('joi');
-const validatorHandler = require('../middlewares/validatorHandler');
-
-
+const Joi = require("joi");
+const validatorHandler = require("../middlewares/validatorHandler");
 
 const getDoctorsClinicValidation = (req, res, next) => {
     const schema = Joi.object().keys({
@@ -27,7 +25,6 @@ const addSymptomValidation = (req, res, next) => {
     });
     validatorHandler(req, res, next, schema);
 };
-
 
 const symptomListValidation = (req, res, next) => {
     const schema = Joi.object().keys({
@@ -86,7 +83,6 @@ const addAdviceValidation = (req, res, next) => {
     validatorHandler(req, res, next, schema);
 };
 
-
 const adviceListValidation = (req, res, next) => {
     const schema = Joi.object().keys({
         doctor_id: Joi.number().required(),
@@ -103,7 +99,6 @@ const addFollowUpValidation = (req, res, next) => {
     });
     validatorHandler(req, res, next, schema);
 };
-
 
 const followupListValidation = (req, res, next) => {
     const schema = Joi.object().keys({
@@ -125,6 +120,7 @@ const addDiagnosticValidation = (req, res, next) => {
 module.exports = {
     getDoctorsClinicValidation,
     getClinicAppointmentValidation,
+    addSymptomValidation,
     symptomListValidation,
     addHealthStatusValidation,
     healthStatusListValidation,

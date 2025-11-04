@@ -10,7 +10,9 @@
     "db:up": "node src/database/scripts/dbUp.js",
     "db:down": "node src/database/scripts/dbDown.js",
     "tables:up": "node src/database/scripts/tablesUp.js",
-    "db:init": "npm run db:up && npm run tables:up"
+    "db:init": "npm run db:up && npm run tables:up",
+    "lint": "eslint .",
+    "fix": "eslint . --fix"
   },
   "keywords": [],
   "author": "",
@@ -45,6 +47,9 @@
     "request-promise": "^4.2.6"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "eslint": "^9.39.1",
+    "globals": "^16.5.0",
     "nodemon": "^2.0.16",
     "winston": "^3.7.2"
   }

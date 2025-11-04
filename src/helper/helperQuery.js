@@ -1,6 +1,6 @@
-const { resolve, reject, Promise } = require('q');
-const db = require('../config/db.config');
-const { logger } = require('../utils/logger');
+const { resolve, reject, Promise } = require("q");
+const db = require("../config/db.config");
+const { logger } = require("../utils/logger");
 //Note=> use query builder in the for json for exam  
 //helperquery.hasOne({table1:'users_documents',table:'users',id:'member_id',where:'users.created_by_id=users_documents.user_id'})
 class helperQuery {
@@ -33,7 +33,7 @@ class helperQuery {
     }
 
     static hasMany(data, cb) {
-        db.query(`SELECT *FROM ${data.table}  JOIN ${data.table1} ON ${data.withId != undefined && data.withId != null ? data.withId : data.table + '.id'} = ${data.table1}.${data.id} WHERE ${data.where != undefined ? data.where : 1}`,
+        db.query(`SELECT *FROM ${data.table}  JOIN ${data.table1} ON ${data.withId != undefined && data.withId != null ? data.withId : data.table + ".id"} = ${data.table1}.${data.id} WHERE ${data.where != undefined ? data.where : 1}`,
             (err, res) => {
                 if (err) {
                     logger.error(err.message);
@@ -45,7 +45,7 @@ class helperQuery {
             });
     }
     static hasOne(data, cb) {
-        db.query(`SELECT *FROM ${data.table}  LEFT JOIN ${data.table1} ON ${data.withId != undefined && data.withId != null ? data.withId : data.table + '.id'} = ${data.table1}.${data.id} WHERE ${data.where != undefined ? data.where : 1}`,
+        db.query(`SELECT *FROM ${data.table}  LEFT JOIN ${data.table1} ON ${data.withId != undefined && data.withId != null ? data.withId : data.table + ".id"} = ${data.table1}.${data.id} WHERE ${data.where != undefined ? data.where : 1}`,
             (err, res) => {
                 if (err) {
                     logger.error(err.message);
@@ -58,7 +58,7 @@ class helperQuery {
 
     }
     static belongsTo(data, cb) {
-        db.query(`SELECT *FROM ${data.table} RIGHT JOIN ${data.table1}  ON ${data.withId != undefined && data.withId != null ? data.withId : data.table + '.id'} = ${data.table1}.${data.id} WHERE ${data.where != undefined ? data.where : 1}`,
+        db.query(`SELECT *FROM ${data.table} RIGHT JOIN ${data.table1}  ON ${data.withId != undefined && data.withId != null ? data.withId : data.table + ".id"} = ${data.table1}.${data.id} WHERE ${data.where != undefined ? data.where : 1}`,
             (err, res) => {
                 if (err) {
                     logger.error(err.message);
@@ -95,7 +95,7 @@ class helperQuery {
                     }
                     return resolve(res);
                 });
-        })
+        });
     }
     static First(data) {
         return new Promise((resolve, reject) => {
@@ -110,7 +110,7 @@ class helperQuery {
                     }
                     return resolve({});
                 });
-        })
+        });
     }
     static All(data) {
         return new Promise((resolve, reject) => {
@@ -136,7 +136,7 @@ class helperQuery {
                         return resolve(res);
                     });
             }
-        })
+        });
     }
     static deleleAll(data) {
         return new Promise((resolve, reject) => {
@@ -160,11 +160,11 @@ class helperQuery {
                     }
                     return resolve(res);
                 });
-        })
+        });
     }
     static HasMany(data) {
         return new Promise((resolve, reject) => {
-            db.query(`SELECT *FROM ${data.table}  JOIN ${data.table1} ON ${data.withId != undefined && data.withId != null ? data.withId : data.table + '.id'} = ${data.table1}.${data.id} WHERE ${data.where != undefined ? data.where : 1}`,
+            db.query(`SELECT *FROM ${data.table}  JOIN ${data.table1} ON ${data.withId != undefined && data.withId != null ? data.withId : data.table + ".id"} = ${data.table1}.${data.id} WHERE ${data.where != undefined ? data.where : 1}`,
                 (err, res) => {
                     if (err) {
                         logger.error(err.message);
@@ -176,7 +176,7 @@ class helperQuery {
     }
     static BelongsTo(data) {
         return new Promise((resolve, reject) => {
-            db.query(`SELECT *FROM ${data.table} RIGHT JOIN ${data.table1}  ON ${data.withId != undefined && data.withId != null ? data.withId : data.table + '.id'} = ${data.table1}.${data.id} WHERE ${data.where != undefined ? data.where : 1}`,
+            db.query(`SELECT *FROM ${data.table} RIGHT JOIN ${data.table1}  ON ${data.withId != undefined && data.withId != null ? data.withId : data.table + ".id"} = ${data.table1}.${data.id} WHERE ${data.where != undefined ? data.where : 1}`,
                 (err, res) => {
                     if (err) {
                         logger.error(err.message);
@@ -188,7 +188,7 @@ class helperQuery {
     }
     static HasOne(data) {
         return new Promise((resolve, reject) => {
-            db.query(`SELECT *FROM ${data.table}  LEFT JOIN ${data.table1} ON ${data.withId != undefined && data.withId != null ? data.withId : data.table + '.id'} = ${data.table1}.${data.id} WHERE ${data.where != undefined ? data.where : 1}`,
+            db.query(`SELECT *FROM ${data.table}  LEFT JOIN ${data.table1} ON ${data.withId != undefined && data.withId != null ? data.withId : data.table + ".id"} = ${data.table1}.${data.id} WHERE ${data.where != undefined ? data.where : 1}`,
                 (err, res) => {
                     if (err) {
                         logger.error(err.message);

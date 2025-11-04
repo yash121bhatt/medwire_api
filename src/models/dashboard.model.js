@@ -1,9 +1,9 @@
-const db = require('../config/db.config');
-const { logger } = require('../utils/logger');
+const db = require("../config/db.config");
+const { logger } = require("../utils/logger");
 class dashboard {
     static heartchart({ member_id, type, filterdata, filtertype }) {
         return new Promise((resolve, reject) => {
-            if (type == 'weekly' && filtertype != '' && filtertype != null) {
+            if (type == "weekly" && filtertype != "" && filtertype != null) {
 
                 var query = `SELECT DATE_FORMAT(max_date, '%Y-%m-%d') as createdate,
                 DAYNAME(a.createdate) as DayName,
@@ -54,7 +54,7 @@ class dashboard {
                 );
                 return;*/
 
-            } else if (type == 'monthly' && filtertype != '' && filtertype != null) {
+            } else if (type == "monthly" && filtertype != "" && filtertype != null) {
 
                 var query = `SELECT DATE_FORMAT(max_date, '%Y-%m-%d') as createdate,
                 MONTHNAME(a.createdate) as MonthName,
@@ -72,7 +72,7 @@ class dashboard {
                 var arr = [filterdata, member_id, filtertype];
 
             }
-            else if (type != '' && type != null && (filterdata == '' || filterdata == null || filterdata == undefined)) {
+            else if (type != "" && type != null && (filterdata == "" || filterdata == null || filterdata == undefined)) {
                 var query = `SELECT DATE_FORMAT(max_date, '%Y-%m-%d') as createdate,
                 MONTHNAME(a.createdate) as MonthName,
                 a.${filtertype}
@@ -206,9 +206,9 @@ class dashboard {
                                 response.push({ sno, day_name, date, current_total, runing_total, before_week_total, grandtotal });
                             }
                             cb(null, response);
-                        })
+                        });
                 }
-            })
+            });
     };
     static dashboardDayMonthYearCount(lab_id, cb) {
         db.query(`SELECT 
@@ -239,7 +239,7 @@ class dashboard {
 
     static dashboarChart(lab_id, type, cb) {
 
-        if (type == 'Today') {
+        if (type == "Today") {
 
             db.query(`select COUNT(*) as todayCount from new_visit 
      where lab_id = '${lab_id}' and DATE(DATE_FORMAT(updated_at,'%y-%m-%d')) = DATE(DATE_FORMAT(NOW(),'%y-%m-%d')) 
@@ -255,7 +255,7 @@ class dashboard {
                     cb(null, res);
                 });
         }
-        else if (type == 'Monthly') {
+        else if (type == "Monthly") {
 
             db.query(`SELECT DAYNAME(Month_Date) as Day_name,Month_Date,total,updated_at from ( 
                 select DATE_FORMAT(updated_at,'%y-%m-%d') as Month_Date,updated_at as updated_at, count(updated_at) as total 

@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const { async } = require("q");
 const helperQuery = require("../helper/helperQuery");
-const { JWT_SECRET_KEY } = require('../utils/secrets');
+const { JWT_SECRET_KEY } = require("../utils/secrets");
 const jwtAuth = (req, res, next) => {
   let token = req.headers["x-access-token"];
   if (!token) {
@@ -32,6 +32,6 @@ const jwtAuth = (req, res, next) => {
       }
     }
   });
-}
+};
 
 module.exports = jwtAuth;

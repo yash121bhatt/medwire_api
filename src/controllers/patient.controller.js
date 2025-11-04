@@ -1,16 +1,16 @@
-const User = require('../models/user.model');
-const ClinicOrHospital = require('../models/clinicorhospital.model');
-const Patient = require('../models/patient.model');
-const { hash: hashPassword, compare: comparePassword } = require('../utils/password');
-const { transporter: transporter, mailOptions: mailOptions, autoGenPassword: autoGenPassword } = require('../helper/helper');
-const helperFunction = require('../helper/helperFunction');
-const { async } = require('q');
-const db = require('../config/db.config');
+const User = require("../models/user.model");
+const ClinicOrHospital = require("../models/clinicorhospital.model");
+const Patient = require("../models/patient.model");
+const { hash: hashPassword, compare: comparePassword } = require("../utils/password");
+const { transporter: transporter, mailOptions: mailOptions, autoGenPassword: autoGenPassword } = require("../helper/helper");
+const helperFunction = require("../helper/helperFunction");
+const { async } = require("q");
+const db = require("../config/db.config");
 const helperQuery = require("../helper/helperQuery");
 
 exports.addPatient = async (req, res) => {
     const { staff_id, user_id, alternate_mobile_number, full_name, email_id, date_of_birth, search_key, sex, role_id, pin_code, address, enquiry_date } = req.body;
-    var profile_image = '';
+    var profile_image = "";
     
     var valid = helperFunction.customValidater(req, { user_id, full_name, date_of_birth, search_key, role_id, enquiry_date });
     if (valid) {
@@ -20,10 +20,10 @@ exports.addPatient = async (req, res) => {
     var password = autoGenPassword();
     var encryptedPassword = hashPassword(password.trim());
 
-    if (req.body.search_key == '') {
+    if (req.body.search_key == "") {
         return res.status(400).json({
             status_code: 400,
-            status: 'error',
+            status: "error",
             message: "Mobile number or Medwire ID field is required"
         });
     }
@@ -31,7 +31,7 @@ exports.addPatient = async (req, res) => {
     if (req.body.full_name.length < 3) {
         return res.status(400).json({
             status_code: 400,
-            status: 'error',
+            status: "error",
             message: "Full Name should be minimum 3 characters"
         });
     }
@@ -39,16 +39,16 @@ exports.addPatient = async (req, res) => {
     if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(req.body.email_id) == false) {
         return res.status(400).json({
             status_code: 400,
-            status: 'error',
+            status: "error",
             message: "Please enter valid email id"
         });
     }
 
-    if (req.body.search_key.substring(0, 3) != 'MED') {
+    if (req.body.search_key.substring(0, 3) != "MED") {
         if (isNaN(req.body.search_key)) {
             return res.status(400).json({
                 status_code: 400,
-                status: 'error',
+                status: "error",
                 message: "Mobile number should be numeric"
             });
         }
@@ -56,22 +56,22 @@ exports.addPatient = async (req, res) => {
         if (req.body.search_key.length != 10) {
             return res.status(400).json({
                 status_code: 400,
-                status: 'error',
+                status: "error",
                 message: "Mobile number should be 10 digit"
             });
         }
     }
 
-    if (req.body.suggested_by !== 'self' && req.body.suggested_by !== 'doctor') {
+    if (req.body.suggested_by !== "self" && req.body.suggested_by !== "doctor") {
         return res.status(400).json({
             status_code: 400,
-            status: 'error',
+            status: "error",
             message: "Suggested by should be doctor or self"
         });
     }
 
     if (req.file == undefined) {
-        var profile_image = '';
+        var profile_image = "";
     } else {
         var profile_image = req.file.filename;
     }
@@ -81,14 +81,14 @@ exports.addPatient = async (req, res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code: 404,
-                    status: 'error',
-                    message: `User Does Not Exist`
+                    status: "error",
+                    message: "User Does Not Exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code: 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -100,8 +100,8 @@ exports.addPatient = async (req, res) => {
                 if (data.length > 0) {
                     res.status(500).send({
                         status_code: 500,
-                        status: 'error',
-                        message: `Patient already exist`
+                        status: "error",
+                        message: "Patient already exist"
                     });
                     return;
                 } else {
@@ -113,11 +113,11 @@ exports.addPatient = async (req, res) => {
                                 var email_id = req.body.email_id;
                                 var dob = req.body.date_of_birth;
                                 var mobile_number = req.body.search_key;
-                                if (req.body.search_key.substring(0, 3) != 'MED' || req.body.search_key.substring(0, 3) == 'MED') {
+                                if (req.body.search_key.substring(0, 3) != "MED" || req.body.search_key.substring(0, 3) == "MED") {
                                     if (isNaN(req.body.search_key)) {
                                         return res.status(400).json({
                                             status_code: 400,
-                                            status: 'error',
+                                            status: "error",
                                             message: "Mobile number should be numeric"
                                         });
                                     }
@@ -125,7 +125,7 @@ exports.addPatient = async (req, res) => {
                                     if (req.body.search_key.length != 10) {
                                         return res.status(400).json({
                                             status_code: 400,
-                                            status: 'error',
+                                            status: "error",
                                             message: "Mobile number should be 10 digit"
                                         });
                                     }
@@ -146,14 +146,14 @@ exports.addPatient = async (req, res) => {
                                     user_name:req.body.full_name,
                                     email: req.body.email_id,
                                     password: password
-                                }
-                                console.log('useer',user)
+                                };
+                                console.log("useer",user);
                                 Patient.add(added_by, alternate_mobile_number, full_name, email_id, dob, mobile_number, sex, role_id, pin_code, address, created_by_id, suggested_by, suggested_by_id, enquiry_date, profile_image, encryptedPassword, async (err, data) => {
                                     if (err) {
                                         res.status(500).send({
                                             status_code: 500,
-                                            status: 'error',
-                                            message: 'Something Went Wrong'
+                                            status: "error",
+                                            message: "Something Went Wrong"
                                         });
                                         return;
                                     }
@@ -163,23 +163,23 @@ exports.addPatient = async (req, res) => {
                                         var user_detail = await helperQuery.Get({ table: "users", where: "id =" + user_id });
 
                                         if (mobile_number) {
-                                            var url = 'https://play.google.com/store/apps/details?id=dev.khct.medwire';
-                                            var message = 'Dear ' + full_name + ' ' + user_detail[0].first_name + ' added you to their patient list. Download our app for online service benefit ' + url + ' Thanks MedWire Team';
+                                            var url = "https://play.google.com/store/apps/details?id=dev.khct.medwire";
+                                            var message = "Dear " + full_name + " " + user_detail[0].first_name + " added you to their patient list. Download our app for online service benefit " + url + " Thanks MedWire Team";
 
                                             await helperFunction.sendJapiSMS(mobile_number, message);
                                         }
 
-                                        var context = 'You have been registered by ' + user_detail[0].first_name + ' on MedWire. Now you can avail all the benefits by login in the MedWire app.';
+                                        var context = "You have been registered by " + user_detail[0].first_name + " on MedWire. Now you can avail all the benefits by login in the MedWire app.";
                                         
                                         const credential = true;
                                         const login = process.env.USER_LOGIN_URL;
                                         const mailOptions = {
                                             from: process.env.MAIL_FROM_ADDRESS,
                                             to: req.body.email_id,
-                                            template: 'createPatientAccountByLab',
+                                            template: "createPatientAccountByLab",
                                             subject: "You have been Registered by " + user_detail[0].first_name + " on MedWire",
                                             context: { context, user, credential: true,login}
-                                        }
+                                        };
 
                                         helperFunction.template(transporter, true);
                                         transporter.sendMail(mailOptions,
@@ -193,13 +193,13 @@ exports.addPatient = async (req, res) => {
 
                                         res.status(200).send({
                                             status_code: 200,
-                                            status: 'success',
+                                            status: "success",
                                             message: "Patient Added Successfully",
                                             data: data
                                         });
                                         return;
                                     }
-                                })
+                                });
                             }
 
                         }
@@ -220,27 +220,27 @@ exports.addPatient = async (req, res) => {
                             var user_detail = await helperQuery.Get({ table: "users", where: "id =" + user_id });
 
                             if (mobile_number) {
-                                var url = 'https://play.google.com/store/apps/details?id=dev.khct.medwire';
-                                var message = 'Dear ' + full_name + ' ' + user_detail[0].first_name + ' added you to their patient list. Download our app for online service benefit ' + url + ' Thanks MedWire Team';
+                                var url = "https://play.google.com/store/apps/details?id=dev.khct.medwire";
+                                var message = "Dear " + full_name + " " + user_detail[0].first_name + " added you to their patient list. Download our app for online service benefit " + url + " Thanks MedWire Team";
 
                                 await helperFunction.sendJapiSMS(mobile_number, message);
                             }
 
-                            var context = 'You have been registered by ' + user_detail[0].first_name + ' on MedWire. Now you can avail all the benefits by login in the MedWire app.';
+                            var context = "You have been registered by " + user_detail[0].first_name + " on MedWire. Now you can avail all the benefits by login in the MedWire app.";
                             const user = {
                                 user_name:req.body.full_name,
                                 email: req.body.email_id,
                                 password: password
-                            }
-                            console.log('useer',user)
+                            };
+                            console.log("useer",user);
                             const login = process.env.USER_LOGIN_URL;
                             const mailOptions = {
                                 from: process.env.MAIL_FROM_ADDRESS,
                                 to: req.body.email_id,
-                                template: 'createPatientAccountByLab',
+                                template: "createPatientAccountByLab",
                                 subject: "You have been Registered by " + user_detail[0].first_name + " on MedWire",
                                 context: { context, user, credential: false,login}
-                            }
+                            };
                             helperFunction.template(transporter, true);
                             transporter.sendMail(mailOptions,
                                 function (error, info) {
@@ -253,25 +253,25 @@ exports.addPatient = async (req, res) => {
 
                             res.status(200).send({
                                 status_code: 200,
-                                status: 'success',
+                                status: "success",
                                 message: "Patient Added Successfully",
                                 data: data
                             });
                             return;
                         }
-                    })
+                    });
 
                 }
             });
 
         }
 
-    })
+    });
 
-}
+};
 exports.addForClinic = async (req, res) => {
     const { staff_id, user_id, alternate_mobile_number, full_name, email_id, date_of_birth, search_key, sex, role_id, pin_code, address, enquiry_date } = req.body;
-    var profile_image = '';
+    var profile_image = "";
     // console.log({staff_id,user_id,full_name,date_of_birth,search_key,role_id,enquiry_date});
     var valid = helperFunction.customValidater(req, { user_id, full_name, date_of_birth, search_key, role_id, enquiry_date });
     if (valid) {
@@ -281,10 +281,10 @@ exports.addForClinic = async (req, res) => {
     var password = autoGenPassword();
     var encryptedPassword = hashPassword(password.trim());
 
-    if (req.body.search_key == '') {
+    if (req.body.search_key == "") {
         return res.status(400).json({
             status_code: 400,
-            status: 'error',
+            status: "error",
             message: "Mobile number or Medwire ID field is required"
         });
     }
@@ -292,7 +292,7 @@ exports.addForClinic = async (req, res) => {
     if (req.body.full_name.length < 3) {
         return res.status(400).json({
             status_code: 400,
-            status: 'error',
+            status: "error",
             message: "Full Name should be minimum 3 characters"
         });
     }
@@ -300,16 +300,16 @@ exports.addForClinic = async (req, res) => {
     if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(req.body.email_id) == false) {
         return res.status(400).json({
             status_code: 400,
-            status: 'error',
+            status: "error",
             message: "Please enter valid email id"
         });
     }
 
-    if (req.body.search_key.substring(0, 3) != 'MED') {
+    if (req.body.search_key.substring(0, 3) != "MED") {
         if (isNaN(req.body.search_key)) {
             return res.status(400).json({
                 status_code: 400,
-                status: 'error',
+                status: "error",
                 message: "Mobile number should be numeric"
             });
         }
@@ -317,22 +317,22 @@ exports.addForClinic = async (req, res) => {
         if (req.body.search_key.length != 10) {
             return res.status(400).json({
                 status_code: 400,
-                status: 'error',
+                status: "error",
                 message: "Mobile number should be 10 digit"
             });
         }
     }
 
-    if (req.body.suggested_by !== 'self' && req.body.suggested_by !== 'doctor') {
+    if (req.body.suggested_by !== "self" && req.body.suggested_by !== "doctor") {
         return res.status(400).json({
             status_code: 400,
-            status: 'error',
+            status: "error",
             message: "Suggested by should be doctor or self"
         });
     }
 
     if (req.file == undefined) {
-        var profile_image = '';
+        var profile_image = "";
     } else {
         var profile_image = req.file.filename;
     }
@@ -342,14 +342,14 @@ exports.addForClinic = async (req, res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code: 404,
-                    status: 'error',
-                    message: `User Does Not Exist`
+                    status: "error",
+                    message: "User Does Not Exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code: 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -361,8 +361,8 @@ exports.addForClinic = async (req, res) => {
                 if (data.length > 0) {
                     res.status(500).send({
                         status_code: 500,
-                        status: 'error',
-                        message: `Patient already exist`
+                        status: "error",
+                        message: "Patient already exist"
                     });
                     return;
                 } else {
@@ -376,11 +376,11 @@ exports.addForClinic = async (req, res) => {
                                 var email_id = req.body.email_id;
                                 var dob = req.body.date_of_birth;
                                 var mobile_number = req.body.search_key;
-                                if (req.body.search_key.substring(0, 3) != 'MED' || req.body.search_key.substring(0, 3) == 'MED') {
+                                if (req.body.search_key.substring(0, 3) != "MED" || req.body.search_key.substring(0, 3) == "MED") {
                                     if (isNaN(req.body.search_key)) {
                                         return res.status(400).json({
                                             status_code: 400,
-                                            status: 'error',
+                                            status: "error",
                                             message: "Mobile number should be numeric"
                                         });
                                     }
@@ -388,7 +388,7 @@ exports.addForClinic = async (req, res) => {
                                     if (req.body.search_key.length != 10) {
                                         return res.status(400).json({
                                             status_code: 400,
-                                            status: 'error',
+                                            status: "error",
                                             message: "Mobile number should be 10 digit"
                                         });
                                     }
@@ -410,8 +410,8 @@ exports.addForClinic = async (req, res) => {
                                     if (err) {
                                         res.status(500).send({
                                             status_code: 500,
-                                            status: 'error',
-                                            message: 'Something Went Wrong'
+                                            status: "error",
+                                            message: "Something Went Wrong"
                                         });
                                         return;
                                     }
@@ -421,27 +421,27 @@ exports.addForClinic = async (req, res) => {
                                         var user_detail = await helperQuery.Get({ table: "users", where: "id =" + created_by_id });
 
                                         if (mobile_number) {
-                                            var url = 'https://play.google.com/store/apps/details?id=dev.khct.medwire';
-                                            var message = 'Dear ' + full_name + ' ' + user_detail[0].first_name + ' added you to their patient list. Download our app for online service benefit ' + url + ' Thanks MedWire Team';
+                                            var url = "https://play.google.com/store/apps/details?id=dev.khct.medwire";
+                                            var message = "Dear " + full_name + " " + user_detail[0].first_name + " added you to their patient list. Download our app for online service benefit " + url + " Thanks MedWire Team";
 
                                             await helperFunction.sendJapiSMS(mobile_number, message);
                                         }
 
-                                        var context = 'You have been registered by ' + user_detail[0].first_name + ' on MedWire. Now you can avail all the benefits by login in the MedWire app.';
+                                        var context = "You have been registered by " + user_detail[0].first_name + " on MedWire. Now you can avail all the benefits by login in the MedWire app.";
                                         const user = {
                                             user_name:full_name,
                                             email: email_id,
                                             password: password
-                                        }
+                                        };
                                         const credential = true;
                                         const login = process.env.USER_LOGIN_URL;
                                         const mailOptions = {
                                             from: process.env.MAIL_FROM_ADDRESS,
                                             to: req.body.email_id,
-                                            template: 'createPatientAccountByLab',
+                                            template: "createPatientAccountByLab",
                                             subject: "You have been Registered by " + user_detail[0].first_name + " on MedWire",
                                             context: { context, user, credential: true,login}
-                                        }
+                                        };
 
                                         helperFunction.template(transporter, true);
                                         transporter.sendMail(mailOptions,
@@ -455,31 +455,31 @@ exports.addForClinic = async (req, res) => {
 
                                         res.status(200).send({
                                             status_code: 200,
-                                            status: 'success',
+                                            status: "success",
                                             message: "Patient Added Successfully",
                                             data: data
                                         });
                                         return;
                                     }
-                                })
+                                });
                             }
 
                         }
                         
 
                         if (pData) {
-                            var context = 'You have been registered by ' + full_name + ' on MedWire. Now you can avail all the benefits by login in the MedWire app.';
+                            var context = "You have been registered by " + full_name + " on MedWire. Now you can avail all the benefits by login in the MedWire app.";
                             const user = {
                                 user_name:full_name
-                            }
+                            };
                             const login = process.env.USER_LOGIN_URL;
                             const mailOptions = {
                                 to: req.body.email_id,
-                                template: 'createPatientAccountByLab',
+                                template: "createPatientAccountByLab",
                                 subject: "You have been Registered by " + full_name + " on MedWire",
                                 context: { context, user, credential: true,login}
-                            }
-                            helperFunction.sendEmail(mailOptions,true)
+                            };
+                            helperFunction.sendEmail(mailOptions,true);
 
                             var suggested_id = req.body.suggested_by_id!=undefined && req.body.suggested_by_id!=req.body.user_id?req.body.suggested_by_id:null;
                             db.query("Insert into users_patient(patient_id,user_id,suggested_by_id,added_by) values(?,?,?,?)", [req.body.patient_id, created_by_id,suggested_id,added_by], (err, res2) => {
@@ -495,22 +495,22 @@ exports.addForClinic = async (req, res) => {
                             });
                             res.status(200).send({
                                 status_code: 200,
-                                status: 'success',
+                                status: "success",
                                 message: "Patient Added Successfully",
                                 data: data
                             });
                             return;
                         }
-                    })
+                    });
 
                 }
             });
 
         }
 
-    })
+    });
 
-}
+};
 
 // search patient by vineet shirdhonkar
 
@@ -527,14 +527,14 @@ exports.searchPatient = (req, res) => {
             if (err.kind === "not_found") {
                 res.status(200).send({
                     status_code: 200,
-                    status: 'success',
-                    message: `No Record Found`
+                    status: "success",
+                    message: "No Record Found"
                 });
                 return;
             }
             res.status(500).send({
                 status_code: 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -544,15 +544,15 @@ exports.searchPatient = (req, res) => {
         if (data) {
             res.status(200).send({
                 status_code: 200,
-                status: 'success',
+                status: "success",
                 message: "Data Found Successfully",
                 data: data
             });
             return;
         }
 
-    })
-}
+    });
+};
 
 
 
@@ -570,14 +570,14 @@ exports.getAllPatients = (req, res) => {
             if (err.kind === "not_found") {
                 res.status(200).send({
                     status_code: 200,
-                    status: 'success',
-                    message: `User Does Not Exist`
+                    status: "success",
+                    message: "User Does Not Exist"
                 });
                 return;
             }
             res.status(500).send({
-                status_code: '500',
-                status: 'error',
+                status_code: "500",
+                status: "error",
                 message: err.message
             });
             return;
@@ -588,15 +588,15 @@ exports.getAllPatients = (req, res) => {
                     if (err.kind === "not_found") {
                         res.status(200).send({
                             status_code: 200,
-                            status: 'success',
-                            message: `No Record Found`,
+                            status: "success",
+                            message: "No Record Found",
                             data: []
                         });
                         return;
                     }
                     res.status(500).send({
                         status_code: 500,
-                        status: 'error',
+                        status: "error",
                         message: err.message
                     });
                     return;
@@ -604,7 +604,7 @@ exports.getAllPatients = (req, res) => {
                 if (data1) {
                     res.status(200).send({
                         status_code: 200,
-                        status: 'success',
+                        status: "success",
                         message: "Patient data found Successfully",
                         data: data1
                     });
@@ -614,8 +614,8 @@ exports.getAllPatients = (req, res) => {
             
         }
 
-    })
-}
+    });
+};
 // get all Patients code by vineet shirdhonkar
 
 exports.getAllPatientsClinic = async(req, res) => {
@@ -629,8 +629,8 @@ exports.getAllPatientsClinic = async(req, res) => {
         if (data1.kind === "not_found") {
             res.status(200).send({
                 status_code: 200,
-                status: 'success',
-                message: `No Record Found`,
+                status: "success",
+                message: "No Record Found",
                 data: []
             });
             return;
@@ -638,7 +638,7 @@ exports.getAllPatientsClinic = async(req, res) => {
         if (data1.length>0) {
             res.status(200).send({
                 status_code: 200,
-                status: 'success',
+                status: "success",
                 message: "Patient data found Successfully",
                 data: data1
             });
@@ -647,11 +647,11 @@ exports.getAllPatientsClinic = async(req, res) => {
     } catch (error) {
         res.status(500).send({
             status_code: 500,
-            status: 'error',
+            status: "error",
             message: error.message
         });
     }
-}
+};
 
 
 
@@ -671,14 +671,14 @@ exports.getPatientDetail = (req, res) => {
             if (err.kind === "not_found") {
                 res.status(200).send({
                     status_code: 200,
-                    status: 'success',
-                    message: `Patient Does Not Exist`
+                    status: "success",
+                    message: "Patient Does Not Exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code: 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -687,21 +687,21 @@ exports.getPatientDetail = (req, res) => {
         if (data) {
             res.status(200).send({
                 status_code: 200,
-                status: 'success',
+                status: "success",
                 message: "Patient Details Found Successfully",
                 data: data
             });
             return;
         }
     });
-}
+};
 
 
 // update patient code by vineet shirdhonkar
 
 exports.updatePatient = (req, res) => {
     const { user_id, alternate_mobile_number, full_name, email_id, date_of_birth, search_key, sex, role_id, pin_code, address, enquiry_date } = req.body;
-    var profile_image = '';
+    var profile_image = "";
 
     var valid = helperFunction.customValidater(req, { user_id, full_name, search_key, date_of_birth, role_id, enquiry_date });
     if (valid) {
@@ -711,10 +711,10 @@ exports.updatePatient = (req, res) => {
     var password = autoGenPassword();
     var encryptedPassword = hashPassword(password.trim());
 
-    if (req.body.search_key == '') {
+    if (req.body.search_key == "") {
         return res.status(400).json({
             status_code: 400,
-            status: 'error',
+            status: "error",
             message: "Mobile number or Medwire ID field is required"
         });
     }
@@ -722,7 +722,7 @@ exports.updatePatient = (req, res) => {
     if (req.body.full_name.length < 3) {
         return res.status(400).json({
             status_code: 400,
-            status: 'error',
+            status: "error",
             message: "Full Name should be minimum 3 characters"
         });
     }
@@ -730,7 +730,7 @@ exports.updatePatient = (req, res) => {
     if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(req.body.email_id) == false) {
         return res.status(400).json({
             status_code: 400,
-            status: 'error',
+            status: "error",
             message: "Please enter valid email id"
         });
     }
@@ -738,11 +738,11 @@ exports.updatePatient = (req, res) => {
 
 
 
-    if (req.body.search_key.substring(0, 3) != 'MED') {
+    if (req.body.search_key.substring(0, 3) != "MED") {
         if (isNaN(req.body.search_key)) {
             return res.status(400).json({
                 status_code: 400,
-                status: 'error',
+                status: "error",
                 message: "Mobile number should be numeric"
             });
         }
@@ -750,17 +750,17 @@ exports.updatePatient = (req, res) => {
         if (req.body.search_key.length != 10) {
             return res.status(400).json({
                 status_code: 400,
-                status: 'error',
+                status: "error",
                 message: "Mobile number should be 10 digit"
             });
         }
     }
 
 
-    if (req.body.suggested_by !== 'self' && req.body.suggested_by !== 'doctor') {
+    if (req.body.suggested_by !== "self" && req.body.suggested_by !== "doctor") {
         return res.status(400).json({
             status_code: 400,
-            status: 'error',
+            status: "error",
             message: "Suggested by should be doctor or self"
         });
     }
@@ -769,7 +769,7 @@ exports.updatePatient = (req, res) => {
 
     if (req.file == undefined) {
 
-        var profile_image = '';
+        var profile_image = "";
 
     } else {
         var profile_image = req.file.filename;
@@ -782,14 +782,14 @@ exports.updatePatient = (req, res) => {
             if (err.kind === "not_found") {
                 res.status(200).send({
                     status_code: 200,
-                    status: 'success',
-                    message: `User Does Not Exist`
+                    status: "success",
+                    message: "User Does Not Exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code: 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -804,11 +804,11 @@ exports.updatePatient = (req, res) => {
                         var email_id = req.body.email_id;
                         var dob = req.body.date_of_birth;
                         var mobile_number = req.body.search_key;
-                        if (req.body.search_key.substring(0, 3) != 'MED' || req.body.search_key.substring(0, 3) == 'MED') {
+                        if (req.body.search_key.substring(0, 3) != "MED" || req.body.search_key.substring(0, 3) == "MED") {
                             if (isNaN(req.body.search_key)) {
                                 return res.status(400).json({
                                     status_code: 400,
-                                    status: 'error',
+                                    status: "error",
                                     message: "Mobile number should be numeric"
                                 });
                             }
@@ -816,7 +816,7 @@ exports.updatePatient = (req, res) => {
                             if (req.body.search_key.length != 10) {
                                 return res.status(400).json({
                                     status_code: 400,
-                                    status: 'error',
+                                    status: "error",
                                     message: "Mobile number should be 10 digit"
                                 });
                             }
@@ -835,15 +835,15 @@ exports.updatePatient = (req, res) => {
                             if (err) {
                                 res.status(500).send({
                                     status_code: 500,
-                                    status: 'error',
-                                    message: 'Something Went Wrong'
+                                    status: "error",
+                                    message: "Something Went Wrong"
                                 });
                                 return;
                             }
                             if (data) {
                                 res.status(200).send({
                                     status_code: 200,
-                                    status: 'success',
+                                    status: "success",
                                     message: "Patient Updated Successfully",
                                     data: data
                                 });
@@ -862,7 +862,7 @@ exports.updatePatient = (req, res) => {
 
                                 return;
                             }
-                        })
+                        });
                     }
 
                 }
@@ -890,22 +890,22 @@ exports.updatePatient = (req, res) => {
                             if (err.kind === "failed_to_update") {
                                 res.status(500).send({
                                     status_code: 500,
-                                    status: 'success',
-                                    message: `Failed ! Please try again later`
+                                    status: "success",
+                                    message: "Failed ! Please try again later"
                                 });
                                 return;
                             }
                             res.status(500).send({
                                 status_code: 500,
-                                status: 'error',
-                                message: 'Something Went Wrong'
+                                status: "error",
+                                message: "Something Went Wrong"
                             });
                             return;
                         }
                         if (data) {
                             res.status(200).send({
                                 status_code: 200,
-                                status: 'success',
+                                status: "success",
                                 message: "Patient Updated Successfully",
                                 data: data
                             });
@@ -922,15 +922,15 @@ exports.updatePatient = (req, res) => {
                             });
                             return;
                         }
-                    })
+                    });
 
                 }
-            })
+            });
         }
 
-    })
+    });
 
-}
+};
 
 // delete patient code by vineet shirdhonkar
 
@@ -948,8 +948,8 @@ exports.deletePatient = (req, res) => {
         if (err) {
             res.status(500).send({
                 status_code: 500,
-                status: 'error',
-                message: 'Something Went Wrong'
+                status: "error",
+                message: "Something Went Wrong"
             });
             return;
         }
@@ -959,8 +959,8 @@ exports.deletePatient = (req, res) => {
                     if (err) {
                         res.status(500).send({
                             status_code: 500,
-                            status: 'error',
-                            message: 'Something Went Wrong'
+                            status: "error",
+                            message: "Something Went Wrong"
                         });
                         return;
                     }
@@ -968,11 +968,11 @@ exports.deletePatient = (req, res) => {
             }
             res.status(200).send({
                 status_code: 200,
-                status: 'success',
+                status: "success",
                 message: "Patient Deleted Successfully",
                 data: data
             });
             return;
         }
     });
-}
+};

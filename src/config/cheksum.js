@@ -1,20 +1,20 @@
 "use strict";
 
-var crypto = require('crypto');
+var crypto = require("crypto");
 
 class PaytmChecksum {
 
     static encrypt(input, key) {
-        var cipher = crypto.createCipheriv('AES-128-CBC', key, PaytmChecksum.iv);
-        var encrypted = cipher.update(input, 'binary', 'base64');
-        encrypted += cipher.final('base64');
+        var cipher = crypto.createCipheriv("AES-128-CBC", key, PaytmChecksum.iv);
+        var encrypted = cipher.update(input, "binary", "base64");
+        encrypted += cipher.final("base64");
         return encrypted;
     }
     static decrypt(encrypted, key) {
-        var decipher = crypto.createDecipheriv('AES-128-CBC', key, PaytmChecksum.iv);
-        var decrypted = decipher.update(encrypted, 'base64', 'binary');
+        var decipher = crypto.createDecipheriv("AES-128-CBC", key, PaytmChecksum.iv);
+        var decrypted = decipher.update(encrypted, "base64", "binary");
         try {
-            decrypted += decipher.final('binary');
+            decrypted += decipher.final("binary");
         }
         catch (e) {
             console.log(e);
@@ -39,7 +39,7 @@ class PaytmChecksum {
             return Promise.reject(error);
         }
         if (params.hasOwnProperty("CHECKSUMHASH")) {
-            delete params.CHECKSUMHASH
+            delete params.CHECKSUMHASH;
         }
         if (typeof params !== "string") {
             params = PaytmChecksum.getStringByParams(params);
@@ -78,17 +78,17 @@ class PaytmChecksum {
         Object.keys(params).sort().forEach(function (key, value) {
             data[key] = (params[key] !== null && params[key].toLowerCase() !== "null") ? params[key] : "";
         });
-        return Object.values(data).join('|');
+        return Object.values(data).join("|");
     }
 
     static calculateHash(params, salt) {
         var finalString = params + "|" + salt;
-        return crypto.createHash('sha256').update(finalString).digest('hex') + salt;
+        return crypto.createHash("sha256").update(finalString).digest("hex") + salt;
     }
     static calculateChecksum(params, key, salt) {
         var hashString = PaytmChecksum.calculateHash(params, salt);
         return PaytmChecksum.encrypt(hashString, key);
     }
 }
-PaytmChecksum.iv = '@@@@&&&&####$$$$';
+PaytmChecksum.iv = "@@@@&&&&####$$$$";
 module.exports = PaytmChecksum;

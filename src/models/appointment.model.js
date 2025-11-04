@@ -1,14 +1,14 @@
-const { JOI } = require('joi');
-const db = require('../config/db.config');
-const { logger } = require('../utils/logger');
-const helperFunction = require('../helper/helperFunction');
+const { JOI } = require("joi");
+const db = require("../config/db.config");
+const { logger } = require("../utils/logger");
+const helperFunction = require("../helper/helperFunction");
 const helperQuery = require("../helper/helperQuery");
-const { async } = require('q');
+const { async } = require("q");
 
 class Appointment {
 
     static findById(id,cb) {
-        var deleted_at = 'IS NULL';
+        var deleted_at = "IS NULL";
         db.query(`SELECT * FROM appointments WHERE id = '${id}' and deleted_at ${deleted_at}`, [id,deleted_at], (err, res) => {
             if (err) {
                 logger.error(err.message);
@@ -22,12 +22,12 @@ class Appointment {
                cb({ kind: "not_found" }, null); 
             }
             
-        })
+        });
     }
 
     static findByIdAsync(id) {
         return new Promise((resolve,reject)=>{
-            var deleted_at = 'IS NULL';
+            var deleted_at = "IS NULL";
             db.query(`SELECT * FROM appointments WHERE id = '${id}' and deleted_at ${deleted_at}`, [id,deleted_at], (err, res) => {
                 if (err) {
                     return reject(err);
@@ -38,16 +38,16 @@ class Appointment {
                     return resolve({ kind: "not_found" });
                 }
                 
-            })
+            });
         });
     }
 
     static findAll(clinic_id,doctor_id,role_id,cb) {
-        var deleted_at = 'IS NULL';
+        var deleted_at = "IS NULL";
         if(role_id == 5){
             var query = `SELECT appointments.appointments_user_type,appointments.prescription_pdf_name,appointments.appointment_date,appointments.id as appointment_id,appointments.patient_id,appointments.reason,appointments.from_time,appointments.status FROM appointments inner join users  on users.id = appointments.doctor_id  WHERE appointments.clinic_id = '${clinic_id}' and appointments.doctor_id = '${doctor_id}' and appointments.deleted_at ${deleted_at} and (appointments.status!='Pending' and appointments.status!='' and appointments.status!='Cancelled' and appointments.payment_status='Success')  ORDER BY appointments.id DESC`;
         } else {
-            var query = `SELECT appointments.appointments_user_type,appointments.prescription_pdf_name,appointments.appointment_date,appointments.id as appointment_id,appointments.patient_id,appointments.reason,appointments.from_time,appointments.status FROM appointments inner join users  on users.id = appointments.doctor_id  WHERE appointments.clinic_id = '${clinic_id}' and appointments.doctor_id = '${doctor_id}' and appointments.deleted_at = ${deleted_at} and appointments.payment_status='Success'  ORDER BY appointments.id DESC`
+            var query = `SELECT appointments.appointments_user_type,appointments.prescription_pdf_name,appointments.appointment_date,appointments.id as appointment_id,appointments.patient_id,appointments.reason,appointments.from_time,appointments.status FROM appointments inner join users  on users.id = appointments.doctor_id  WHERE appointments.clinic_id = '${clinic_id}' and appointments.doctor_id = '${doctor_id}' and appointments.deleted_at = ${deleted_at} and appointments.payment_status='Success'  ORDER BY appointments.id DESC`;
         }
         db.query(query,[clinic_id,doctor_id,deleted_at],
             (err, res) => {
@@ -102,11 +102,11 @@ class Appointment {
             }  else {
                 cb({ kind: "not_found" }, null);
             }           
-        })
+        });
     }
 
     static findDoctorsClinic(user_id,cb) {
-        var deleted_at = 'IS NULL';
+        var deleted_at = "IS NULL";
 
         db.query(`SELECT * FROM users u inner join doctors_clinic dc on u.id = dc.doctor_id WHERE dc.doctor_id = '${user_id}' `,
          [user_id,deleted_at],
@@ -147,12 +147,12 @@ class Appointment {
                     cb(null, response);
                 },1000); 
             }            
-        })
+        });
     }
     
     static addSymptom(all_data,cb) {
         var created_at =  helperFunction.getCurrentDateTime();
-        db.query(`INSERT INTO symptoms(source,duration,type,appointment_id,created_by_id,created_at) VALUES ?`,[
+        db.query("INSERT INTO symptoms(source,duration,type,appointment_id,created_by_id,created_at) VALUES ?",[
         all_data.map(item => [item.source.toString(), item.duration, item.type,item.appointment_id,item.doctor_id,created_at])],(err,res)=>{
 
             if (err) {
@@ -181,7 +181,7 @@ class Appointment {
                     return reject(err);
                 }
                 return resolve(res);            
-                })
+                });
             });    
     }
 
@@ -208,7 +208,7 @@ class Appointment {
             }  else {
                cb({ kind: "not_inserted" }, null); 
             }            
-        })
+        });
         
     }
 
@@ -222,7 +222,7 @@ class Appointment {
                     return reject(err);
                 }
                 return resolve(res);            
-                })
+                });
         });  
        
     }
@@ -235,11 +235,11 @@ class Appointment {
        
         var all_data = [];
         for(const efn of examination_finding_name) {
-           all_data.push({'examination_finding_name':efn,'appointment_id':appointment_id,'created_by_id':doctor_id,'created_at':created_at}); 
+           all_data.push({"examination_finding_name":efn,"appointment_id":appointment_id,"created_by_id":doctor_id,"created_at":created_at}); 
         }
 
         if(all_data.length > 0){
-            db.query(`INSERT INTO examination_findings(examination_finding_name,appointment_id,created_by_id,created_at) VALUES ?`,[
+            db.query("INSERT INTO examination_findings(examination_finding_name,appointment_id,created_by_id,created_at) VALUES ?",[
                 all_data.map(item => [item.examination_finding_name, item.appointment_id, item.created_by_id,created_at])],(err, res) => {
                     if (err) {
                         logger.error(err.message);
@@ -266,7 +266,7 @@ class Appointment {
                     return reject(err);
                 }
                 return resolve(res);            
-                })
+                });
         });  
     }
 
@@ -278,10 +278,10 @@ class Appointment {
        
         var all_data = [];
         for(const ad of advices) {
-           all_data.push({'advices':ad,'appointment_id':appointment_id,'created_by_id':doctor_id,'created_at':created_at}); 
+           all_data.push({"advices":ad,"appointment_id":appointment_id,"created_by_id":doctor_id,"created_at":created_at}); 
         }
 
-        db.query(`INSERT INTO advices(advice_name,appointment_id,created_by_id,created_at) VALUES ?`,[
+        db.query("INSERT INTO advices(advice_name,appointment_id,created_by_id,created_at) VALUES ?",[
             all_data.map(item => [item.advices, item.appointment_id, item.created_by_id,created_at])],(err, res) => {
 
               if (err) {
@@ -309,7 +309,7 @@ class Appointment {
                     return reject(err);
                 }
                 return resolve(res);            
-                })
+                });
         });  
 
     }
@@ -321,11 +321,11 @@ class Appointment {
         var follow_up_intervals = follow_up_intervals.toString().split(",");
         var all_data = [];
         for(const fwi of follow_up_intervals) {
-          all_data.push({'follow_up_interval':fwi,'appointment_id':appointment_id,'created_by_id':doctor_id,'created_at':created_at}); 
+          all_data.push({"follow_up_interval":fwi,"appointment_id":appointment_id,"created_by_id":doctor_id,"created_at":created_at}); 
 
         }
 
-        db.query(`INSERT INTO follow_ups(follow_up_interval,appointment_id,created_by_id,created_at) VALUES?`,[
+        db.query("INSERT INTO follow_ups(follow_up_interval,appointment_id,created_by_id,created_at) VALUES?",[
             all_data.map(item => [item.follow_up_interval, item.appointment_id, item.created_by_id,created_at])],(err, res) => {
                 if (err) {
                     logger.error(err.message);
@@ -339,7 +339,7 @@ class Appointment {
                 }  else {
                    cb({ kind: "not_inserted" }, null); 
                 }            
-        })
+        });
     }
     
     static followUpList(doctor_id,appointment_id) {
@@ -351,7 +351,7 @@ class Appointment {
                     return reject(err);
                 }
                 return resolve(res);            
-                })
+                });
         }); 
 
     }
@@ -361,13 +361,13 @@ class Appointment {
         var l_test_ids =lab_test_ids!=undefined && lab_test_ids ? lab_test_ids:[];
         var r_test_ids =radio_test_ids!=undefined && radio_test_ids ? radio_test_ids:[];
         if(is_lab_appointment == 0){
-            lab_appointment_date = '';
-            lab_time_slot = '';
+            lab_appointment_date = "";
+            lab_time_slot = "";
         }
 
         if(is_radio_appointment == 0){
-            radio_appointment_date = '';
-            radio_time_slot = '';
+            radio_appointment_date = "";
+            radio_time_slot = "";
         }
 
         var all_l_data = [];
@@ -388,7 +388,7 @@ class Appointment {
             }
 
             for(const tid of l_test_ids) { 
-                all_l_data.push({'lab_id':lab_id,'test_ids':tid,'appointment_id':appointment_id,'diagnostic_names':diagnostic_names.toString(),'is_book_lab_test':is_book_lab_test,'appointment_date':lab_appointment_date,'appointment_time':lab_time_slot,'doctor_id':doctor_id});
+                all_l_data.push({"lab_id":lab_id,"test_ids":tid,"appointment_id":appointment_id,"diagnostic_names":diagnostic_names.toString(),"is_book_lab_test":is_book_lab_test,"appointment_date":lab_appointment_date,"appointment_time":lab_time_slot,"doctor_id":doctor_id});
             }
             for(const item of all_l_data) {                
 
@@ -406,7 +406,7 @@ class Appointment {
                             cb({ kind: "not_inserted" }, null); 
                         }  
 
-                })         
+                });         
             
                 
             }
@@ -422,7 +422,7 @@ class Appointment {
                 return; 
             }
             for(const tid1 of r_test_ids) { 
-                all_r_data.push({'radio_id':radio_id,'test_ids':tid1,'appointment_id':appointment_id,'diagnostic_names':diagnostic_names.toString(),'is_book_radio_test':is_book_radio_test,'appointment_date':radio_appointment_date,'appointment_time':radio_time_slot,'doctor_id':doctor_id});
+                all_r_data.push({"radio_id":radio_id,"test_ids":tid1,"appointment_id":appointment_id,"diagnostic_names":diagnostic_names.toString(),"is_book_radio_test":is_book_radio_test,"appointment_date":radio_appointment_date,"appointment_time":radio_time_slot,"doctor_id":doctor_id});
             }
             for(const item of all_r_data) {                
 
@@ -442,14 +442,14 @@ class Appointment {
                             cb({ kind: "not_inserted" }, null); 
                         }  
 
-                })     
+                });     
             }
         }
         if(is_book_lab_test != 1 && is_book_radio_test !=1 ){
          
             db.query(`INSERT INTO dignostic(lab_id,dignostic_names,test_id,appointment_id,is_book_lab_test,appointment_date,appointment_time,created_by_id,created_at) 
             VALUES(?,?,?,?,?,?,?,?,NOW())`,
-            [lab_id,diagnostic_names,'', appointment_id, is_book_lab_test,'','',doctor_id,created_at], (err, res) => {
+            [lab_id,diagnostic_names,"", appointment_id, is_book_lab_test,"","",doctor_id,created_at], (err, res) => {
                 if (err) {
                     logger.error(err.message);
                     cb(err, null);
@@ -461,7 +461,7 @@ class Appointment {
                     cb({ kind: "not_inserted" }, null); 
                 }  
 
-             }) 
+             }); 
         }
 
 
@@ -485,7 +485,7 @@ class Appointment {
             }
             console.log("res",res);
             return resolve(res);            
-            })
+            });
         });
         
     }
@@ -493,7 +493,7 @@ class Appointment {
     static addDrug({drug_names, appointment_id, drug_duration,drug_type,drug_frequency,drug_timing,doctor_id},cb) {
         var created_at = helperFunction.getCurrentDateTime();
       
-        db.query(`INSERT INTO drugs(drug_names,appointment_id,drug_duration,drug_type,drug_frequency,drug_timing,created_by_id,created_at) VALUES (?,?,?,?,?,?,?,?)`,
+        db.query("INSERT INTO drugs(drug_names,appointment_id,drug_duration,drug_type,drug_frequency,drug_timing,created_by_id,created_at) VALUES (?,?,?,?,?,?,?,?)",
         [drug_names, appointment_id, drug_duration,drug_type,drug_frequency,drug_timing,doctor_id,created_at],
         // [all_data.map(item => [item.drug_names.toString(), item.appointment_id, item.drug_duration,item.drug_type,item.drug_frequency,item.drug_timing,item.doctor_id,created_at])],
         (err,res)=>{
@@ -510,7 +510,7 @@ class Appointment {
             }  else {
                cb({ kind: "not_inserted" }, null); 
             }           
-        })
+        });
         
         return false;        
     }    
@@ -524,13 +524,13 @@ class Appointment {
                     return reject(err);
                 }
                 return resolve(res);            
-                })
+                });
         }); 
 
     }
 
     static findAllLabs(doctor_id,cb) {
-        var deleted_at = 'IS NULL';
+        var deleted_at = "IS NULL";
         db.query(`SELECT * FROM users WHERE created_by_id = '${doctor_id}' and approve_status = 'Approve' and deleted_at ${deleted_at}`,
          [doctor_id,deleted_at],
          (err, res) => {
@@ -545,13 +545,13 @@ class Appointment {
                 cb(null, res);
                 return;                
             }            
-        })
+        });
     }
 
 
     static findAppointmentList(user_id,role_id,cb) {
 
-        var deleted_at = 'IS NULL';
+        var deleted_at = "IS NULL";
         var sqlQuery = `SELECT appointments.id as appointment_id,appointments.patient_id,appointments.reason,appointments.from_time,appointments.status,appointments.reason,appointments.doctor_id,d.first_name as doctor_name,appointments.reason_of_status,appointments.appointment_date FROM appointments inner join users on users.id = appointments.clinic_id INNER JOIN users d on d.id = appointments.doctor_id WHERE appointments.clinic_id = '${user_id}' and appointments.deleted_at ${deleted_at}`;
         
          db.query(sqlQuery,
@@ -568,9 +568,9 @@ class Appointment {
                 var patient_id = res[0].patient_id;                
                 var doctor_id  = res[0].doctor_id; 
 
-                helperQuery.get({table:'users',where:"id="+patient_id},(err,dataa)=>{
+                helperQuery.get({table:"users",where:"id="+patient_id},(err,dataa)=>{
                     var response = [];
-                    var referred_by_name = '';
+                    var referred_by_name = "";
                     if(dataa) {
                         for(const item of dataa) {
                             const patient_name = item.first_name;
@@ -598,7 +598,7 @@ class Appointment {
             }  else {
                 cb({ kind: "not_found" }, null);
             }          
-        })
+        });
     }
 }
 module.exports = Appointment;

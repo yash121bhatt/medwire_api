@@ -1,25 +1,25 @@
-const { JOI } = require('joi');
-const db = require('../config/db.config');
-const { logger } = require('../utils/logger');
+const { JOI } = require("joi");
+const db = require("../config/db.config");
+const { logger } = require("../utils/logger");
 
 class Commission {
 
     // vineet
     static add(user_id,commission_for,admin_id,commission_percent,cb){
-        db.query(`INSERT INTO commissions(user_id,commission_for,created_by_id,commission_percent) VALUES(?,?,?,?)`,[user_id,commission_for,admin_id,commission_percent],(err,res)=>{
+        db.query("INSERT INTO commissions(user_id,commission_for,created_by_id,commission_percent) VALUES(?,?,?,?)",[user_id,commission_for,admin_id,commission_percent],(err,res)=>{
             if (err) {
                 logger.error(err.message);
                 cb(err, null);
                 return;
             }           
             cb(null,res);
-        })
+        });
     }
 
 
 
     static findById(id,cb) {
-        var deleted_at = 'IS NULL';
+        var deleted_at = "IS NULL";
         db.query(`SELECT * FROM commissions WHERE id = '${id}' and deleted_at ${deleted_at}`, [id,deleted_at], (err, res) => {
             if (err) {
                 logger.error(err.message);
@@ -31,13 +31,13 @@ class Commission {
                 return;
             }
             cb({ kind: "not_found" }, null);
-        })
+        });
     }
 
 
 
     static getSpecificLabAndRadioLogyList(cb) {
-        db.query(`SELECT commissions.id as commissions_id,users.id,users.first_name  FROM commissions right JOIN users on  users.id = commissions.user_id  WHERE commissions.user_id IS NULL AND  users.role_id in (3,4);`, (err, res) => {
+        db.query("SELECT commissions.id as commissions_id,users.id,users.first_name  FROM commissions right JOIN users on  users.id = commissions.user_id  WHERE commissions.user_id IS NULL AND  users.role_id in (3,4);", (err, res) => {
             if (err) {
                 logger.error(err.message);
                 cb(err, null);
@@ -53,7 +53,7 @@ class Commission {
 
 
     static findAll(admin_id,cb){
-        var deleted_at = 'IS NULL';
+        var deleted_at = "IS NULL";
         db.query(`SELECT users.id,users.first_name,commissions.commission_for,commissions.commission_percent FROM commissions inner JOIN users on users.id = commissions.user_id AND commissions.created_by_id = '${admin_id}' AND commissions.deleted_at ${deleted_at} order by commissions.id desc`, [admin_id,deleted_at], (err,res)=>{
             console.log("q",`SELECT users.id,users.first_name,commissions.commission_for,commissions.commission_percent FROM commissions inner JOIN users on users.id = commissions.user_id AND commissions.created_by_id = '${admin_id}' AND commissions.deleted_at ${deleted_at} order by commissions.id desc`, [admin_id,deleted_at]);
           //  return false;
@@ -72,7 +72,7 @@ class Commission {
             }
             
             
-        })
+        });
     }
 
 
@@ -99,7 +99,7 @@ class Commission {
         var updated_at = year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds;
              
 
-        db.query(`UPDATE commissions SET user_id = ?, commission_for = ?, commission_percent = ? ,updated_at = ?  WHERE id = ?`,[user_id,commission_for,commission_percent,updated_at,commission_id],(err,res)=>{
+        db.query("UPDATE commissions SET user_id = ?, commission_for = ?, commission_percent = ? ,updated_at = ?  WHERE id = ?",[user_id,commission_for,commission_percent,updated_at,commission_id],(err,res)=>{
            if (err) {
                 logger.error(err.message);
                 cb(err, null);
@@ -134,7 +134,7 @@ class Commission {
         var deleted_at = year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds;
                   
 
-        db.query(`update commissions set deleted_at = ? WHERE id= ?`,[deleted_at,id],(err,res)=>{                  
+        db.query("update commissions set deleted_at = ? WHERE id= ?",[deleted_at,id],(err,res)=>{                  
             if (err) {
                 logger.error(err.message);
                 cb(err, null);
@@ -143,7 +143,7 @@ class Commission {
             cb(null, {
                 id: id
             });
-        })
+        });
 
     }
 

@@ -1,6 +1,6 @@
-const helperFunction = require('../helper/helperFunction');
-const helperQuery = require('../helper/helperQuery');
-const menturationCycle = require('../models/menturationCycle.model');
+const helperFunction = require("../helper/helperFunction");
+const helperQuery = require("../helper/helperQuery");
+const menturationCycle = require("../models/menturationCycle.model");
 
 exports.create = (req,res)=>{
     const{user_id, start_date, end_date, bg_color_class,nextDays} =req.body;
@@ -24,7 +24,7 @@ exports.create = (req,res)=>{
             return;
         }
     });
-}
+};
 exports.update = (req,res)=>{
     const{user_id, start_date, end_date, bg_color_class,m_id} =req.body;
     menturationCycle.update(user_id, start_date, end_date, bg_color_class,m_id,(err,data)=>{
@@ -45,7 +45,7 @@ exports.update = (req,res)=>{
             });
         }
     });
-}
+};
 exports.delete = (req,res)=>{
     const{m_id}= req.body;
     menturationCycle.delete(m_id,(err,data)=>{
@@ -55,7 +55,7 @@ exports.delete = (req,res)=>{
                 status_code:500,
                 status:"error",
                 message:"Something went to wrong"
-            })
+            });
         }
         if(data){
             res.status(200).json({
@@ -64,8 +64,8 @@ exports.delete = (req,res)=>{
                 message:"Delete Successfully"
             });
         }
-    })
-}
+    });
+};
 exports.show = (req,res)=>{
     const{user_id}= req.body;
     menturationCycle.show(user_id,(err,data)=>{
@@ -75,7 +75,7 @@ exports.show = (req,res)=>{
                 status_code:500,
                 status:"error",
                 message:"Something went to wrong"
-            })
+            });
         }
         if(data){
             const result = [];
@@ -99,8 +99,8 @@ exports.show = (req,res)=>{
                 data:result
             });
         }
-    })
-}
+    });
+};
 exports.createNew = (req,res)=>{
     const{user_id,period_length,start_date, bg_color_class,nextDays} =req.body;
     const vali = helperFunction.customValidater(req,{user_id,period_length,start_date, bg_color_class,nextDays});
@@ -127,7 +127,7 @@ exports.createNew = (req,res)=>{
             return;
         }
     });
-}
+};
 exports.showNew = (req,res)=>{
     const{user_id}= req.body;
     helperQuery.get({table:"menturation_cycle", where:"user_id="+user_id+" ORDER BY m_id DESC"},(err,data)=>{
@@ -137,7 +137,7 @@ exports.showNew = (req,res)=>{
                 status_code:500,
                 status:"error",
                 message:"Something went to wrong!"
-            })
+            });
         }
         if(data){
             const result = [];
@@ -161,5 +161,5 @@ exports.showNew = (req,res)=>{
                 data:result
             });
         }
-    })
-}
+    });
+};

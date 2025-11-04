@@ -1,9 +1,9 @@
-const db = require('../config/db.config');
-const { logger } = require('../utils/logger');
+const db = require("../config/db.config");
+const { logger } = require("../utils/logger");
 class LabTest {
     static create(test_category_id,lab_id,user_id,member_id,test_name,test_report,fast_time,test_recommended,image,description,amount,cb)
     {
-        db.query(`INSERT INTO lab_tests(test_category_id,lab_id,user_id,member_id,test_name,test_report,fast_time,test_recommended,image,description,amount,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,NOW())`,
+        db.query("INSERT INTO lab_tests(test_category_id,lab_id,user_id,member_id,test_name,test_report,fast_time,test_recommended,image,description,amount,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,NOW())",
         [test_category_id,lab_id,user_id,member_id,test_name,test_report,fast_time,test_recommended,image,description,amount],
         (err,res)=>{
             if (err) {
@@ -15,11 +15,11 @@ class LabTest {
     }
     static update(test_category_id,test_name,test_report,fast_time,test_recommended,image,description,amount,test_id,lab_id,cb)
     {
-        if (image==null || image==undefined || image=='') {
-            var qu =`UPDATE lab_tests SET test_category_id=?,test_name=?,test_report=?,fast_time=?,test_recommended=?,description=?,amount=?,updated_at=NOW() WHERE test_id =? AND lab_id=?`; 
+        if (image==null || image==undefined || image=="") {
+            var qu ="UPDATE lab_tests SET test_category_id=?,test_name=?,test_report=?,fast_time=?,test_recommended=?,description=?,amount=?,updated_at=NOW() WHERE test_id =? AND lab_id=?"; 
             var arr = [test_category_id,test_name,test_report,fast_time,test_recommended,description,amount,test_id,lab_id];
         }else{
-            var qu =`UPDATE lab_tests SET test_category_id=?,test_name=?,test_report=?,fast_time=?,test_recommended=?,image=?,description=?,amount=?,updated_at=NOW() WHERE test_id =? AND lab_id=?`;
+            var qu ="UPDATE lab_tests SET test_category_id=?,test_name=?,test_report=?,fast_time=?,test_recommended=?,image=?,description=?,amount=?,updated_at=NOW() WHERE test_id =? AND lab_id=?";
             var arr = [test_category_id,test_name,test_report,fast_time,test_recommended,image,description,amount,test_id,lab_id];
         }
         db.query(qu,arr,
@@ -85,7 +85,7 @@ class LabTest {
                 }
                 return resolve(res);
             });
-        })
+        });
     }
     static findTestlist({lab_id,category_name,cat_id},cb){
         db.query(`SELECT l.test_id,l.lab_id,l.test_category_id,t.category_name,l.test_name,l.test_report,l.fast_time,l.test_recommended,l.image,l.description,l.amount,l.created_at,l.updated_at 

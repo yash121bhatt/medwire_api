@@ -1,5 +1,5 @@
-const User = require('../models/user.model');
-const Commission = require('../models/commission.model');
+const User = require("../models/user.model");
+const Commission = require("../models/commission.model");
 
 
 // add commission code by vineet shirdhonkar
@@ -12,14 +12,14 @@ exports.addCommission = (req,res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code : 404,
-                    status: 'error',
-                    message: `Admin does not exist`
+                    status: "error",
+                    message: "Admin does not exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code : 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -33,15 +33,15 @@ exports.addCommission = (req,res) => {
                         if(err){
                             res.status(500).send({
                                 status_code : 500,
-                                status: 'error',
-                                message: 'Something Went Wrong'
+                                status: "error",
+                                message: "Something Went Wrong"
                             });
                             return;
                         }
                         if(data1){   
                              res.status(200).send({
                                 status_code : 200,
-                                status: 'success',
+                                status: "success",
                                 message : "Commission Added Successfully",
                                 data: data1
                             }); 
@@ -52,7 +52,7 @@ exports.addCommission = (req,res) => {
             }
         }  
     });     
-}
+};
 
 
 // get Specific Lab And RadioLogy List code by vineet shirdhonkar
@@ -65,14 +65,14 @@ exports.getSpecificLabAndRadioLogyList = (req,res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code : 404,
-                    status: 'error',
-                    message: `Admin does not exist`
+                    status: "error",
+                    message: "Admin does not exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code : 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -84,8 +84,8 @@ exports.getSpecificLabAndRadioLogyList = (req,res) => {
                 if(err){
                     res.status(500).send({
                         status_code : 500,
-                        status: 'error',
-                        message: 'Something Went Wrong'
+                        status: "error",
+                        message: "Something Went Wrong"
                     });
                     return;
                 }
@@ -93,16 +93,16 @@ exports.getSpecificLabAndRadioLogyList = (req,res) => {
                 if(data){   
                     return res.status(200).send({
                         status_code : 200,
-                        status: 'success',
+                        status: "success",
                         message : (data.length > 0) ? "Data Found Successfully" : "No Record Found",
                         data: data
                     });                                   
                 }
-            })
+            });
 
         }
     });   
-}
+};
 
 
 // get all commissions code by vineet shirdhonkar
@@ -115,14 +115,14 @@ exports.getAllCommissions = (req,res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code : 404,
-                    status: 'error',
-                    message: `Admin does not exist`
+                    status: "error",
+                    message: "Admin does not exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code : 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -134,8 +134,8 @@ exports.getAllCommissions = (req,res) => {
                 if(err){
                     res.status(500).send({
                         status_code : 500,
-                        status: 'error',
-                        message: 'Something Went Wrong'
+                        status: "error",
+                        message: "Something Went Wrong"
                     });
                     return;
                 }
@@ -143,16 +143,16 @@ exports.getAllCommissions = (req,res) => {
                 if(data){   
                     return res.status(200).send({
                         status_code : 200,
-                        status: 'success',
+                        status: "success",
                         message :  "Data Found Successfully",
                         data: data
                     });                                   
                 }
-            })
+            });
 
         }
     });      
-}
+};
 
 // get commission detail code by vineet shirdhonkar
 
@@ -164,14 +164,14 @@ exports.getCommissionDetail = (req,res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code : 404,
-                    status: 'error',
-                    message: `Commission Record does not exist`
+                    status: "error",
+                    message: "Commission Record does not exist"
                 });
                 return;
             }          
             res.status(500).send({
                 status_code : 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -180,7 +180,7 @@ exports.getCommissionDetail = (req,res) => {
         if(data) {
             res.status(200).send({
                 status_code : 200,
-                status: 'success',
+                status: "success",
                 message : "Commission Details Found Successfully",
                 data: data
             });
@@ -188,7 +188,7 @@ exports.getCommissionDetail = (req,res) => {
 
         }
     });     
-}
+};
 
 
 
@@ -202,14 +202,14 @@ exports.updateCommission = (req,res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code : 404,
-                    status: 'error',
-                    message: `Admin does not exist`
+                    status: "error",
+                    message: "Admin does not exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code : 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -221,15 +221,15 @@ exports.updateCommission = (req,res) => {
                 if(err){
                     res.status(500).send({
                         status_code : 500,
-                        status: 'error',
-                        message: 'Something Went Wrong'
+                        status: "error",
+                        message: "Something Went Wrong"
                     });
                     return;
                 }
                 if(data1){   
                      res.status(200).send({
                         status_code : 200,
-                        status: 'success',
+                        status: "success",
                         message : "Commission Updated Successfully",
                         data: data1
                     }); 
@@ -239,7 +239,7 @@ exports.updateCommission = (req,res) => {
              
         }  
     });     
-}
+};
 
 
 
@@ -253,15 +253,15 @@ exports.deleteCommission = (req,res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code : 404,
-                    status: 'error',
-                    message: `Commission record does not exist`
+                    status: "error",
+                    message: "Commission record does not exist"
                 });
                 return;
             }
 
             res.status(500).send({
                 status_code : 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -273,8 +273,8 @@ exports.deleteCommission = (req,res) => {
                 if(err){
                     res.status(500).send({
                         status_code : 500,
-                        status: 'error',
-                        message: 'Something Went Wrong'
+                        status: "error",
+                        message: "Something Went Wrong"
                     });
                     return;
                 }
@@ -283,14 +283,14 @@ exports.deleteCommission = (req,res) => {
                 if (data) {   
                     res.status(200).send({
                         status_code : 200,
-                        status: 'success',
+                        status: "success",
                         message : "Commission Deleted Successfully",
                         data: data
                     });
                     return;
                 }
-            })
+            });
 
         }
     });     
-}
+};

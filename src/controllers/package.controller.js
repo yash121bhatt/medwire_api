@@ -30,18 +30,18 @@ exports.create = (req,res)=>{
     Package.create(lab_id, test_category_id, test_id,test_name, package_name, test_report_time, tasting_time, test_recommended, description, image, amount,(err,data)=>{
         if (err) {
             return res.status(500).json({
-                status_code:'500',
-                status:'error',
+                status_code:"500",
+                status:"error",
                 message:err
             });
         }
         res.status(200).json({
-            status_code:'200',
-            status:'success',
-            message:'Add Successfully!',
+            status_code:"200",
+            status:"success",
+            message:"Add Successfully!",
         });
     });
-}
+};
 exports.update = (req,res)=>{
 
     const {package_id,lab_id, test_category_id,package_name, description, amount} = req.body;
@@ -69,18 +69,18 @@ exports.update = (req,res)=>{
     Package.update(test_category_id, test_id,test_name, package_name, test_report_time, tasting_time, test_recommended, description, image, amount,lab_id,package_id,(err,data)=>{
         if (err) {
             return res.status(500).json({
-                status_code:'500',
-                status:'error',
+                status_code:"500",
+                status:"error",
                 message:err
             });
         }
         res.status(200).json({
-            status_code:'200',
-            status:'success',
-            message:'Package Edit Successfully!',
+            status_code:"200",
+            status:"success",
+            message:"Package Edit Successfully!",
         });
     });
-}
+};
 exports.list = async (req,res)=>{
     try {
         const {lab_id} = req.body;
@@ -100,8 +100,8 @@ exports.list = async (req,res)=>{
                 const category_name  = item.category_name !=undefined ? item.category_name:null;  
                 const package_name  = item.	package_name !=undefined ? item.	package_name:null;
                 const description  = item.description !=undefined ? item.description:null;
-                const image = item.image!=undefined && item.image!=null ? process.env.APP_URL+'laboratory/'+item.image:'-';
-                const images = item.image!=undefined && item.image!=null ? item.image:'-';
+                const image = item.image!=undefined && item.image!=null ? process.env.APP_URL+"laboratory/"+item.image:"-";
+                const images = item.image!=undefined && item.image!=null ? item.image:"-";
                 const testData = await Package.ShowWhereIn(arr); 
             
 
@@ -109,17 +109,17 @@ exports.list = async (req,res)=>{
                 responses.push({package_id,lab_id,test_id,test_category_id,test_recommended,category_name,amount,package_name,description,image,images,testData});
             }
             res.status(200).json({
-                status_code:'200',
-                status:'success',
-                message:'Successfully!',
+                status_code:"200",
+                status:"success",
+                message:"Successfully!",
                 data:responses,
 
             });
          }else{
             res.status(200).json({
-                status_code:'200',
-                status:'success',
-                message:'Successfully!',
+                status_code:"200",
+                status:"success",
+                message:"Successfully!",
                 data:responses,
 
             });
@@ -128,12 +128,12 @@ exports.list = async (req,res)=>{
     } catch (error) {
         console.log(error);
         res.status(500).json({
-            status_code:'500',
-            status:'success',
-            message:'Something went to wrong!',
+            status_code:"500",
+            status:"success",
+            message:"Something went to wrong!",
         });
     }
-}
+};
 exports.Onelist = async (req,res)=>{
     
     try {
@@ -153,16 +153,16 @@ exports.Onelist = async (req,res)=>{
                 const category_name  = item.category_name !=undefined ? item.category_name:null;   
                 const package_name  = item.	package_name !=undefined ? item.	package_name:null;
                 const description  = item.description !=undefined ? item.description:null;
-                const image = item.image!=undefined && item.image!=null ? process.env.APP_URL+'laboratory/'+item.image:'-';
-                const images = item.image!=undefined && item.image!=null ? item.image:'-';
+                const image = item.image!=undefined && item.image!=null ? process.env.APP_URL+"laboratory/"+item.image:"-";
+                const images = item.image!=undefined && item.image!=null ? item.image:"-";
                 const testData = await Package.ShowWhereIn(arr); 
                             
                 responses.push({package_id,lab_id,test_id,test_category_id,test_recommended,amount,category_name,package_name,description,image,images,testData});
             }
             res.status(200).json({
-                status_code:'200',
-                status:'success',
-                message:'Successfully!',
+                status_code:"200",
+                status:"success",
+                message:"Successfully!",
                 data:responses,
 
             });
@@ -170,37 +170,37 @@ exports.Onelist = async (req,res)=>{
 
     } catch (error) {
         res.status(200).json({
-            status_code:'200',
-            status:'success',
-            message:'something went to wrong!',
+            status_code:"200",
+            status:"success",
+            message:"something went to wrong!",
         });
     }
-}
+};
 exports.destroy = (req,res)=>{
     const {lab_id,package_id} = req.body;
     helperQuery.destroy({table:"packages",where:"lab_id ="+lab_id+" AND package_id="+package_id},(err,data)=>{
         if (err) {
             return res.status(500).json({
-                status_code:'500',
-                status:'error',
+                status_code:"500",
+                status:"error",
                 message:err
             });
         }
 
         return res.status(200).json({
-            status_code:'200',
-            status:'success',
-            message:data!=undefined && data.affectedRows==1 ?'Package Delete Successfully!':'There is no data valable Please check Id!',
+            status_code:"200",
+            status:"success",
+            message:data!=undefined && data.affectedRows==1 ?"Package Delete Successfully!":"There is no data valable Please check Id!",
 
         });        
     });
-}
+};
 exports.allPackage = async (req,res)=>{
     try {
         const data = await Package.allPackage();
             const responses = [];
             for (const item of data) {
-                const arr =JSON.parse(item?.test_id??'[]');
+                const arr =JSON.parse(item?.test_id??"[]");
 
                 const package_id  = item.package_id !=undefined ? item.package_id:null;
                 const lab_id  = item.lab_id !=undefined ? item.lab_id:null;
@@ -213,8 +213,8 @@ exports.allPackage = async (req,res)=>{
                 const category_name  = item.category_name !=undefined ? item.category_name:null;  
                 const package_name  = item.package_name !=undefined ? item.package_name:null;
                 const description  = item.description !=undefined ? item.description:null;
-                const image = item.image!=undefined && item.image!=null ? process.env.APP_URL+'laboratory/'+item.image:'-';
-                const images = item.image!=undefined && item.image!=null ? item.image:'-';
+                const image = item.image!=undefined && item.image!=null ? process.env.APP_URL+"laboratory/"+item.image:"-";
+                const images = item.image!=undefined && item.image!=null ? item.image:"-";
                 const testDatas = await Package.ShowWhereIn(arr);
                 const totalTest = testDatas.length; 
                 const testData = [];
@@ -236,26 +236,26 @@ exports.allPackage = async (req,res)=>{
                 responses.push({package_id,lab_id,lab_name,test_id,test_category_id,test_recommended,amount,category_name,package_name,description,image,images,totalTest,testData});
             }
             res.status(200).json({
-                status_code:'200',
-                status:'success',
-                message:'Successfully!',
+                status_code:"200",
+                status:"success",
+                message:"Successfully!",
                 data:responses,
 
             });
     } catch (error) {
         console.log(error);
         res.status(500).json({
-            status_code:'500',
-            status:'error',
-            message:'something went to wrong!',
+            status_code:"500",
+            status:"error",
+            message:"something went to wrong!",
         });
     }
     
-}
+};
 exports.alltest = async (req,res)=>{
     try {
         const {lab_name,test_name,role_id} = req.body;
-        const  pin_code=req.body.pin_code!=undefined && req.body.pin_code!='undefined' ? req.body.pin_code:'';
+        const  pin_code=req.body.pin_code!=undefined && req.body.pin_code!="undefined" ? req.body.pin_code:"";
         const data = await Package.alltest(lab_name,test_name,pin_code,role_id);
            
         const responses = [];
@@ -279,29 +279,29 @@ exports.alltest = async (req,res)=>{
                 const email  = item.email !=undefined ? item.email:null;
                 const lab_opening_time  = item.opening_time !=undefined ? item.opening_time:null;
                 const lab_closing_time  = item.closing_time !=undefined ? item.closing_time:null;
-                const image = item.image!=undefined && item.image!=null ? process.env.APP_URL+'laboratory/'+item.image:'-';
-                const images = item.image!=undefined && item.image!=null ? item.image:'-';
+                const image = item.image!=undefined && item.image!=null ? process.env.APP_URL+"laboratory/"+item.image:"-";
+                const images = item.image!=undefined && item.image!=null ? item.image:"-";
                 const created_at  = item.created_at !=undefined ? item.created_at:null;
                 const updated_at  = item.updated_at !=undefined ? item.updated_at:null; 
                 responses.push({test_id,test_name,lab_id,lab_name,test_report,fast_time,description,test_recommended,amount,test_recommended,amount,test_category_id,category_name,cat_id,address,pin_code,email,lab_opening_time,lab_closing_time,image,images,created_at,updated_at});
             }
             res.status(200).json({
-                status_code:'200',
-                status:'success',
-                message:'Successfully!',
+                status_code:"200",
+                status:"success",
+                message:"Successfully!",
                 data:responses,
 
             });
     } catch (error) {
         console.log(error);
         res.status(500).json({
-            status_code:'500',
-            status:'error',
-            message:'something went to wrong!',
+            status_code:"500",
+            status:"error",
+            message:"something went to wrong!",
         });
     }
     
-}
+};
 //29/11/2022 new test
 exports.allPackageTest = async(req,res)=>{
     try {
@@ -311,22 +311,22 @@ exports.allPackageTest = async(req,res)=>{
         if ((lab_name!=undefined && lab_name!="")  || (test_name!=undefined && test_name!="") || (package_name!=undefined && package_name!="")) {
 
             if (package_name!=undefined && package_name!="") {
-                var tpincode=req.body.pin_code!=undefined && req.body.pin_code!='undefined' && req.body.pin_code!='' ? req.body.pin_code:pcode!=undefined && pcode.length>0 && pcode[0]?.pin_code!=null ? pcode[0]?.pin_code:'null';
-                var pincode=req.body.pin_code!=undefined && req.body.pin_code!='undefined' && req.body.pin_code!='' ? req.body.pin_code:'';
+                var tpincode=req.body.pin_code!=undefined && req.body.pin_code!="undefined" && req.body.pin_code!="" ? req.body.pin_code:pcode!=undefined && pcode.length>0 && pcode[0]?.pin_code!=null ? pcode[0]?.pin_code:"null";
+                var pincode=req.body.pin_code!=undefined && req.body.pin_code!="undefined" && req.body.pin_code!="" ? req.body.pin_code:"";
     
             }else if (test_name!=undefined && test_name!="") {
-                var tpincode=req.body.pin_code!=undefined && req.body.pin_code!='undefined' && req.body.pin_code!='' ? req.body.pin_code:'';
-                var pincode=pcode!=undefined && req.body.pin_code!='undefined' && req.body.pin_code!='' ? req.body.pin_code:pcode!=undefined && pcode.length>0 && pcode[0]?.pin_code!=null ? pcode[0]?.pin_code:'null';
+                var tpincode=req.body.pin_code!=undefined && req.body.pin_code!="undefined" && req.body.pin_code!="" ? req.body.pin_code:"";
+                var pincode=pcode!=undefined && req.body.pin_code!="undefined" && req.body.pin_code!="" ? req.body.pin_code:pcode!=undefined && pcode.length>0 && pcode[0]?.pin_code!=null ? pcode[0]?.pin_code:"null";
          
             }
             else {
 
-                var pincode=req.body.pin_code!=undefined && req.body.pin_code!='undefined' && req.body.pin_code!='' ? req.body.pin_code:'';
+                var pincode=req.body.pin_code!=undefined && req.body.pin_code!="undefined" && req.body.pin_code!="" ? req.body.pin_code:"";
                 var tpincode =pincode;
 
             }
         } else {
-            var tpincode=req.body.pin_code!=undefined && req.body.pin_code!='undefined' && req.body.pin_code!='' ? req.body.pin_code:pcode!=undefined && pcode.length>0 && pcode[0]?.pin_code!=null ? pcode[0]?.pin_code:'null';
+            var tpincode=req.body.pin_code!=undefined && req.body.pin_code!="undefined" && req.body.pin_code!="" ? req.body.pin_code:pcode!=undefined && pcode.length>0 && pcode[0]?.pin_code!=null ? pcode[0]?.pin_code:"null";
             var pincode=tpincode;
    
         }
@@ -354,8 +354,8 @@ exports.allPackageTest = async(req,res)=>{
             const email  = item.email !=undefined ? item.email:null;
             const lab_opening_time  = item.opening_time !=undefined ? item.opening_time:null;
             const lab_closing_time  = item.closing_time !=undefined ? item.closing_time:null;
-            const image = item.image!=undefined && item.image!=null ? process.env.APP_URL+'laboratory/'+item.image:'-';
-            const images = item.image!=undefined && item.image!=null ? item.image:'-';
+            const image = item.image!=undefined && item.image!=null ? process.env.APP_URL+"laboratory/"+item.image:"-";
+            const images = item.image!=undefined && item.image!=null ? item.image:"-";
             const created_at  = item.created_at !=undefined ? item.created_at:null;
             const updated_at  = item.updated_at !=undefined ? item.updated_at:null; 
             responses.push({test_id,test_name,lab_id,lab_name,test_report,fast_time,description,test_recommended,amount,test_recommended,amount,test_category_id,category_name,cat_id,address,pin_code,email,lab_opening_time,lab_closing_time,image,images,created_at,updated_at});
@@ -363,7 +363,7 @@ exports.allPackageTest = async(req,res)=>{
         const datap = await Package.allPackages({lab_name,package_name,pincode,role_id});
         const response = [];
         for (const item of datap) {
-            const arr =JSON.parse(item?.test_id??'[]');
+            const arr =JSON.parse(item?.test_id??"[]");
 
             const package_id  = item.package_id !=undefined ? item.package_id:null;
             const lab_id  = item.lab_id !=undefined ? item.lab_id:null;
@@ -377,8 +377,8 @@ exports.allPackageTest = async(req,res)=>{
             const category_name  = item.category_name !=undefined ? item.category_name:null;  
             const package_name  = item.package_name !=undefined ? item.package_name:null;
             const description  = item.description !=undefined ? item.description:null;
-            const image = item.image!=undefined && item.image!=null ? process.env.APP_URL+'laboratory/'+item.image:'-';
-            const images = item.image!=undefined && item.image!=null ? item.image:'-';
+            const image = item.image!=undefined && item.image!=null ? process.env.APP_URL+"laboratory/"+item.image:"-";
+            const images = item.image!=undefined && item.image!=null ? item.image:"-";
             const testDatas = await Package.ShowWhereIn(arr);
             const totalTest = testDatas.length; 
             const testData = [];
@@ -400,8 +400,8 @@ exports.allPackageTest = async(req,res)=>{
             response.push({package_id,lab_id,lab_name,test_id,test_category_id,test_recommended,amount,category_name,package_name,description,image,images,totalTest,testData,address});
         }
         res.status(200).json({
-            status_code:'200',
-            status:'success',
+            status_code:"200",
+            status:"success",
             message:responses.length>0 ? "Successfully!":"Opps! There is no tests or packages in your area. Please search",
             data:responses,
             datapackage:response
@@ -410,12 +410,12 @@ exports.allPackageTest = async(req,res)=>{
     } catch (error) {
         console.log(error);
         res.status(500).json({
-            status_code:'500',
-            status:'error',
-            message:'something went to wrong!',
+            status_code:"500",
+            status:"error",
+            message:"something went to wrong!",
         });
     }
-}
+};
 
 exports.singlePackage = async (req,res)=>{
     try {
@@ -437,8 +437,8 @@ exports.singlePackage = async (req,res)=>{
                 const category_name  = item.category_name !=undefined ? item.category_name:null;  
                 const package_name  = item.	package_name !=undefined ? item.	package_name:null;
                 const description  = item.description !=undefined ? item.description:null;
-                const image = item.image!=undefined && item.image!=null ? process.env.APP_URL+'laboratory/'+item.image:'-';
-                const images = item.image!=undefined && item.image!=null ? item.image:'-';
+                const image = item.image!=undefined && item.image!=null ? process.env.APP_URL+"laboratory/"+item.image:"-";
+                const images = item.image!=undefined && item.image!=null ? item.image:"-";
                 const testDatas = await Package.ShowWhereIn(arr);
                 const totalTest = testDatas.length;  
                 const testData = [];
@@ -460,22 +460,22 @@ exports.singlePackage = async (req,res)=>{
                 responses.push({package_id,lab_id,lab_name,test_id,test_category_id,test_recommended,amount,category_name,package_name,description,image,images,totalTest,testData});
             }
             res.status(200).json({
-                status_code:'200',
-                status:'success',
-                message:'Successfully!',
+                status_code:"200",
+                status:"success",
+                message:"Successfully!",
                 data:responses,
 
             });
     } catch (error) {
         console.log(error);
         res.status(500).json({
-            status_code:'500',
-            status:'error',
-            message:'something went to wrong!',
+            status_code:"500",
+            status:"error",
+            message:"something went to wrong!",
         });
     }
     
-}
+};
 exports.singleTest = async (req,res)=>{
     try {
         const {test_id} = req.body;
@@ -502,27 +502,27 @@ exports.singleTest = async (req,res)=>{
             const email  = item.email !=undefined ? item.email:null;
             const lab_opening_time  = item.opening_time !=undefined ? item.opening_time:null;
             const lab_closing_time  = item.closing_time !=undefined ? item.closing_time:null;
-            const image = item.image!=undefined && item.image!=null ? process.env.APP_URL+'laboratory/'+item.image:'-';
-            const images = item.image!=undefined && item.image!=null ? item.image:'-';
+            const image = item.image!=undefined && item.image!=null ? process.env.APP_URL+"laboratory/"+item.image:"-";
+            const images = item.image!=undefined && item.image!=null ? item.image:"-";
             const created_at  = item.created_at !=undefined ? item.created_at:null;
             const updated_at  = item.updated_at !=undefined ? item.updated_at:null; 
             const user_role_id  = item.user_role_id !=undefined ? item.user_role_id:null;
             responses.push({test_id,test_name,lab_id,lab_name,test_report,fast_time,description,test_recommended,amount,test_recommended,amount,test_category_id,category_name,cat_id,address,pin_code,email,lab_opening_time,lab_closing_time,image,images,created_at,updated_at,user_role_id});
         }   
         res.status(200).json({
-            status_code:'200',
-            status:'success',
-            message:'Successfully!',
+            status_code:"200",
+            status:"success",
+            message:"Successfully!",
             data:responses,
 
         });
     } catch (error) {
         console.log(error);
         res.status(500).json({
-            status_code:'500',
-            status:'error',
-            message:'something went to wrong!',
+            status_code:"500",
+            status:"error",
+            message:"something went to wrong!",
         });
     }
     
-}
+};

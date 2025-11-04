@@ -1,4 +1,4 @@
-const db = require('../config/db.config');
+const db = require("../config/db.config");
 class appliedCouponCodes {
     static create({user_id,promo_code_id,package_id,test_id}) {
         return new Promise((resolve,reject)=>{

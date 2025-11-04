@@ -1,15 +1,15 @@
-const { async } = require('q');
-const db = require('../config/db.config');
-const { logger } = require('../utils/logger');
+const { async } = require("q");
+const db = require("../config/db.config");
+const { logger } = require("../utils/logger");
 const Notification = require("../models/stytemNotification.model");
-const helperQuery = require('../helper/helperQuery');
+const helperQuery = require("../helper/helperQuery");
 const moment = require("moment");
-const helperFunction = require('../helper/helperFunction');
+const helperFunction = require("../helper/helperFunction");
 
 class Laboratory {
     static labRadioCountPatientDetail(user_id,much_type){
         return new Promise((resolve,reject)=>{
-            if(much_type=='today'){
+            if(much_type=="today"){
                 var query = "SELECT COUNT(up.created_at) AS today_patients FROM users as u left join users_patient as up on u.id = up.patient_id WHERE up.user_id = '"+user_id+"' AND DATE_FORMAT(up.created_at,'%Y-%m-%d') =  DATE_FORMAT(curdate(),'%Y-%m-%d')";
             }
             else{
@@ -52,7 +52,7 @@ class Laboratory {
             //     LEFT JOIN users p on p.id=ap.created_by_id 
             //     WHERE l.id='${user_id}' AND  AND ap.payment_status='Success'  `;
             // }
-            if(much_type=='today'){
+            if(much_type=="today"){
                 var query = `SELECT COUNT(appointment_date) AS today_appiontments 
                 FROM appointments
                 WHERE user_id='${user_id}' 
@@ -76,10 +76,10 @@ class Laboratory {
     static memberfindByMobileWithRole({mobile,role_id}, cb) {
         if (role_id!=undefined || role_id!=null) {
             var query = `SELECT * FROM users WHERE mobile = '${mobile}' AND role_id='${role_id}' ORDER BY id DESC `;
-            var arr = [mobile,role_id]
+            var arr = [mobile,role_id];
         } else {
             var query = `SELECT * FROM users WHERE mobile = '${mobile}' ORDER BY id DESC `;
-            var arr = [mobile]
+            var arr = [mobile];
         }
         db.query(query,arr, (err, res) => {
             if(err){
@@ -94,7 +94,7 @@ class Laboratory {
                 const role_id = item.role_id;
                 const email = item.email;
                 const imgName = item.profile_image;
-                const img = process.env.APP_URL+'member/' + imgName;
+                const img = process.env.APP_URL+"member/" + imgName;
                 const first_name = item.first_name;
                 const last_name = item.last_name;
                 const mobile = item.mobile;
@@ -124,7 +124,7 @@ class Laboratory {
             for (const item of res) {
                 const id = item.id;
                 const imgName = item.profile_image;
-                const img = process.env.APP_URL+'/member/' + imgName;
+                const img = process.env.APP_URL+"/member/" + imgName;
                 const first_name = item.first_name;
                 const last_name = item.last_name;
                 const mobile = item.mobile;
@@ -153,7 +153,7 @@ class Laboratory {
             for (const item of res) {
                 const id = item.id;
                 const imgName = item.profile_image;
-                const img = process.env.APP_URL+'/member/' + imgName;
+                const img = process.env.APP_URL+"/member/" + imgName;
                 const first_name = item.first_name;
                 const last_name = item.last_name;
                 const mobile = item.mobile;
@@ -167,7 +167,7 @@ class Laboratory {
         });
     }
     static newVisit(mobile,lab_id,member_id,category,sub_category, cb) {
-        db.query(`INSERT INTO new_visit(mobile,lab_id,member_id,category,sub_category,created_at) VALUES(?,?,?,?,?,NOW())`,
+        db.query("INSERT INTO new_visit(mobile,lab_id,member_id,category,sub_category,created_at) VALUES(?,?,?,?,?,NOW())",
         [
             mobile,lab_id,member_id,category,sub_category
         ],async(err, res) => {
@@ -286,13 +286,13 @@ class Laboratory {
                 
 
                 if (role_id == 3) {
-                    var plan_for = 'laboratories';
-                    var report_for = 'Laborartory';
+                    var plan_for = "laboratories";
+                    var report_for = "Laborartory";
                 }
 
                 if (role_id == 4) {
-                    var plan_for = 'radiology';
-                    var report_for = 'Radiology';
+                    var plan_for = "radiology";
+                    var report_for = "Radiology";
                 }
                 db.query(`SELECT * FROM plan_purchase_history WHERE user_id = '${lab_rad_id}' and status = 'active' order by id desc LIMIT 1`, (err, pphres) => {
                     if (err) {
@@ -308,14 +308,14 @@ class Laboratory {
                         if (total_limit > 0) {
                             if (role_id==4) {
                                 var lab_rad_type =2;
-                                var report_type = 'radio_report';
+                                var report_type = "radio_report";
                                 var queryPDF =`UPDATE new_visit SET report_document = '${report_document}', type = '${lab_rad_type}',updated_at=NOW() WHERE id = '${visit_id}' AND report_document IS NULL`;
                                 var queryDCM =`UPDATE new_visit SET dcm_document = '${report_document}', type = '${lab_rad_type}',updated_at=NOW() WHERE id = '${visit_id}' AND dcm_document IS NULL`;
                                 var query = type!=null && type==2 ? queryDCM:queryPDF;
                                 
                             } else {
                                 var lab_rad_type =1;
-                                var report_type = 'lab_report';
+                                var report_type = "lab_report";
                                 var query = `UPDATE new_visit SET report_document = '${report_document}', type = '${lab_rad_type}',updated_at=NOW() WHERE id = '${visit_id}' AND report_document IS NULL`; 
                             }
                             db.query(query,
@@ -330,15 +330,15 @@ class Laboratory {
                                     if (res) {
                                         const updated_visit = await helperQuery.First({table:"new_visit",where:"id ="+visit_id});
                                         const data = {
-                                            message:',<br> your '+report_for+' report has been uploaded by',
+                                            message:",<br> your "+report_for+" report has been uploaded by",
                                             from_user_id:updated_visit.lab_id,
                                             to_user_id:updated_visit.member_id,
-                                            by:'lab_radio_upload',
-                                            title:'Uploaded Report',
-                                            type:'Uploaded Report',
+                                            by:"lab_radio_upload",
+                                            title:"Uploaded Report",
+                                            type:"Uploaded Report",
                                             appointment_date:updated_visit.updated_at,
-                                            time_slot:moment(updated_visit.updated_at).format(' h:mm A'),
-                                        }
+                                            time_slot:moment(updated_visit.updated_at).format(" h:mm A"),
+                                        };
                                         await Notification.AddNotification(data);
 
 
@@ -346,16 +346,16 @@ class Laboratory {
                                         var lab_detail = await helperQuery.Get({table:"users",where:" id="+updated_visit.lab_id});
                                         if(member_detail){
                                             
-                                            var member_name = (member_detail[0].first_name) ? member_detail[0].first_name : '';
-                                            var lab_name = (lab_detail[0].first_name) ? lab_detail[0].first_name : '';
+                                            var member_name = (member_detail[0].first_name) ? member_detail[0].first_name : "";
+                                            var lab_name = (lab_detail[0].first_name) ? lab_detail[0].first_name : "";
                                             var appointment_date = updated_visit.updated_at;
-                                            var time_slot = moment(updated_visit.updated_at).format(' h:mm A');
+                                            var time_slot = moment(updated_visit.updated_at).format(" h:mm A");
                                          
                                             var payload = {
                                                 notification : {
-                                                    title : 'Uploaded Report'
+                                                    title : "Uploaded Report"
                                                 }
-                                            }  
+                                            };  
                                         //    console.log("data",member_detail);
                                             if(lab_detail[0].role_id == 3){
                                                 payload.notification.body = "Hey "+member_name+" \nyour Laboratory report has been uploaded  by "+lab_name;
@@ -375,21 +375,21 @@ class Laboratory {
                                                 device_token = member_data.device_token;
                                                 console.log("member 2");
                                             }
-                                            if(device_type == 'Android' || device_type == 'IOS'){
+                                            if(device_type == "Android" || device_type == "IOS"){
                                                 console.log("push noti send for  upload doc");
                                                 await helperFunction.pushNotification(device_token,payload);
                                             }
                                         }
                                         
                                         if (role_id==4) {
-                                            var report_type = 'radio_report';
+                                            var report_type = "radio_report";
                                             var queryUPDF = `UPDATE users_documents SET  type= 'lab_report',lab_radio_type= '2',document_date=NOW(),document_title= '${lab_rad_title}',document_file= '${report_document}' where visite_id='${visit_id}' AND member_id= '${visit_member_id}' AND user_id= '${visit_member_id}'`;
                                             var queryUDCM = `UPDATE users_documents SET  type= 'lab_report',lab_radio_type= '2',document_date=NOW(),document_title= '${lab_rad_title}',dcm_document_file= '${report_document}' where visite_id='${visit_id}' AND member_id= '${visit_member_id}' AND user_id= '${visit_member_id}'`;
                                             var Uquery = type!=null && type==2 ? queryUDCM:queryUPDF;
                                             var is_dcm = type!=null && type==2 ? true:false;
 
                                         } else{
-                                            var report_type = 'radio_report';
+                                            var report_type = "radio_report";
                                             var Uquery =`UPDATE users_documents SET  type= 'lab_report',lab_radio_type= '1',document_date=NOW(),document_title= '${lab_rad_title}',document_file= '${report_document}' where visite_id='${visit_id}' AND member_id= '${visit_member_id}' AND user_id= '${visit_member_id}'`;
                                             var is_dcm = true;
                                         }
@@ -435,7 +435,7 @@ class Laboratory {
 
                                         
                                     }
-                                })
+                                });
                         }
                         else {
                             cb({ kind: "plan_limit_reached" }, null);
@@ -465,7 +465,7 @@ class Laboratory {
                 return;
             }
             cb(null,res);
-        })
+        });
 
     }
     static testReport(member_id,cb){
@@ -484,7 +484,7 @@ class Laboratory {
                 return;
             }
             cb(null,res);
-        })
+        });
 
     }
     

@@ -1,10 +1,10 @@
-const db = require('../config/db.config');
-const { logger } = require('../utils/logger');
+const db = require("../config/db.config");
+const { logger } = require("../utils/logger");
 class PregnantWomen {
     
     
     static create(user_id,name,date_of_pregnancy, cb) {
-        db.query(`INSERT INTO pregnant_women(user_id,name,date_of_pregnancy,created_at) VALUES(?,?,?,NOW())`,
+        db.query("INSERT INTO pregnant_women(user_id,name,date_of_pregnancy,created_at) VALUES(?,?,?,NOW())",
             [
                 user_id,name,date_of_pregnancy  
             ], (err, res) => {

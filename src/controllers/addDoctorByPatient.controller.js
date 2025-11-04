@@ -12,16 +12,16 @@ exports.searchDoctor = async(req,res)=>{
             status:"success",
             message:"Successfully!",
             data:result
-        })
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json({
             status_code:500,
             status:"error",
             message:"something went wrong!"
-        })
+        });
     }
-}
+};
 exports.addDoctor = async(req,res)=>{
     try {
         const {user_id,created_by_id} = req.body;
@@ -31,7 +31,7 @@ exports.addDoctor = async(req,res)=>{
                 status_code:400,
                 status:"error",
                 message:"You have already added this doctor pleace add another one!"
-            })
+            });
         }
         const vali = helperFunction.customValidater(req,{user_id,created_by_id});
         if (vali) {
@@ -43,16 +43,16 @@ exports.addDoctor = async(req,res)=>{
             status_code:200,
             status:"success",
             message:"Successfully!",
-        })
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json({
             status_code:500,
             status:"error",
             message:"something went wrong!"
-        })
+        });
     }
-}
+};
 exports.doctorList = async(req,res)=>{
     try {
         const {user_id} = req.body;
@@ -67,30 +67,30 @@ exports.doctorList = async(req,res)=>{
             const patient_id =item.patient_id ?? null;
             const doctor =item.doctor ?? null;
             const doctor_profile =item.doctor_profile ?? null;
-            const doctor_profiles =process.env.APP_URL+'member/' +item.doctor_profile ?? null;
+            const doctor_profiles =process.env.APP_URL+"member/" +item.doctor_profile ?? null;
             const clinic =item.clinic ?? null;
             const clinic_profile =item.clinic_profile ?? null;
             const patient_name =item.patient_name ?? null;
             const patient_image =item.patient_image ?? null;
             const spaci = await helperQuery.All("SELECT id,speciality_name FROM doctor_specialities WHERE doctor_id="+doctor_id);
-            const spaciality =item.doctor_id!=undefined && item.doctor_id!=null && item.doctor_id!=''? spaci :null;
-            data.push({id,clinic_id,patient_id,doctor,doctor_profile,experience_in_year,clinic,clinic_profile,patient_name,patient_image,spaciality,doctor_profiles})
+            const spaciality =item.doctor_id!=undefined && item.doctor_id!=null && item.doctor_id!=""? spaci :null;
+            data.push({id,clinic_id,patient_id,doctor,doctor_profile,experience_in_year,clinic,clinic_profile,patient_name,patient_image,spaciality,doctor_profiles});
         }
         return res.status(200).json({
             status_code:200,
             status:"success",
             message:"Successfully!",
             data:data
-        })
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json({
             status_code:500,
             status:"error",
             message:"something went wrong!"
-        })
+        });
     }
-}
+};
 
 exports.Deletedoctor = async(req,res)=>{
     try {
@@ -100,14 +100,14 @@ exports.Deletedoctor = async(req,res)=>{
             status_code:200,
             status:"success",
             message:"Successfully!",
-        })
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json({
             status_code:500,
             status:"error",
             message:"something went wrong!"
-        })
+        });
     }
-}
+};
 

@@ -1,11 +1,11 @@
-const { reject } = require('q');
-const db = require('../config/db.config');
-const { logger } = require('../utils/logger');
+const { reject } = require("q");
+const db = require("../config/db.config");
+const { logger } = require("../utils/logger");
 
 class PatientsDoctor {
     static searchDoctor(search)
     {
-        if(search!=undefined && search !='' ){
+        if(search!=undefined && search !="" ){
             var query = `SELECT dc.id,dc.clinic_id,u.first_name as doctor,c.first_name as clinic
             
             FROM doctors_clinic dc INNER JOIN users u  on dc.doctor_id=u.id 
@@ -30,14 +30,14 @@ class PatientsDoctor {
     static addDoctor(user_id,created_by_id)
     {
         return new Promise((resolve,reject)=>{
-            db.query(`INSERT INTO user_doctors (user_id,created_by_id,created_at) VALUES (?,?,NOW())`,
+            db.query("INSERT INTO user_doctors (user_id,created_by_id,created_at) VALUES (?,?,NOW())",
             [user_id,created_by_id],
             (err,res)=>{
                 if(err){
                     return reject(err);
                 }
                 return resolve(res);
-            })
+            });
             
         });
     }
@@ -61,7 +61,7 @@ class PatientsDoctor {
                     return reject(err);
                 }
                 return resolve(res);
-            })
+            });
         });
     }
     static Deletedoctor(user_id)
@@ -75,7 +75,7 @@ class PatientsDoctor {
                     return reject(err);
                 }
                 return resolve(res);
-            })
+            });
         });
     }
 }

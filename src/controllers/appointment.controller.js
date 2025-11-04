@@ -4,17 +4,17 @@ const { async } = require("q");
 const { log } = require("winston");
 const helperQuery = require("../helper/helperQuery");
 const bookApointment = require("../models/bookApointment.model");
-const User = require('../models/user.model');
-const Appointment = require('../models/appointment.model');
-const PDFDocument = require('pdfkit-table');
-const Prescription = require('../models/prescription.model');
-var request = require('request');
-const helperFunction = require('../helper/helperFunction');
+const User = require("../models/user.model");
+const Appointment = require("../models/appointment.model");
+const PDFDocument = require("pdfkit-table");
+const Prescription = require("../models/prescription.model");
+var request = require("request");
+const helperFunction = require("../helper/helperFunction");
 const Notification = require("../models/stytemNotification.model");
 const Document = require("../models/document.model.js");
-const { resolve } = require('path');
-const fs = require('fs');
-const db = require('../config/db.config');
+const { resolve } = require("path");
+const fs = require("fs");
+const db = require("../config/db.config");
 const moment = require("moment");
 
 exports.getInsightAppointments = (req, res) => {
@@ -30,14 +30,14 @@ exports.getInsightAppointments = (req, res) => {
             if (err.kind === "not_found") {
                 res.status(200).send({
                     status_code: 200,
-                    status: 'success',
-                    message: `No Data Found`
+                    status: "success",
+                    message: "No Data Found"
                 });
                 return;
             }
             res.status(500).send({
                 status_code: 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -45,14 +45,14 @@ exports.getInsightAppointments = (req, res) => {
         if (data) {
             res.status(200).send({
                 status_code: 200,
-                status: 'success',
+                status: "success",
                 //total_appointments : data.length,
                 data: data
             });
             return;
         }
     });
-}
+};
 
 // get all clinics by vineet shirdhonkar
 
@@ -64,14 +64,14 @@ exports.clinicList = (req, res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code: 404,
-                    status: 'error',
-                    message: `Doctor does not exist`
+                    status: "error",
+                    message: "Doctor does not exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code: 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -82,7 +82,7 @@ exports.clinicList = (req, res) => {
                 if (err) {
                     res.status(500).send({
                         status_code: 500,
-                        status: 'error',
+                        status: "error",
                         message: err.message
                     });
                     return;
@@ -92,7 +92,7 @@ exports.clinicList = (req, res) => {
 
                 res.status(200).send({
                     status_code: 200,
-                    status: 'success',
+                    status: "success",
                     message: response_message,
                     data: data
                 });
@@ -101,8 +101,8 @@ exports.clinicList = (req, res) => {
             });
         }
 
-    })
-}
+    });
+};
 
 
 // get clinic's appointment on doctors by vineet shirdhonkar
@@ -115,14 +115,14 @@ exports.appointmentList = (req, res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code: 404,
-                    status: 'error',
-                    message: `Doctor does not exist`
+                    status: "error",
+                    message: "Doctor does not exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code: 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -134,14 +134,14 @@ exports.appointmentList = (req, res) => {
                     if (err.kind === "not_found") {
                         res.status(404).send({
                             status_code: 404,
-                            status: 'error',
-                            message: `Clinic / Hospital does not exist`
+                            status: "error",
+                            message: "Clinic / Hospital does not exist"
                         });
                         return;
                     }
                     res.status(500).send({
                         status_code: 500,
-                        status: 'error',
+                        status: "error",
                         message: err.message
                     });
                     return;
@@ -154,15 +154,15 @@ exports.appointmentList = (req, res) => {
                             if (err.kind === "not_found") {
                                 res.status(404).send({
                                     status_code: 404,
-                                    status: 'error',
-                                    message: `No Record Found`,
+                                    status: "error",
+                                    message: "No Record Found",
                                     data: []
                                 });
                                 return;
                             }
                             res.status(500).send({
                                 status_code: 500,
-                                status: 'error',
+                                status: "error",
                                 message: err.message
                             });
                             return;
@@ -199,11 +199,11 @@ exports.appointmentList = (req, res) => {
                                     for (const iterator of labradio) {
                                         if (iterator.type == 1) {
                                             lab_document = iterator.report_document;
-                                            lab_document_url = iterator.report_document != null ? process.env.APP_URL + 'laboratory/' + iterator.report_document : "";
+                                            lab_document_url = iterator.report_document != null ? process.env.APP_URL + "laboratory/" + iterator.report_document : "";
                                         }
                                         if (iterator.type == 2) {
                                             radio_document = iterator.report_document;
-                                            radio_document_url = iterator.report_document != null ? process.env.APP_URL + 'laboratory/' + iterator.report_document : "";
+                                            radio_document_url = iterator.report_document != null ? process.env.APP_URL + "laboratory/" + iterator.report_document : "";
                                             radio_document_dcm = iterator.dcm_document??null;
                                             radio_document_dcm_url = iterator.dcm_document!=null ? process.env.APP_URL_DCM + "/" +iterator.dcm_document:"";
                                         }
@@ -237,7 +237,7 @@ exports.appointmentList = (req, res) => {
 
                             res.status(200).send({
                                 status_code: 200,
-                                status: 'success',
+                                status: "success",
                                 message: (data.length > 0) ? "Data Found Successfully!" : "No Data Found",
                                 data: appointList
                             });
@@ -247,11 +247,11 @@ exports.appointmentList = (req, res) => {
                     });
                 }
 
-            })
+            });
         }
 
-    })
-}
+    });
+};
 
 // add Symptom by vineet shirdhonkar
 
@@ -264,7 +264,7 @@ exports.addSymptom = (req, res) => {
         var source = item.source;
         var duration = item.duration;
         var type = item.type;
-        all_data.push({ 'doctor_id': doctor_id, 'appointment_id': appointment_id, 'source': source, 'type': type, 'duration': duration });
+        all_data.push({ "doctor_id": doctor_id, "appointment_id": appointment_id, "source": source, "type": type, "duration": duration });
     });
 
     Appointment.addSymptom(all_data, (err, data) => {
@@ -273,14 +273,14 @@ exports.addSymptom = (req, res) => {
             if (err.kind === "not_inserted") {
                 res.status(500).send({
                     status_code: 500,
-                    status: 'error',
-                    message: `Failed ! Please try again later`
+                    status: "error",
+                    message: "Failed ! Please try again later"
                 });
                 return;
             }
             res.status(500).send({
                 status_code: 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -289,7 +289,7 @@ exports.addSymptom = (req, res) => {
         if (data.insertId) {
             res.status(200).send({
                 status_code: 200,
-                status: 'success',
+                status: "success",
                 message: "Symptoms Added Successfully!",
                 data: data
             });
@@ -298,7 +298,7 @@ exports.addSymptom = (req, res) => {
         }
     });
 
-}
+};
 
 // add Vital by vineet shirdhonkar
 
@@ -309,14 +309,14 @@ exports.addVital = (req, res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code: 404,
-                    status: 'error',
-                    message: `Doctor does not exist`
+                    status: "error",
+                    message: "Doctor does not exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code: 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -328,14 +328,14 @@ exports.addVital = (req, res) => {
                     if (err.kind === "not_found") {
                         res.status(404).send({
                             status_code: 404,
-                            status: 'error',
-                            message: `Appointment does not exist`
+                            status: "error",
+                            message: "Appointment does not exist"
                         });
                         return;
                     }
                     res.status(500).send({
                         status_code: 500,
-                        status: 'error',
+                        status: "error",
                         message: err.message
                     });
                     return;
@@ -347,15 +347,15 @@ exports.addVital = (req, res) => {
                             if (err.kind === "not_inserted") {
                                 res.status(500).send({
                                     status_code: 500,
-                                    status: 'error',
-                                    message: `Failed ! Please try again later`
+                                    status: "error",
+                                    message: "Failed ! Please try again later"
                                 });
                                 return;
                             }
 
                             res.status(500).send({
                                 status_code: 500,
-                                status: 'error',
+                                status: "error",
                                 message: err.message
                             });
                             return;
@@ -364,7 +364,7 @@ exports.addVital = (req, res) => {
                         if (data.insertId) {
                             res.status(200).send({
                                 status_code: 200,
-                                status: 'success',
+                                status: "success",
                                 message: "Vitals Added Successfully!",
                                 data: data
                             });
@@ -373,10 +373,10 @@ exports.addVital = (req, res) => {
                     });
 
                 }
-            })
+            });
         }
-    })
-}
+    });
+};
 
 
 // add Exam Finding by vineet shirdhonkar
@@ -388,14 +388,14 @@ exports.addExamFinding = (req, res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code: 404,
-                    status: 'error',
-                    message: `Doctor does not exist`
+                    status: "error",
+                    message: "Doctor does not exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code: 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -407,14 +407,14 @@ exports.addExamFinding = (req, res) => {
                     if (err.kind === "not_found") {
                         res.status(404).send({
                             status_code: 404,
-                            status: 'error',
-                            message: `Appointment does not exist`
+                            status: "error",
+                            message: "Appointment does not exist"
                         });
                         return;
                     }
                     res.status(500).send({
                         status_code: 500,
-                        status: 'error',
+                        status: "error",
                         message: err.message
                     });
                     return;
@@ -426,15 +426,15 @@ exports.addExamFinding = (req, res) => {
                             if (err.kind === "not_inserted") {
                                 res.status(500).send({
                                     status_code: 500,
-                                    status: 'error',
-                                    message: `Failed ! Please try again later`
+                                    status: "error",
+                                    message: "Failed ! Please try again later"
                                 });
                                 return;
                             }
 
                             res.status(500).send({
                                 status_code: 500,
-                                status: 'error',
+                                status: "error",
                                 message: err.message
                             });
                             return;
@@ -443,7 +443,7 @@ exports.addExamFinding = (req, res) => {
                         if (data.insertId) {
                             res.status(200).send({
                                 status_code: 200,
-                                status: 'success',
+                                status: "success",
                                 message: "Examination Finding Added Successfully!",
                                 data: data
                             });
@@ -453,10 +453,10 @@ exports.addExamFinding = (req, res) => {
                     });
 
                 }
-            })
+            });
         }
-    })
-}
+    });
+};
 
 
 // add advice by vineet shirdhonkar
@@ -468,14 +468,14 @@ exports.addAdvice = (req, res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code: 404,
-                    status: 'error',
-                    message: `Doctor does not exist`
+                    status: "error",
+                    message: "Doctor does not exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code: 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -487,14 +487,14 @@ exports.addAdvice = (req, res) => {
                     if (err.kind === "not_found") {
                         res.status(404).send({
                             status_code: 404,
-                            status: 'error',
-                            message: `Appointment does not exist`
+                            status: "error",
+                            message: "Appointment does not exist"
                         });
                         return;
                     }
                     res.status(500).send({
                         status_code: 500,
-                        status: 'error',
+                        status: "error",
                         message: err.message
                     });
                     return;
@@ -507,14 +507,14 @@ exports.addAdvice = (req, res) => {
                             if (err.kind === "not_inserted") {
                                 res.status(500).send({
                                     status_code: 500,
-                                    status: 'error',
-                                    message: `Failed ! Please try again later`
+                                    status: "error",
+                                    message: "Failed ! Please try again later"
                                 });
                                 return;
                             }
                             res.status(500).send({
                                 status_code: 500,
-                                status: 'error',
+                                status: "error",
                                 message: err.message
                             });
                             return;
@@ -523,7 +523,7 @@ exports.addAdvice = (req, res) => {
                         if (data.insertId) {
                             res.status(200).send({
                                 status_code: 200,
-                                status: 'success',
+                                status: "success",
                                 message: "Advice Added Successfully!",
                                 data: data
                             });
@@ -533,10 +533,10 @@ exports.addAdvice = (req, res) => {
                     });
 
                 }
-            })
+            });
         }
-    })
-}
+    });
+};
 
 
 // add follow up by vineet shirdhonkar
@@ -548,14 +548,14 @@ exports.addFollowUp = (req, res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code: 404,
-                    status: 'error',
-                    message: `Doctor does not exist`
+                    status: "error",
+                    message: "Doctor does not exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code: 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -567,14 +567,14 @@ exports.addFollowUp = (req, res) => {
                     if (err.kind === "not_found") {
                         res.status(404).send({
                             status_code: 404,
-                            status: 'error',
-                            message: `Appointment does not exist`
+                            status: "error",
+                            message: "Appointment does not exist"
                         });
                         return;
                     }
                     res.status(500).send({
                         status_code: 500,
-                        status: 'error',
+                        status: "error",
                         message: err.message
                     });
                     return;
@@ -587,14 +587,14 @@ exports.addFollowUp = (req, res) => {
                             if (err.kind === "not_inserted") {
                                 res.status(500).send({
                                     status_code: 500,
-                                    status: 'error',
-                                    message: `Failed ! Please try again later`
+                                    status: "error",
+                                    message: "Failed ! Please try again later"
                                 });
                                 return;
                             }
                             res.status(500).send({
                                 status_code: 500,
-                                status: 'error',
+                                status: "error",
                                 message: err.message
                             });
                             return;
@@ -603,7 +603,7 @@ exports.addFollowUp = (req, res) => {
                         if (data.insertId) {
                             res.status(200).send({
                                 status_code: 200,
-                                status: 'success',
+                                status: "success",
                                 message: "Follow Up Added Successfully!",
                                 data: data
                             });
@@ -613,10 +613,10 @@ exports.addFollowUp = (req, res) => {
                     });
 
                 }
-            })
+            });
         }
-    })
-}
+    });
+};
 
 
 // add Dignostic by vineet shirdhonkar
@@ -630,14 +630,14 @@ exports.addDignostic = (req, res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code: 404,
-                    status: 'error',
-                    message: `Doctor does not exist`
+                    status: "error",
+                    message: "Doctor does not exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code: 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -649,14 +649,14 @@ exports.addDignostic = (req, res) => {
                     if (err.kind === "not_found") {
                         res.status(404).send({
                             status_code: 404,
-                            status: 'error',
-                            message: `Appointment does not exist`
+                            status: "error",
+                            message: "Appointment does not exist"
                         });
                         return;
                     }
                     res.status(500).send({
                         status_code: 500,
-                        status: 'error',
+                        status: "error",
                         message: err.message
                     });
                     return;
@@ -673,15 +673,15 @@ exports.addDignostic = (req, res) => {
                             if (err.kind === "not_inserted") {
                                 res.status(500).send({
                                     status_code: 500,
-                                    status: 'error',
-                                    message: `Failed ! Please try again later`
+                                    status: "error",
+                                    message: "Failed ! Please try again later"
                                 });
                                 return;
                             }else if(err.kind === "appointment")
                             {
                                 return res.status(500).send({
                                     status_code: 500,
-                                    status: 'error',
+                                    status: "error",
                                     message: err.message
                                 });
                             }
@@ -689,7 +689,7 @@ exports.addDignostic = (req, res) => {
                             {
                                 return res.status(500).send({
                                     status_code: 500,
-                                    status: 'error',
+                                    status: "error",
                                     message: err.message
                                 });
                             }
@@ -697,7 +697,7 @@ exports.addDignostic = (req, res) => {
                             {
                                 return res.status(500).send({
                                     status_code: 500,
-                                    status: 'error',
+                                    status: "error",
                                     message: err.message
                                 });
                             }
@@ -705,13 +705,13 @@ exports.addDignostic = (req, res) => {
                             {
                                 return res.status(500).send({
                                     status_code: 500,
-                                    status: 'error',
+                                    status: "error",
                                     message: err.message
                                 });
                             }
                             res.status(500).send({
                                 status_code: 500,
-                                status: 'error',
+                                status: "error",
                                 message: err.message
                             });
                             return;
@@ -737,20 +737,20 @@ exports.addDignostic = (req, res) => {
                                         time_slot: radio_time_slot,
                                         appointment_date: radio_appointment_date,
                                         test_ids: radio_test_ids,
-                                        appointments_user_type: 'doctor'
-                                    }
-                                    bydoctorAppoinment(res, radioJson)
+                                        appointments_user_type: "doctor"
+                                    };
+                                    bydoctorAppoinment(res, radioJson);
                                    
                                     const patient_noticData = {
                                         message: costLabRadioMSG,
                                         by: "doctor_lab_radio_patient",
                                         from_user_id: radio_id,
                                         to_user_id: patient_id,
-                                        title: 'Appointment Booked',
+                                        title: "Appointment Booked",
                                         type: "radio_appointment_booked",
                                         appointment_date: radio_appointment_date,
                                         time_slot: radio_time_slot,
-                                    }
+                                    };
                                     Notification.AddNotification(patient_noticData);
                                   
                                     
@@ -758,11 +758,11 @@ exports.addDignostic = (req, res) => {
                                     if (p_detail) {
                                         var payload = {
                                             notification: {
-                                                title: 'Appointment Booked',
-                                                body: 'Hey '+p_detail[0].first_name+'your appointment with '+message+helperFunction.dateFormat(radio_appointment_date,'yyyy/mm/dd')+" & "+radio_time_slot,
+                                                title: "Appointment Booked",
+                                                body: "Hey "+p_detail[0].first_name+"your appointment with "+message+helperFunction.dateFormat(radio_appointment_date,"yyyy/mm/dd")+" & "+radio_time_slot,
                                             }
-                                        }
-                                        if ((p_detail[0].device_type == 'Android')||(p_detail[0].device_type == 'IOS')) {
+                                        };
+                                        if ((p_detail[0].device_type == "Android")||(p_detail[0].device_type == "IOS")) {
                                             await helperFunction.pushNotification(p_detail[0].device_token, payload);
                                         }
                                     }
@@ -772,22 +772,22 @@ exports.addDignostic = (req, res) => {
                                         by: "doctor",
                                         from_user_id: patient_id,
                                         to_user_id: radio_id,
-                                        title: 'Appointment Booked',
+                                        title: "Appointment Booked",
                                         type: "radio_appointment_booked",
                                         appointment_date: radio_appointment_date,
                                         time_slot: radio_time_slot,
-                                    }
+                                    };
                                     Notification.AddNotification(noticData);
                                     var r_detail = await helperQuery.Get({table:"users",where:" id="+radio_id});
 
                                     if (r_detail) {
                                         var payload = {
                                             notification: {
-                                                title: 'Appointment Booked',
+                                                title: "Appointment Booked",
                                                 body: message + " radio"
                                             }
-                                        }
-                                        if (r_detail[0].device_type == 'Android') {
+                                        };
+                                        if (r_detail[0].device_type == "Android") {
                                             await helperFunction.pushNotification(r_detail[0].device_token, payload);
                                         }
                                     }
@@ -808,42 +808,42 @@ exports.addDignostic = (req, res) => {
                                         time_slot: lab_time_slot,
                                         appointment_date: lab_appointment_date,
                                         test_ids: lab_test_ids,
-                                        appointments_user_type: 'doctor'
-                                    }
-                                    bydoctorAppoinment(res, labJson)
+                                        appointments_user_type: "doctor"
+                                    };
+                                    bydoctorAppoinment(res, labJson);
 
                                     const patient_noticData = {
                                         message: costLabRadioMSG,
                                         by: "doctor_lab_radio_patient",
                                         from_user_id: lab_id,
                                         to_user_id: patient_id,
-                                        title: 'Appointment Booked',
+                                        title: "Appointment Booked",
                                         type: "lab_appointment_booked",
                                         appointment_date: lab_appointment_date,
                                         time_slot: lab_time_slot,
-                                    }
+                                    };
                                     Notification.AddNotification(patient_noticData);
                                     const noticData = {
                                         message: message,
                                         by: "doctor",
                                         from_user_id: patient_id,
                                         to_user_id: lab_id,
-                                        title: 'Appointment Booked',
+                                        title: "Appointment Booked",
                                         type: "lab_appointment_booked",
                                         appointment_date: lab_appointment_date,
                                         time_slot: lab_time_slot,
-                                    }
+                                    };
                                     Notification.AddNotification(noticData);
                                     var p_detail = await helperQuery.Get({table:"users",where:" id="+patient_id});
 
                                     if (p_detail) {
                                         var payload = {
                                             notification: {
-                                                title: 'Appointment Booked',
-                                                body: 'Hey '+p_detail[0].first_name+' your appointment with '+message+helperFunction.dateFormat(lab_appointment_date,'yyyy/mm/dd')+" & "+lab_time_slot,
+                                                title: "Appointment Booked",
+                                                body: "Hey "+p_detail[0].first_name+" your appointment with "+message+helperFunction.dateFormat(lab_appointment_date,"yyyy/mm/dd")+" & "+lab_time_slot,
                                             }
-                                        }
-                                        if ((p_detail[0].device_type == 'Android')||(p_detail[0].device_type == 'IOS')) {
+                                        };
+                                        if ((p_detail[0].device_type == "Android")||(p_detail[0].device_type == "IOS")) {
                                             await helperFunction.pushNotification(p_detail[0].device_token, payload);
                                         }
                                     }
@@ -851,7 +851,7 @@ exports.addDignostic = (req, res) => {
                             }
                             res.status(200).send({
                                 status_code: 200,
-                                status: 'success',
+                                status: "success",
                                 message: "Dignostic Added Successfully!",
                                 data: data
                             });
@@ -861,10 +861,10 @@ exports.addDignostic = (req, res) => {
                     });
 
                 }
-            })
+            });
         }
-    })
-}
+    });
+};
 
 async function bydoctorAppoinment(res, data) {
     try {
@@ -896,7 +896,7 @@ async function bydoctorAppoinment(res, data) {
         if (userdata.length > 0) {
             for (const iterator of userdata) {
                 catId.push(iterator.test_category_id ?? 0);
-                category.push(iterator.test_name ?? '-');
+                category.push(iterator.test_name ?? "-");
                 cartItem.push({
                     test_id: iterator.test_id ?? null,
                     test_category_id: iterator.test_category_id ?? null,
@@ -907,14 +907,14 @@ async function bydoctorAppoinment(res, data) {
                     image: iterator.image ?? null,
                     //description:iterator.description??null,
                     amount: iterator.amount ?? null,
-                })
+                });
 
             }
         }
 
         const categoryData = await helperQuery.All(`SELECT category_name FROM test_categories WHERE  cat_id IN ('${catId}')`);
         for (const iterators of categoryData) {
-            category.push(iterators.category_name)
+            category.push(iterators.category_name);
         }
 
         var total = helperFunction.totalAmount(cartItem);
@@ -986,7 +986,7 @@ exports.addDrug = (req, res) => {
     if (req.body.length == 0) {
         res.status(404).send({
             status_code: 404,
-            status: 'error',
+            status: "error",
             message: "Please enter atleast one drug name,duration,type,frequency,timing",
         });
         return;
@@ -1015,21 +1015,21 @@ exports.addDrug = (req, res) => {
     //     all_data.push({ 'drug_names': drug_names, 'doctor_id': doctor_id, 'appointment_id': appointment_id, 'drug_duration': drug_duration, 'drug_type': drug_type, 'drug_frequency': drug_frequency, 'drug_timing': drug_timing });
     // });
 
-    const all_data = { 'drug_names': drugs, 'doctor_id': doctor_id, 'appointment_id': appointment_id, 'drug_duration': drug_duration, 'drug_type': drug_type, 'drug_frequency': drug_frequency, 'drug_timing': drug_timing };
+    const all_data = { "drug_names": drugs, "doctor_id": doctor_id, "appointment_id": appointment_id, "drug_duration": drug_duration, "drug_type": drug_type, "drug_frequency": drug_frequency, "drug_timing": drug_timing };
     
     Appointment.addDrug(all_data, (err, data) => {
         if (err) {
             if (err.kind === "not_inserted") {
                 res.status(500).send({
                     status_code: 500,
-                    status: 'error',
-                    message: `Failed ! Please try again later`
+                    status: "error",
+                    message: "Failed ! Please try again later"
                 });
                 return;
             }
             res.status(500).send({
                 status_code: 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -1038,7 +1038,7 @@ exports.addDrug = (req, res) => {
         if (data.insertId) {
             res.status(200).send({
                 status_code: 200,
-                status: 'success',
+                status: "success",
                 message: "Drug Added Successfully!",
                 data: data
             });
@@ -1047,7 +1047,7 @@ exports.addDrug = (req, res) => {
         }
     });
 
-}
+};
 
 // prescription detail
 
@@ -1059,14 +1059,14 @@ exports.prescriptionDetail = (req, res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code: 404,
-                    status: 'error',
-                    message: `Doctor does not exist`
+                    status: "error",
+                    message: "Doctor does not exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code: 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -1078,14 +1078,14 @@ exports.prescriptionDetail = (req, res) => {
                     if (err.kind === "not_found") {
                         res.status(404).send({
                             status_code: 404,
-                            status: 'error',
-                            message: `Appointment does not exist`
+                            status: "error",
+                            message: "Appointment does not exist"
                         });
                         return;
                     }
                     res.status(500).send({
                         status_code: 500,
-                        status: 'error',
+                        status: "error",
                         message: err.message
                     });
                     return;
@@ -1101,14 +1101,14 @@ exports.prescriptionDetail = (req, res) => {
                             if (err.kind === "not_found") {
                                 res.status(404).send({
                                     status_code: 404,
-                                    status: 'error',
-                                    message: `Patient does not exist`
+                                    status: "error",
+                                    message: "Patient does not exist"
                                 });
                                 return;
                             }
                             res.status(500).send({
                                 status_code: 500,
-                                status: 'error',
+                                status: "error",
                                 message: err.message
                             });
                             return;
@@ -1118,7 +1118,7 @@ exports.prescriptionDetail = (req, res) => {
                             all_data["patient_name"] = data.first_name + " " + data.last_name;
                         }
 
-                    })
+                    });
 
 
                     const symptomdata = await Appointment.symptomList(doctor_id, appointment_id);
@@ -1148,7 +1148,7 @@ exports.prescriptionDetail = (req, res) => {
 
                     res.status(200).send({
                         status_code: 200,
-                        status: 'success',
+                        status: "success",
                         message: "Data Found Successfully!",
                         data: all_data
                     });
@@ -1157,10 +1157,10 @@ exports.prescriptionDetail = (req, res) => {
 
 
                 }
-            })
+            });
         }
-    })
-}
+    });
+};
 
 //  lab List by vineet shirdhonkar
 
@@ -1172,14 +1172,14 @@ exports.labList = (req, res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code: 404,
-                    status: 'error',
-                    message: `Doctor does not exist`
+                    status: "error",
+                    message: "Doctor does not exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code: 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -1192,15 +1192,15 @@ exports.labList = (req, res) => {
                     if (err.kind === "not_found") {
                         res.status(404).send({
                             status_code: 404,
-                            status: 'error',
-                            message: `No Record Found`,
+                            status: "error",
+                            message: "No Record Found",
                             data: []
                         });
                         return;
                     }
                     res.status(500).send({
                         status_code: 500,
-                        status: 'error',
+                        status: "error",
                         message: err.message
                     });
                     return;
@@ -1209,7 +1209,7 @@ exports.labList = (req, res) => {
                 if (data) {
                     res.status(200).send({
                         status_code: 200,
-                        status: 'success',
+                        status: "success",
                         message: (data.length > 0) ? "Data Found Successfully!" : "No Data Found",
                         data: data
                     });
@@ -1220,7 +1220,7 @@ exports.labList = (req, res) => {
         }
 
     });
-}
+};
 
 
 
@@ -1234,8 +1234,8 @@ exports.generatePDF = async (req, res) => {
             if (dataAppoi.kind === "not_found") {
                 res.status(404).send({
                     status_code: 404,
-                    status: 'error',
-                    message: `Appointment does not exist`
+                    status: "error",
+                    message: "Appointment does not exist"
                 });
                 return;
             }
@@ -1248,8 +1248,8 @@ exports.generatePDF = async (req, res) => {
                 if (dataClinic.kind === "not_found") {
                     res.status(404).send({
                         status_code: 404,
-                        status: 'error',
-                        message: `clinic not found.`
+                        status: "error",
+                        message: "clinic not found."
                     });
                     return;
                 }
@@ -1259,8 +1259,8 @@ exports.generatePDF = async (req, res) => {
                     if (dataDoctor.kind === "not_found") {
                         res.status(404).send({
                             status_code: 404,
-                            status: 'error',
-                            message: `Doctor does not exist`
+                            status: "error",
+                            message: "Doctor does not exist"
                         });
                         return;
                     }
@@ -1272,15 +1272,15 @@ exports.generatePDF = async (req, res) => {
                     if (data1.kind === "not_found") {
                         res.status(404).send({
                             status_code: 404,
-                            status: 'error',
-                            message: `Patient does not exist`
+                            status: "error",
+                            message: "Patient does not exist"
                         });
                         return;
                     }
 
                     var all_data = {};
 
-                    if (data1 != null && data1 != 'null' && data1 != undefined) {
+                    if (data1 != null && data1 != "null" && data1 != undefined) {
 
                         var patient_name = data1.first_name;
                         var patient_age = helperFunction.getFullAge(data1.date_of_birth ?? "00-00-0000");
@@ -1328,10 +1328,10 @@ exports.generatePDF = async (req, res) => {
                             let mm = today.getMonth() + 1; // Months start at 0!
                             let dd = today.getDate();
 
-                            if (dd < 10) dd = '0' + dd;
-                            if (mm < 10) mm = '0' + mm;
+                            if (dd < 10) dd = "0" + dd;
+                            if (mm < 10) mm = "0" + mm;
 
-                            const current_date = dd + '/' + mm + '/' + yyyy;
+                            const current_date = dd + "/" + mm + "/" + yyyy;
                             let buffers = [];
 
                             var today_time = helperFunction.getCurrentTime();
@@ -1341,43 +1341,43 @@ exports.generatePDF = async (req, res) => {
                             });
 
 
-                            myDoc.on('data', buffers.push.bind(buffers));
-                            var pdf_name = today_time + 'prescription.pdf';
-                            myDoc.pipe(fs.createWriteStream('public/prescription_pdfs/' + pdf_name));
-                            myDoc.pipe(fs.createWriteStream('public/member/' + pdf_name));
+                            myDoc.on("data", buffers.push.bind(buffers));
+                            var pdf_name = today_time + "prescription.pdf";
+                            myDoc.pipe(fs.createWriteStream("public/prescription_pdfs/" + pdf_name));
+                            myDoc.pipe(fs.createWriteStream("public/member/" + pdf_name));
 
                             var myDoc1 = new PDFDocument({
                                 bufferPages: true
                             });
 
 
-                            myDoc1.on('data', buffers.push.bind(buffers));
-                            var pdf_name1 = today_time + 'prescription_for_admin.pdf';
-                            myDoc1.pipe(fs.createWriteStream('public/prescription_pdfs/' + pdf_name1));
+                            myDoc1.on("data", buffers.push.bind(buffers));
+                            var pdf_name1 = today_time + "prescription_for_admin.pdf";
+                            myDoc1.pipe(fs.createWriteStream("public/prescription_pdfs/" + pdf_name1));
 
 
 
-                            const absolutePathOfLogo = resolve(process.env.APP_URL + '/member/' + clinic_logo);
-                            const logo_arr = absolutePathOfLogo.split('/');
+                            const absolutePathOfLogo = resolve(process.env.APP_URL + "/member/" + clinic_logo);
+                            const logo_arr = absolutePathOfLogo.split("/");
 
                             var index = logo_arr.indexOf(logo_arr[3]);
                             if (index >= 0) logo_arr.splice(index, 1);
                             var index = logo_arr.indexOf(logo_arr[3]);
                             if (index >= 0) logo_arr.splice(index, 1);
-                            logo_arr.splice(index, 0, 'public');
+                            logo_arr.splice(index, 0, "public");
 
                             const absolutePathOfSign = resolve(process.env.APP_URL + "/public/signature/" + signature);
-                            const sign_arr = absolutePathOfSign.split('/');
+                            const sign_arr = absolutePathOfSign.split("/");
                             var index = sign_arr.indexOf(sign_arr[3]);
                             if (index >= 0) sign_arr.splice(index, 1);
                             var index = sign_arr.indexOf(sign_arr[3]);
                             if (index >= 0) sign_arr.splice(index, 1);
 
-                            myDoc.font('Times-Roman').fontSize(12);
-                            myDoc1.font('Times-Roman').fontSize(12);
-                            if ((clinic_logo != null)&&(clinic_logo !='')&&(clinic_logo != undefined)) {
+                            myDoc.font("Times-Roman").fontSize(12);
+                            myDoc1.font("Times-Roman").fontSize(12);
+                            if ((clinic_logo != null)&&(clinic_logo !="")&&(clinic_logo != undefined)) {
 
-                                myDoc.image(process.env.PDF_IMG_PATH + 'member/' + clinic_logo, 75, 20, { width: 50, height: 50 });
+                                myDoc.image(process.env.PDF_IMG_PATH + "member/" + clinic_logo, 75, 20, { width: 50, height: 50 });
                             } 
 
                             if (degrees.split(",").length > 1) {
@@ -1393,75 +1393,75 @@ exports.generatePDF = async (req, res) => {
                                 var speciality_heading = "Speciality";
                             }
 
-                            if (alternate_mobile_number == 'undefined' || alternate_mobile_number == null) {
-                                alternate_mobile_number = '';
+                            if (alternate_mobile_number == "undefined" || alternate_mobile_number == null) {
+                                alternate_mobile_number = "";
                             }
 
-                            if (patient_blood_group == 'undefined' || patient_blood_group == null) {
-                                patient_blood_group = 'N/A';
+                            if (patient_blood_group == "undefined" || patient_blood_group == null) {
+                                patient_blood_group = "N/A";
                             }
 
 
                             myDoc.moveDown(0.5);
-                            myDoc.font('Helvetica-Bold').text(clinic_name, {
-                                align: 'left'
+                            myDoc.font("Helvetica-Bold").text(clinic_name, {
+                                align: "left"
                             })
                                 .moveDown(0.5)
                                 .text("Email : " + email_id, {
-                                    align: 'left'
+                                    align: "left"
                                 })
                                 // .text("Landline No. : " + mobile_number, {
                                 //     align: 'left'
                                 // })
-                                .text("Mobile No. : " + (alternate_mobile_number == '' ? 'N/A' : alternate_mobile_number), {
-                                    align: 'left'
+                                .text("Mobile No. : " + (alternate_mobile_number == "" ? "N/A" : alternate_mobile_number), {
+                                    align: "left"
                                 })
                                 .text("Clinic Timing : " + clinic_timing, {
-                                    align: 'left'
+                                    align: "left"
                                 })
                                 .moveUp(4)
                                 .text("Doctor Name : " + doctor_name, 248, 100, {
-                                    align: 'right'
+                                    align: "right"
                                 })
                                 .text(speciality_heading + " : " + specialities, 348, 110, {
-                                    align: 'right',
+                                    align: "right",
                                     lineBreak: true
                                 })
                                 .text(degree_heading + " : " + degrees, {
-                                    align: 'right'
+                                    align: "right"
                                 })
 
-                                .font('Courier-Bold').text("Patient Details", 70, 190, {
-                                    align: 'left'
+                                .font("Courier-Bold").text("Patient Details", 70, 190, {
+                                    align: "left"
                                 })
-                                .font('Times-Roman')
+                                .font("Times-Roman")
                                 .text("Name  : " + patient_name, {
-                                    align: 'left'
+                                    align: "left"
                                 })
                                 .text("Age : " + patient_age, {
-                                    align: 'left'
+                                    align: "left"
                                 })
                                 .text("Blood Group : " + patient_blood_group, {
-                                    align: 'left'
+                                    align: "left"
                                 })
                                 .text(current_date, {
-                                    align: 'right'
+                                    align: "right"
                                 });
 
                             myDoc1.text("Doctor Name : " + doctor_name, 248, 100, {
-                                align: 'right'
+                                align: "right"
                             })
                             .text(speciality_heading + " : " + specialities, 348, 110, {
-                                    align: 'right',
+                                    align: "right",
                                     lineBreak: true
                                 })
                             .text(degree_heading + " : " + degrees, {
-                                    align: 'right'
+                                    align: "right"
                             })
                             .moveDown(1.5)
                             .text(current_date, {
-                                    align: 'right'
-                            })
+                                    align: "right"
+                            });
 
 
 
@@ -1478,14 +1478,14 @@ exports.generatePDF = async (req, res) => {
                                 if (cheif_complaint_data.length > 0) {
                                     for (item of cheif_complaint_data) {
                                         if (item.source == null) {
-                                            item.source = '';
+                                            item.source = "";
                                         }
-                                        cheif_complaint_rows.push([item.source ?? '']);
+                                        cheif_complaint_rows.push([item.source ?? ""]);
                                     }
 
                                     const table1 = {
-                                        title: 'History & Symptoms',
-                                        headers: ['Chief Complaint'],
+                                        title: "History & Symptoms",
+                                        headers: ["Chief Complaint"],
                                         rows: cheif_complaint_rows
                                     };
 
@@ -1506,14 +1506,14 @@ exports.generatePDF = async (req, res) => {
                                 if (illness_data.length > 0) {
                                     for (item of illness_data) {
                                         if (item.source == null) {
-                                            item.source = '';
+                                            item.source = "";
                                         }
                                         illness_rows.push([item.source]);
                                     }
 
                                     const table2 = {
 
-                                        headers: ['History of presenting illness'],
+                                        headers: ["History of presenting illness"],
                                         rows: illness_rows
                                     };
 
@@ -1535,13 +1535,13 @@ exports.generatePDF = async (req, res) => {
                                 if (past_medical_history_data.length > 0) {
                                     for (item of past_medical_history_data) {
                                         if (item.source == null) {
-                                            item.source = '';
+                                            item.source = "";
                                         }
                                         past_medical_history_rows.push([item.source]);
                                     }
 
                                     const table3 = {
-                                        headers: ['Past Medical History'],
+                                        headers: ["Past Medical History"],
                                         rows: past_medical_history_rows
                                     };
 
@@ -1563,13 +1563,13 @@ exports.generatePDF = async (req, res) => {
                                 if (alergy_data.length > 0) {
                                     for (item of alergy_data) {
                                         if (item.source == null) {
-                                            item.source = '';
+                                            item.source = "";
                                         }
                                         alergy_rows.push([item.source]);
                                     }
 
                                     const table4 = {
-                                        headers: ['Allergy'],
+                                        headers: ["Allergy"],
                                         rows: alergy_rows
                                     };
 
@@ -1590,13 +1590,13 @@ exports.generatePDF = async (req, res) => {
                                 if (parent_history_data.length > 0) {
                                     for (item of parent_history_data) {
                                         if (item.source == null) {
-                                            item.source = '';
+                                            item.source = "";
                                         }
                                         parent_history_rows.push([item.source]);
                                     }
 
                                     const table4 = {
-                                        headers: ['Family History'],
+                                        headers: ["Family History"],
                                         rows: parent_history_rows
                                     };
 
@@ -1617,13 +1617,13 @@ exports.generatePDF = async (req, res) => {
                                 if (addiction_history_data.length > 0) {
                                     for (item of addiction_history_data) {
                                         if (item.source == null) {
-                                            item.source = '';
+                                            item.source = "";
                                         }
                                         addiction_history_rows.push([item.source]);
                                     }
 
                                     const table5 = {
-                                        headers: ['Addiction History'],
+                                        headers: ["Addiction History"],
                                         rows: addiction_history_rows
                                     };
 
@@ -1647,13 +1647,13 @@ exports.generatePDF = async (req, res) => {
                                 if (menstrual_data.length > 0) {
                                     for (item of menstrual_data) {
                                         if (item.source == null) {
-                                            item.source = '';
+                                            item.source = "";
                                         }
                                         menstrual_rows.push([item.source]);
                                     }
 
                                     const table6 = {
-                                        headers: ['Menstrual/OBS'],
+                                        headers: ["Menstrual/OBS"],
                                         rows: menstrual_rows
                                     };
 
@@ -1677,15 +1677,15 @@ exports.generatePDF = async (req, res) => {
                                 if (health_status_list_data.length > 0) {
                                     for (item of health_status_list_data) {
                                         if (item.heart_rate == null) {
-                                            item.heart_rate = '';
+                                            item.heart_rate = "";
                                         }
                                         if (item.respiratory_rate == null) {
-                                            item.respiratory_rate = '';
+                                            item.respiratory_rate = "";
                                         }
                                         if (item.blood_pressure == null) {
-                                            item.blood_pressure = '';
-                                            var high_blood_pressure = '';
-                                            var low_blood_pressure = '';
+                                            item.blood_pressure = "";
+                                            var high_blood_pressure = "";
+                                            var low_blood_pressure = "";
                                         } else {
                                             var bp = item.blood_pressure.split("/");
                                             var high_blood_pressure = bp[0];
@@ -1693,14 +1693,14 @@ exports.generatePDF = async (req, res) => {
                                         }
 
                                         if (item.oxygen_saturation == null) {
-                                            item.oxygen_saturation = '';
+                                            item.oxygen_saturation = "";
                                         }
                                         if (item.temperature == null) {
-                                            item.temperature = '';
+                                            item.temperature = "";
                                         }
 
                                         if (item.bmi == null) {
-                                            item.bmi = '';
+                                            item.bmi = "";
                                         }
                                         health_status_rows.push([item.heart_rate, item.respiratory_rate, high_blood_pressure, low_blood_pressure, item.oxygen_saturation, item.temperature]);
                                     }
@@ -1708,8 +1708,8 @@ exports.generatePDF = async (req, res) => {
 
                                     var two_number = "";
                                     const table7 = {
-                                        title: 'Vitals',
-                                        headers: ['Heart Rate(beats/min)', 'Respiratory Rate(breaths/min)', 'Systolic(mmHg)', 'Diastolic(mmHg)', 'Oxygen Saturation(%)', 'Temperature(F)'],
+                                        title: "Vitals",
+                                        headers: ["Heart Rate(beats/min)", "Respiratory Rate(breaths/min)", "Systolic(mmHg)", "Diastolic(mmHg)", "Oxygen Saturation(%)", "Temperature(F)"],
                                         rows: health_status_rows
                                     };
 
@@ -1722,43 +1722,43 @@ exports.generatePDF = async (req, res) => {
 
                             myDoc.text("Clinic Address : " + clinic_address, 10, myDoc.page.height - 50, {
                                 lineBreak: false,
-                                align: 'left'
+                                align: "left"
                             });
                             myDoc.addPage();
                             myDoc1.addPage();
 
-                            myDoc.font('Times-Roman').fontSize(12);
-                            myDoc1.font('Times-Roman').fontSize(12);
+                            myDoc.font("Times-Roman").fontSize(12);
+                            myDoc1.font("Times-Roman").fontSize(12);
 
-                            if ((clinic_logo != null)&&(clinic_logo !='')&&(clinic_logo != undefined)) {
-                                myDoc.image(process.env.PDF_IMG_PATH + 'member/' + clinic_logo, 75, 20, { width: 50, height: 50 });
+                            if ((clinic_logo != null)&&(clinic_logo !="")&&(clinic_logo != undefined)) {
+                                myDoc.image(process.env.PDF_IMG_PATH + "member/" + clinic_logo, 75, 20, { width: 50, height: 50 });
                             } 
 
-                            myDoc.font('Helvetica-Bold').text(clinic_name, {
-                                align: 'left'
+                            myDoc.font("Helvetica-Bold").text(clinic_name, {
+                                align: "left"
                             })
                             .moveDown(0.5)
                             .text("Email : " + email_id, {
-                                align: 'left'
+                                align: "left"
                             })
-                            .text("Mobile No. : " + (alternate_mobile_number == '' ? 'N/A' : alternate_mobile_number), {
-                                align: 'left'
+                            .text("Mobile No. : " + (alternate_mobile_number == "" ? "N/A" : alternate_mobile_number), {
+                                align: "left"
                                 })
                             .text("Clinic Timing : " + clinic_timing, {
-                                align: 'left'
+                                align: "left"
                             })
                             .text("Doctor Name : " + doctor_name, 248, 100, {
-                                align: 'right'
+                                align: "right"
                                 })
                                 .text(speciality_heading + " : " + specialities, 348, 110, {
-                                align: 'right',
+                                align: "right",
                                 lineBreak: true
                                 })
                                 .text(degree_heading + " : " + degrees, {
-                                align: 'right'
+                                align: "right"
                                 })
-                                .font('Courier-Bold').text("", 70, 190, {
-                            })
+                                .font("Courier-Bold").text("", 70, 190, {
+                            });
 
                             
    
@@ -1781,27 +1781,27 @@ exports.generatePDF = async (req, res) => {
 
                                     for (item of diagnostic_list_data) {
                                         if (item.dignostic_names == null) {
-                                            item.dignostic_names = '';
+                                            item.dignostic_names = "";
                                         }
                                         if (item.lab_name == null) {
-                                            item.lab_name = '';
+                                            item.lab_name = "";
                                         }
                                         if (item.test_name == null) {
-                                            item.test_name = '';
+                                            item.test_name = "";
                                         }
 
                                         if (item.appointment_date == null) {
-                                            item.appointment_date = '';
+                                            item.appointment_date = "";
                                         }
                                         if (item.appointment_time == null) {
-                                            item.appointment_time = '';
+                                            item.appointment_time = "";
                                         }
-                                        diagnostic_rows.push([item.dignostic_names, item.lab_name, item.test_name, (item.appointment_date) ? moment(item.appointment_date).format('DD/MM/YYYY') : '', item.appointment_time]);
+                                        diagnostic_rows.push([item.dignostic_names, item.lab_name, item.test_name, (item.appointment_date) ? moment(item.appointment_date).format("DD/MM/YYYY") : "", item.appointment_time]);
 
                                     }
                                     const table9 = {
-                                        title: 'Diagonostic Test',
-                                        headers: ['Diagnostic', 'Lab / Radiology Name', 'Test Name', 'Appointment Date', 'Appointment Time'],
+                                        title: "Diagonostic Test",
+                                        headers: ["Diagnostic", "Lab / Radiology Name", "Test Name", "Appointment Date", "Appointment Time"],
                                         rows: diagnostic_rows
                                     };
 
@@ -1823,7 +1823,7 @@ exports.generatePDF = async (req, res) => {
                                 if (examination_finding_list_data.length > 0) {
                                     for (item of examination_finding_list_data) {
                                         if (item.examination_finding_name == null) {
-                                            item.examination_finding_name = '';
+                                            item.examination_finding_name = "";
                                         }
 
                                         examination_finding_rows.push([item.examination_finding_name]);
@@ -1831,7 +1831,7 @@ exports.generatePDF = async (req, res) => {
 
                                     const table8 = {
                                         // title: 'Examination Findings',
-                                        headers: ['Examination Findings'],
+                                        headers: ["Examination Findings"],
                                         rows: examination_finding_rows
                                     };
                                     myDoc.table(table8, {});
@@ -1846,7 +1846,7 @@ exports.generatePDF = async (req, res) => {
 
                             myDoc.text("Clinic Address : " + clinic_address, 10, myDoc.page.height - 50, {
                                 lineBreak: false,
-                                align: 'left'
+                                align: "left"
                             });
                                 
 
@@ -1854,39 +1854,39 @@ exports.generatePDF = async (req, res) => {
                             myDoc1.addPage();
 
                            
-                            myDoc.font('Times-Roman').fontSize(12);
-                            myDoc1.font('Times-Roman').fontSize(12);
+                            myDoc.font("Times-Roman").fontSize(12);
+                            myDoc1.font("Times-Roman").fontSize(12);
                             
-                            if ((clinic_logo != null)&&(clinic_logo !='')&&(clinic_logo != undefined)) {
-                                myDoc.image(process.env.PDF_IMG_PATH + 'member/' + clinic_logo, 75, 20, { width: 50, height: 50 });
+                            if ((clinic_logo != null)&&(clinic_logo !="")&&(clinic_logo != undefined)) {
+                                myDoc.image(process.env.PDF_IMG_PATH + "member/" + clinic_logo, 75, 20, { width: 50, height: 50 });
                             } 
 
 
-                            myDoc.font('Helvetica-Bold').text(clinic_name, {
-                                align: 'left'
+                            myDoc.font("Helvetica-Bold").text(clinic_name, {
+                                align: "left"
                             })
                             .moveDown(0.5)
                             .text("Email : " + email_id, {
-                                align: 'left'
+                                align: "left"
                             })
-                            .text("Mobile No. : " + (alternate_mobile_number == '' ? 'N/A' : alternate_mobile_number), {
-                                align: 'left'
+                            .text("Mobile No. : " + (alternate_mobile_number == "" ? "N/A" : alternate_mobile_number), {
+                                align: "left"
                                 })
                             .text("Clinic Timing : " + clinic_timing, {
-                                align: 'left'
+                                align: "left"
                             })
                             .text("Doctor Name : " + doctor_name, 248, 100, {
-                                align: 'right'
+                                align: "right"
                                 })
                                 .text(speciality_heading + " : " + specialities, 348, 110, {
-                                align: 'right',
+                                align: "right",
                                 lineBreak: true
                                 })
                                 .text(degree_heading + " : " + degrees, {
-                                align: 'right'
+                                align: "right"
                                 })
-                                .font('Courier-Bold').text("", 70, 190, {
-                            })
+                                .font("Courier-Bold").text("", 70, 190, {
+                            });
 
 
                             // pdf 3rd page content
@@ -1903,7 +1903,7 @@ exports.generatePDF = async (req, res) => {
                                 if (advice_list_data.length > 0) {
                                     for (item of advice_list_data) {
                                         if (item.advice_name == null) {
-                                            item.advice_name = '';
+                                            item.advice_name = "";
                                         }
 
                                         advice_rows.push([item.advice_name]);
@@ -1911,7 +1911,7 @@ exports.generatePDF = async (req, res) => {
 
                                     const table10 = {
                                         // title: 'Advice',
-                                        headers: ['Advice'],
+                                        headers: ["Advice"],
                                         rows: advice_rows
                                     };
 
@@ -1935,7 +1935,7 @@ exports.generatePDF = async (req, res) => {
                                 if (follow_up_list_data.length > 0) {
                                     for (item of follow_up_list_data) {
                                         if (item.follow_up_interval == null) {
-                                            item.follow_up_interval = '';
+                                            item.follow_up_interval = "";
                                         }
 
                                         follow_up_rows.push([item.follow_up_interval]);
@@ -1943,7 +1943,7 @@ exports.generatePDF = async (req, res) => {
 
                                     const table12 = {
                                         // title: 'Follow UP',
-                                        headers: ['Follow Up'],
+                                        headers: ["Follow Up"],
                                         rows: follow_up_rows
                                     };
 
@@ -1967,16 +1967,16 @@ exports.generatePDF = async (req, res) => {
                                 if (drug_list_data.length > 0) {
                                     for (item of drug_list_data) {
                                         if (item.drug_names == null) {
-                                            item.drug_names = '';
+                                            item.drug_names = "";
                                         }
-                                        drug_rows.push([item.drug_names ?? '']);
+                                        drug_rows.push([item.drug_names ?? ""]);
                                     }
 
 
 
                                     const table11 = {
                                         // title: 'Drugs',
-                                        headers: ['Drugs'],
+                                        headers: ["Drugs"],
                                         rows: drug_rows
                                     };
 
@@ -1989,14 +1989,14 @@ exports.generatePDF = async (req, res) => {
 
                             // pdf 3rd page  content
                                
-                            if ((signature != null)&&(signature !='')&&(signature != undefined)) {
+                            if ((signature != null)&&(signature !="")&&(signature != undefined)) {
 
                                 myDoc.image(process.env.PDF_IMG_PATH + "signature/" + signature, 480, 650, {
                                     width: 100,
                                     height: 100
                                 });
                             } else {
-                                myDoc.image(process.env.PDF_IMG_PATH + "member/" + 'demouser.png', 480, 650, {
+                                myDoc.image(process.env.PDF_IMG_PATH + "member/" + "demouser.png", 480, 650, {
                                     width: 100,
                                     height: 100
                                 });
@@ -2005,12 +2005,12 @@ exports.generatePDF = async (req, res) => {
 
                             myDoc.text("Clinic Address : " + clinic_address, 10, myDoc.page.height - 50, {
                                 lineBreak: false,
-                                align: 'left'
+                                align: "left"
                             });
                             myDoc.end();
                             myDoc1.end();
 
-                            myDoc.on('end', async () => {
+                            myDoc.on("end", async () => {
 
                                 const appointmentComplite = await helperQuery.All(`UPDATE  appointments set status = 'Completed' , prescription_pdf_name = '${pdf_name}' , prescription_pdf_name_for_admin = '${pdf_name1}' WHERE id = '${appointment_id}'`);
                                 const appointmentData = await helperQuery.All(`SELECT*FROM appointments WHERE id ='${appointment_id}'`);
@@ -2022,7 +2022,7 @@ exports.generatePDF = async (req, res) => {
                                     document_title: "prescription pdf file",
                                     document_file: pdf_name,
                                     type: "prescription"
-                                }
+                                };
                                 await Document.addUserPrescriptionDocument(userDoc);
                                 if (followUpData.length > 0) {
                                     const patient_noticData = {
@@ -2030,29 +2030,29 @@ exports.generatePDF = async (req, res) => {
                                         by: "message",
                                         from_user_id: appointmentData[0].doctor_id,
                                         to_user_id: appointmentData[0].user_id,
-                                        title: 'Appointment Booked',
+                                        title: "Appointment Booked",
                                         type: "radio_appointment_booked",
                                         appointment_date: followUpData[0].follow_up_interval,
-                                        time_slot: '',
-                                    }
+                                        time_slot: "",
+                                    };
                                     Notification.AddNotification(patient_noticData);
                                 }
 
                                 return res.status(200).send({
                                     status_code: 200,
-                                    status: 'success',
+                                    status: "success",
                                     pdf_name: pdf_name,
-                                    pdf_url: process.env.APP_URL + 'prescription_pdfs/' + pdf_name,
-                                    pdf_url_for_admin: process.env.APP_URL + 'prescription_pdfs/' + pdf_name1,
-                                    message: 'PDF Generated Successfully'
+                                    pdf_url: process.env.APP_URL + "prescription_pdfs/" + pdf_name,
+                                    pdf_url_for_admin: process.env.APP_URL + "prescription_pdfs/" + pdf_name1,
+                                    message: "PDF Generated Successfully"
                                 });
 
                             });
                         }else{
                             return res.status(500).send({
                                     status_code: 500,
-                                    status: 'error',
-                                    message: 'Clinic Header and Footer must be required.'
+                                    status: "error",
+                                    message: "Clinic Header and Footer must be required."
                                 });
                         }
 
@@ -2064,12 +2064,12 @@ exports.generatePDF = async (req, res) => {
         console.log("error", error);
         return res.status(500).json({
             status_code: 500,
-            status: 'error',
+            status: "error",
             message: "something went wrong"
-        })
+        });
     }
 
-}
+};
 
 
 
@@ -2091,14 +2091,14 @@ exports.getAppointmentList = (req, res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code: 404,
-                    status: 'error',
-                    message: `User does not exist`,
+                    status: "error",
+                    message: "User does not exist",
                 });
                 return;
             }
             res.status(500).send({
                 status_code: 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -2113,15 +2113,15 @@ exports.getAppointmentList = (req, res) => {
                     if (err.kind === "not_found") {
                         res.status(404).send({
                             status_code: 404,
-                            status: 'error',
-                            message: `No Record Found`,
+                            status: "error",
+                            message: "No Record Found",
                             data: []
                         });
                         return;
                     }
                     res.status(500).send({
                         status_code: 500,
-                        status: 'error',
+                        status: "error",
                         message: err.message
                     });
                     return;
@@ -2130,7 +2130,7 @@ exports.getAppointmentList = (req, res) => {
                 if (data) {
                     res.status(200).send({
                         status_code: 200,
-                        status: 'success',
+                        status: "success",
                         message: (data.length > 0) ? "Data Found Successfully" : "No Data Found",
                         data: data
                     });
@@ -2142,4 +2142,4 @@ exports.getAppointmentList = (req, res) => {
         }
 
     });
-}
+};

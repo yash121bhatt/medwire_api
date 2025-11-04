@@ -1,8 +1,8 @@
-const Document = require('../models/document.model');
-const helperQuery = require('../helper/helperQuery');
-const helperFunction = require('../helper/helperFunction');
-const { async } = require('q');
-const moment = require('moment');
+const Document = require("../models/document.model");
+const helperQuery = require("../helper/helperQuery");
+const helperFunction = require("../helper/helperFunction");
+const { async } = require("q");
+const moment = require("moment");
 
 exports.add_document = (req,res) => { 
     const {user_id,member_id,document_title,document_date,type,scan_doc_text} =req.body;
@@ -12,7 +12,7 @@ exports.add_document = (req,res) => {
         if(err){
             res.status(500).send({
                 status_code : "500",
-                status: 'error',
+                status: "error",
                 message: err
             });
             return;
@@ -20,14 +20,14 @@ exports.add_document = (req,res) => {
         if (data) {
             res.status(200).send({
                 status_code : "200",
-                status: 'success',
+                status: "success",
                 message : "Added Successfully",
                 data: data
             });
             return;
         }
-    })
-}
+    });
+};
 exports.list_document = (req, res) => {
     const { user_id,member_id,type} = req.body;
     Document.list_document(user_id,member_id,type, (err, data) => {
@@ -35,14 +35,14 @@ exports.list_document = (req, res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code : "404",
-                    status: 'error',
-                    message: `Data not found`
+                    status: "error",
+                    message: "Data not found"
                 });
                 return;
             }
             res.status(500).send({
                 status_code : "500",
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -53,11 +53,11 @@ exports.list_document = (req, res) => {
                 status_code:"200",
                 status:"success",
                 data:sortedData
-            })
+            });
         }
     });
 
-}
+};
 exports.delete_document = (req,res) => { 
     const {id,user_id} =req.body;
     helperQuery.get({table:"users_documents",where:"id="+id+" AND user_id="+user_id},(err,data)=>{
@@ -71,25 +71,25 @@ exports.delete_document = (req,res) => {
                 if(err){
                     res.status(500).send({
                         status_code : "500",
-                        status: 'error',
-                        message: 'Something Went Wrong'
+                        status: "error",
+                        message: "Something Went Wrong"
                     });
                     return;
                 }
                 if (data) {
                     res.status(200).send({
                         status_code : "200",
-                        status: 'success',
+                        status: "success",
                         message : "Deleted Successfully",
                         data: data
                     });
                     helperFunction.removeFileFromFolder(fileName);
                     return;
                 }
-            })
+            });
         }
     });
-}
+};
 exports.list_document_six = (req,res)=>{
     const {user_id,member_id} = req.body;
     Document.list_document_six(user_id,member_id,(err,data)=>{
@@ -98,7 +98,7 @@ exports.list_document_six = (req,res)=>{
                 status_code:"500",
                 status:"error",
                 message:"Something went to wrong"
-            })
+            });
         }
         if(data){
             let sortedData = data.slice().sort((a, b) =>parseInt(helperFunction.dateFormat(b.document_date,"yyyymmdd")) - parseInt(helperFunction.dateFormat(a.document_date,"yyyymmdd")));
@@ -106,10 +106,10 @@ exports.list_document_six = (req,res)=>{
                 status_code:"200",
                 status:"success",
                 data:sortedData
-            })   
+            });   
         }
-    })
-}
+    });
+};
 exports.search_document = (req,res)=>{
     const { search,user_id } = req.body;
     if (user_id===undefined || user_id===null) {
@@ -134,15 +134,15 @@ exports.search_document = (req,res)=>{
             const response = [];
             for(const item of data)
             {
-                const id = item.id !=null ? item.id : '';
-                const profile_image = item.profile_image !=null ? item.profile_image : '';
-                const profile = item.profile_image !=null ? process.env.APP_URL+'member/'+item.profile_image : '';
-                const first_name = item.first_name !=null ? item.first_name : '';
-                const document_title = item.document_title !=null ? item.document_title : '';
-                const document_file = item.document_file !=null ? item.document_file : '';
-                const document = item.document_file !=null ? process.env.APP_URL+'member/'+item.document_file : '';
-                const document_date = item.document_date !=null ? item.document_date : '';
-                const scan_doc_text = item.scan_doc_text !=null ? item.scan_doc_text : '';
+                const id = item.id !=null ? item.id : "";
+                const profile_image = item.profile_image !=null ? item.profile_image : "";
+                const profile = item.profile_image !=null ? process.env.APP_URL+"member/"+item.profile_image : "";
+                const first_name = item.first_name !=null ? item.first_name : "";
+                const document_title = item.document_title !=null ? item.document_title : "";
+                const document_file = item.document_file !=null ? item.document_file : "";
+                const document = item.document_file !=null ? process.env.APP_URL+"member/"+item.document_file : "";
+                const document_date = item.document_date !=null ? item.document_date : "";
+                const scan_doc_text = item.scan_doc_text !=null ? item.scan_doc_text : "";
                 const document_file_url =helperFunction.is_file_exist(item.document_file );
                 const lab_radio_type = helperFunction.check_file_DCM(item.document_file);
                 response.push({id,profile_image,profile,first_name,document_title,document_file,document,document_date,scan_doc_text,document_file_url,lab_radio_type});
@@ -157,10 +157,10 @@ exports.search_document = (req,res)=>{
                 status_code:"200",
                 status:"success",
                 data:sortedData
-            })
+            });
         }
-    })
-}
+    });
+};
 async function dateConverter(str,duration){
     var date = new Date(str),
     mnth = ("0" + (date.getMonth()+1)).slice(-2),
@@ -168,14 +168,14 @@ async function dateConverter(str,duration){
     hours  = ("0" + date.getHours()).slice(-2);
     minutes = ("0" + date.getMinutes()).slice(-2);
     seconds  = ("0" + date.getSeconds()).slice(-2);
-    if(duration == 'year'){
+    if(duration == "year"){
         return date.getFullYear();
     }
-    else if(duration == 'month'){
+    else if(duration == "month"){
         return ("0" + (date.getMonth()+1)).slice(-2);
     }
-    else if(duration == 'date'){
-        return `${year}/${mnth}/${day} ${hours}:${minutes}:${seconds}`
+    else if(duration == "date"){
+        return `${year}/${mnth}/${day} ${hours}:${minutes}:${seconds}`;
     }
  }
 exports.searchDocumentTimeline = (req,res)=>{
@@ -206,7 +206,7 @@ exports.searchDocumentTimeline = (req,res)=>{
             const mapData =[];
             const response =[];
             const years =[];
-            const datas = []
+            const datas = [];
                
 
             // const monthNames = [
@@ -226,13 +226,13 @@ exports.searchDocumentTimeline = (req,res)=>{
             }
 
             for(const item of data){
-                if ((item.document_file !=null && item.document_file !='null' && item.document_file !='' && helperFunction.is_file_exist(item.document_file)!=null)|| (item.dcm_document_file!=null && item.dcm_document_file!='null' && item.dcm_document_file!='' && helperFunction.is_file_exist(item.dcm_document_file)!=null)) {
+                if ((item.document_file !=null && item.document_file !="null" && item.document_file !="" && helperFunction.is_file_exist(item.document_file)!=null)|| (item.dcm_document_file!=null && item.dcm_document_file!="null" && item.dcm_document_file!="" && helperFunction.is_file_exist(item.dcm_document_file)!=null)) {
                     console.log(item.document_file !=null || item.dcm_document_file!=null);
                     const month_name = helperFunction.get_Moths(item.document_date);
                     const id = item.id !=null ? item.id : null;
                     const year = helperFunction.get_Full_Year(item.document_date);
                     const profile_image = item.profile_image !=null ? item.profile_image : null;
-                    const profile = item.profile_image !=null ? process.env.APP_URL+'member/'+item.profile_image : null;
+                    const profile = item.profile_image !=null ? process.env.APP_URL+"member/"+item.profile_image : null;
                     const first_name = item.first_name !=null ? item.first_name : null;
                     const document_title = item.document_title !=null && item.document_title !="" && item.document_title !="null" ? item.document_title : null;
                     const document_date = item.document_date !=null ? item.document_date : null;
@@ -257,7 +257,7 @@ exports.searchDocumentTimeline = (req,res)=>{
                     helperFunction.get_Full_Year(udoc.document_date)!=undefined && 
                     helperFunction.get_Full_Year(udoc.document_date)!=NaN &&
                     helperFunction.get_Full_Year(udoc.document_date)==year &&  
-                    helperFunction.get_Moths(udoc.document_date)==month 
+                    helperFunction.get_Moths(udoc.document_date)==month; 
                     if (valid) {
                         return true;
                     }
@@ -270,7 +270,7 @@ exports.searchDocumentTimeline = (req,res)=>{
                     helperFunction.get_Full_Year(udoc.document_date)!=undefined &&
                     helperFunction.get_Full_Year(udoc.document_date)==year;
                     if (valid) {
-                       return true 
+                       return true; 
                     }
                 });
             }else{
@@ -280,7 +280,7 @@ exports.searchDocumentTimeline = (req,res)=>{
                     helperFunction.get_Full_Year(udoc.document_date)!=NaN &&
                     helperFunction.get_Full_Year(udoc.document_date)!=undefined;
                     if (valid) {
-                       return true 
+                       return true; 
                     }
                 });
             }
@@ -326,7 +326,7 @@ exports.searchDocumentTimeline = (req,res)=>{
                 const obj = {};
 
                 for (let i = 0, len = iterator.yearData.length; i < len; i++) {
-                obj[iterator.yearData[i]['monthName']] = iterator.yearData[i];
+                obj[iterator.yearData[i]["monthName"]] = iterator.yearData[i];
                 }
 
                 iterator.yearData = new Array();
@@ -344,10 +344,10 @@ exports.searchDocumentTimeline = (req,res)=>{
                 years:yeard,
                 data:datas,
                 // data:uniqueData
-            })
+            });
         }
-    })
-}
+    });
+};
 exports.latestTestDocs = async(req,res)=>{
     try {
         const {user_id,member_id,type} = req.body;
@@ -374,7 +374,7 @@ exports.latestTestDocs = async(req,res)=>{
                 document_file_url:helperFunction.is_file_exist(item.document_file),
                 lab_radio_type:item.lab_radio_type??null,
                 type:item.type??null,
-            })
+            });
         });
         
         let sortedData = response.slice().sort((a, b) =>parseInt(helperFunction.dateFormat(b.document_date,"yyyymmdd")) - parseInt(helperFunction.dateFormat(a.document_date,"yyyymmdd")));
@@ -394,4 +394,4 @@ exports.latestTestDocs = async(req,res)=>{
             message:"something went to wrong!",
         });
     }
-}
+};

@@ -1,7 +1,7 @@
-const mysql = require('mysql2');
-const helperFunction = require('../helper/helperFunction');
+const mysql = require("mysql2");
+const helperFunction = require("../helper/helperFunction");
 // const { logger } = require('../utils/logger');
-const { DB_HOST, DB_PORT, DB_USER, DB_PASS, DB_NAME } = require('../utils/secrets');
+const { DB_HOST, DB_PORT, DB_USER, DB_PASS, DB_NAME } = require("../utils/secrets");
 
 // const connection = mysql.createConnection({
 //     host: DB_HOST,

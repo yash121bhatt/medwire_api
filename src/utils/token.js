@@ -1,12 +1,12 @@
-const jwt = require('jsonwebtoken');
-const { JWT_SECRET_KEY } = require('../utils/secrets');
-const { logger } = require('./logger');
+const jwt = require("jsonwebtoken");
+const { JWT_SECRET_KEY } = require("../utils/secrets");
+const { logger } = require("./logger");
 
-const generate = (id) => jwt.sign({ id }, JWT_SECRET_KEY, { expiresIn: '356d'});
+const generate = (id) => jwt.sign({ id }, JWT_SECRET_KEY, { expiresIn: "356d"});
 
 const decode = (token) => {
     try {
-        return jwt.verify(token, JWT_SECRET_KEY)
+        return jwt.verify(token, JWT_SECRET_KEY);
     } catch (error) {
         logger.error(error);
     }
@@ -15,4 +15,4 @@ const decode = (token) => {
 module.exports = {
     generate,
     decode
-}
+};

@@ -1,7 +1,7 @@
-const { unlink } =require('node:fs/promises');
-const hbs = require('nodemailer-express-handlebars')
-const nodemailer = require('nodemailer')
-const path = require('path')
+const { unlink } =require("node:fs/promises");
+const hbs = require("nodemailer-express-handlebars");
+const nodemailer = require("nodemailer");
+const path = require("path");
 
 // initialize nodemailer SMTP transport
 let transporter = nodemailer.createTransport({
@@ -19,25 +19,25 @@ let transporter = nodemailer.createTransport({
 const handlebarOptions = {
     viewEngine: {
         extname: "handlebars",
-        partialsDir: path.resolve('./public/views/'),
+        partialsDir: path.resolve("./public/views/"),
         defaultLayout: false,
     },
-    viewPath: path.resolve('./public/views/'),
+    viewPath: path.resolve("./public/views/"),
 };
 
 // use a template file with nodemailer
 // transporter.use('compile', hbs(handlebarOptions))
 const template = (transporter,temp)=>{
     if (temp==true) {
-       return transporter.use('compile', hbs(handlebarOptions));
+       return transporter.use("compile", hbs(handlebarOptions));
     } 
-}
+};
 
 
 var mailOptions = {
-    from: '"Adebola" <adebola.rb.js@gmail.com>', // sender address
-    to: 'krishnapawar90906@gmail.com', // list of receivers
-    subject: 'Welcome!',
+    from: "\"Adebola\" <adebola.rb.js@gmail.com>", // sender address
+    to: "krishnapawar90906@gmail.com", // list of receivers
+    subject: "Welcome!",
     // template: 'email', // the name of the template file i.e email.handlebars
     // context:{
     //     name: "Adebola", // replace {{name}} with Adebola
@@ -64,12 +64,12 @@ const autoGenPassword = ()=>{
         password += chars.substring(randomNumber,randomNumber+1);
     }
     return password;
-} 
+}; 
 
 //auto string to array converter 
-const convertStringToArray  = (str,index,bythe=' ')=>{
+const convertStringToArray  = (str,index,bythe=" ")=>{
     return str.split(bythe)[index];
-}
+};
 
 //a simple date formatting function
 function dateFormat(inputDate, format) {
@@ -118,20 +118,20 @@ const uniqueEmailAndMobile = (check,res)=>{
         }
     } 
    return errorMessage;
-}
+};
 // delete file from folder function folderPath is folder name defualt will be member 
 // and basefolder will be public if want to change path you will to give path in
 // in proper order for exma. => removeFileFromFolder('file name','file folder name','base folder name')
-const removeFileFromFolder = async (fileName,folderPath='member',baseFolder='public',)=>{
+const removeFileFromFolder = async (fileName,folderPath="member",baseFolder="public",)=>{
     try {
-        const deleteFile =baseFolder+'/'+folderPath+'/'+fileName;
+        const deleteFile =baseFolder+"/"+folderPath+"/"+fileName;
         await unlink(deleteFile);
-        console.log('file remove Successfully deleted!');
+        console.log("file remove Successfully deleted!");
       } catch (error) {
-        console.error('there was an error:', error.message);
+        console.error("there was an error:", error.message);
         
       }
-} 
+}; 
 
  module.exports = {
     transporter,
@@ -142,4 +142,4 @@ const removeFileFromFolder = async (fileName,folderPath='member',baseFolder='pub
     dateFormat,
     uniqueEmailAndMobile,
     removeFileFromFolder
- }
+ };

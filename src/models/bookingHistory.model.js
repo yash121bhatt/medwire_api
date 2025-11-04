@@ -1,4 +1,4 @@
-const db = require('../config/db.config');
+const db = require("../config/db.config");
 class bookingHistory{
     //radio/lab
     static patientBillingHistoryLabRadio({ role_id, user_id }) {

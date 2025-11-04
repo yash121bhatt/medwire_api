@@ -1,4 +1,4 @@
-const db = require('../config/db.config');
+const db = require("../config/db.config");
 class addByDoctor {
 
     //lab/radio list by role_id 
@@ -7,7 +7,7 @@ class addByDoctor {
         return  new Promise((resolve,reject)=>{
             const cids =ids.length >0?ids:0;
             const roleId = role_id!=undefined && role_id==4 ? role_id:3;
-            if (search!=undefined  && search!='') {
+            if (search!=undefined  && search!="") {
                 var que = "SELECT * FROM users WHERE approve_status='Approve' AND role_id="+roleId+" AND (first_name LIKE '%${search}%') AND id NOT IN ("+cids+") ORDER BY id DESC";
             }else{
                 var que = "SELECT * FROM users WHERE approve_status='Approve' AND role_id="+roleId+" AND id NOT IN ("+cids+") ORDER BY id DESC";
@@ -25,7 +25,7 @@ class addByDoctor {
     static AddlabRadio({user_id,doctor_id})
     {
         return  new Promise((resolve,reject)=>{
-            db.query(`INSERT INTO radio_lab_doctors(user_id,doctor_id,created_at) VALUES(?,?,NOW())`,
+            db.query("INSERT INTO radio_lab_doctors(user_id,doctor_id,created_at) VALUES(?,?,NOW())",
             [user_id,doctor_id],
             (err,res)=>{
                 if (err) {
@@ -60,7 +60,7 @@ class addByDoctor {
     static showlabRadios({user_id,doctor_id})
     {
         return  new Promise((resolve,reject)=>{
-            db.query(`INSERT INTO radio_lab_doctors(user_id,doctor_id,created_at) VALUES(?,?,NOW())`,
+            db.query("INSERT INTO radio_lab_doctors(user_id,doctor_id,created_at) VALUES(?,?,NOW())",
             [user_id,doctor_id],
             (err,res)=>{
                 if (err) {

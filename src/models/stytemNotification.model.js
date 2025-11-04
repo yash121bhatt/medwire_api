@@ -1,6 +1,6 @@
 const helperFunction = require("../helper/helperFunction");
 const helperQuery = require("../helper/helperQuery");
-const moment = require('moment');
+const moment = require("moment");
 class Notification{
    
     static async AddNotification(data,pushN=false)
@@ -70,25 +70,25 @@ class Notification{
                 
                 var to_name      = result1.first_name??null; 
                 var uId          =result1.id??null;
-                var doctor_name  = result2.first_name??''; 
-                var clinic_name  = result3.first_name??''; 
+                var doctor_name  = result2.first_name??""; 
+                var clinic_name  = result3.first_name??""; 
                                             
                 
-                if (data.by=='doctor') {
+                if (data.by=="doctor") {
                     var msg = message+" "+from_name + " for "+helperFunction.dateFormat(appointment_date,"dd/mm/yyyy") + " & "+time_slot;
                     // var msg ="Hey "+to_name+"<br> "+ message+" "+from_name + " on "+helperFunction.dateFormat(appointment_date,"dd/mm/yyyy") + " at "+time_slot;
-                }else if (data.by=='doctor_lab_radio_patient') {
+                }else if (data.by=="doctor_lab_radio_patient") {
                     var msg = message+ " "+from_name +" for "+helperFunction.dateFormat(appointment_date,"dd/mm/yyyy")+ " & "+time_slot;
-                }else if (data.by=='clinic') {
+                }else if (data.by=="clinic") {
                     var msg = "Hey "+from_name+" "+message+ " on "+helperFunction.dateFormat(appointment_date,"dd/mm/yyyy")+ " at "+time_slot+" with " +to_name;
-                }else if (data.by=='lab_radio') {
+                }else if (data.by=="lab_radio") {
                     var msg = from_name+" booked an appointment in "+to_name+ " on "+helperFunction.dateFormat(appointment_date,"dd/mm/yyyy")+ " at "+time_slot;
-                }else if (data.by=='lab_radio_upload') {
+                }else if (data.by=="lab_radio_upload") {
                     var msg = "Hey "+to_name+" "+message+" "+from_name;
-                }else if (data.by=='message') {
+                }else if (data.by=="message") {
                     // var msg = "Mr/Miss "+to_name+" "+message+ " in "+appointment_date + " "+time_slot+" with " +from_name +" "+`<a href="${process.env.APPOINTMENT_URL+"/"+uId}">Click here</a>`;
                     var msg = "Mr/Miss "+to_name+" "+message+ " on "+appointment_date + " "+time_slot+" with " +from_name;
-                }else if (data.by=='custom') {
+                }else if (data.by=="custom") {
                     var msg = message;
                 } else {
                     var msg = message+ " on "+helperFunction.dateFormat(appointment_date,"dd/mm/yyyy")+ " at "+time_slot +" with doctor " + doctor_name + " and clinic " + clinic_name;
@@ -98,8 +98,8 @@ class Notification{
                         title : title,
                         body:msg
                     }
-                } 
-                var created_at = moment().format('YYYY-MM-DD HH:mm:ss'); 
+                }; 
+                var created_at = moment().format("YYYY-MM-DD HH:mm:ss"); 
                 helperQuery.All(`INSERT INTO system_notifications(from_user_id,to_user_id,title,type,message,created_at) VALUES('${from_main_user_id}','${to_main_user_id}','${title}','${type}','${msg}','${created_at}')`)
                 .then(result=>{
                     // if (pushN==true && device_type!=null && device_type!=undefined && device_token!=null && device_token!=undefined) {

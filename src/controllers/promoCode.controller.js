@@ -1,6 +1,6 @@
-const User = require('../models/user.model');
-const PromoCode = require('../models/promoCode.model');
-const helperFunction = require('../helper/helperFunction');
+const User = require("../models/user.model");
+const PromoCode = require("../models/promoCode.model");
+const helperFunction = require("../helper/helperFunction");
 
 
 // add promo code by vineet shirdhonkar
@@ -8,7 +8,7 @@ const helperFunction = require('../helper/helperFunction');
 
 exports.addPromoCode = (req,res) => {
     var {user_id,role_id,promo_code_for,promo_code_for_id,discount_type,promo_code,discount_rate,discount_price,validity_start_date,validity_end_date,max_uses,price,description} = req.body;
-    var banner_image = '';
+    var banner_image = "";
     var valid = helperFunction.customValidater(req,{user_id,role_id,discount_type,promo_code,validity_start_date,validity_end_date,max_uses,price,description});
 
     if(valid){
@@ -24,7 +24,7 @@ exports.addPromoCode = (req,res) => {
     if(new Date(validity_start_date) > new Date(validity_end_date)){
         return res.status(400).json({
             status_code : 400,
-            status: 'error',
+            status: "error",
             message: "Validity start date should be less than validity end date"
         });   
     }
@@ -36,14 +36,14 @@ exports.addPromoCode = (req,res) => {
             if (err.kind === "not_found") {
                 res.status(200).send({
                     status_code : 200,
-                    status: 'success',
-                    message: `User does not exist`
+                    status: "success",
+                    message: "User does not exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code : 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -57,22 +57,22 @@ exports.addPromoCode = (req,res) => {
                     if (err.kind === "not_inserted") {
                         res.status(500).send({
                             status_code : 500,
-                            status: 'error',
-                            message: `Failed ! Please try again`
+                            status: "error",
+                            message: "Failed ! Please try again"
                         });
                         return;
                     }
                     res.status(500).send({
                         status_code : 500,
-                        status: 'error',
-                        message: 'Something Went Wrong'
+                        status: "error",
+                        message: "Something Went Wrong"
                     });
                     return;
                 }
                 if(data1){   
                      res.status(200).send({
                         status_code : 200,
-                        status: 'success',
+                        status: "success",
                         message : "Promo Code Added Successfully",
                         data: data1
                     }); 
@@ -82,7 +82,7 @@ exports.addPromoCode = (req,res) => {
            
         }  
     });     
-}
+};
 
 
 // get all promo code by vineet shirdhonkar
@@ -101,14 +101,14 @@ exports.getAllPromoCode = (req,res) => {
             if (err.kind === "not_found") {
                 res.status(200).send({
                     status_code : 200,
-                    status: 'success',
-                    message: `User does not exist`
+                    status: "success",
+                    message: "User does not exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code : 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -122,15 +122,15 @@ exports.getAllPromoCode = (req,res) => {
                     if (err.kind === "not_found") {
                         res.status(200).send({
                             status_code : 200,
-                            status: 'success',
-                            message: `No Record Found`,
+                            status: "success",
+                            message: "No Record Found",
                             data : []
                         });
                         return;
                     }         
                     res.status(500).send({
                         status_code : 500,
-                        status: 'error',
+                        status: "error",
                         message: err.message
                     });
                     return;
@@ -139,7 +139,7 @@ exports.getAllPromoCode = (req,res) => {
                 if(data.length > 0) {
                     res.status(200).send({
                         status_code : 200,
-                        status: 'success',
+                        status: "success",
                         message : "Data Found Successfully",
                         data: data
                     });
@@ -149,8 +149,8 @@ exports.getAllPromoCode = (req,res) => {
             }); 
         }
 
-    })       
-}
+    });       
+};
 
 
 // get promo code detail code by vineet shirdhonkar
@@ -169,14 +169,14 @@ exports.getPromoCodeDetail = (req,res) => {
             if (err.kind === "not_found") {
                 res.status(200).send({
                     status_code : 200,
-                    status: 'success',
-                    message: `Promo code does not exist`
+                    status: "success",
+                    message: "Promo code does not exist"
                 });
                 return;
             }          
             res.status(500).send({
                 status_code : 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -185,7 +185,7 @@ exports.getPromoCodeDetail = (req,res) => {
         if(data) {
             res.status(200).send({
                 status_code : 200,
-                status: 'success',
+                status: "success",
                 message : "Promo Code Details Found Successfully",
                 data: data
             });
@@ -193,14 +193,14 @@ exports.getPromoCodeDetail = (req,res) => {
 
         }
     });     
-}
+};
 
 // update promo code by vineet shirdhonkar
 
 exports.updatePromoCode = (req,res) => {
     var {promo_code_id,user_id,role_id,promo_code_for,promo_code_for_id,discount_type,promo_code,discount_rate,discount_price,validity_start_date,validity_end_date,max_uses,price,description} = req.body;
 
-    var banner_image = '';
+    var banner_image = "";
 
     var valid = helperFunction.customValidater(req,{promo_code_id,user_id,role_id,role_id,promo_code,discount_type,validity_start_date,validity_end_date,max_uses,price,description});
     if(valid){
@@ -210,7 +210,7 @@ exports.updatePromoCode = (req,res) => {
     if(new Date(validity_start_date) > new Date(validity_end_date)){
         return res.status(400).json({
             status_code : 400,
-            status: 'error',
+            status: "error",
             message: "Validity start date should be less than validity end date"
         });   
     }
@@ -222,14 +222,14 @@ exports.updatePromoCode = (req,res) => {
             if (err.kind === "not_found") {
                 res.status(200).send({
                     status_code : 200,
-                    status: 'success',
-                    message: `User does not exist`
+                    status: "success",
+                    message: "User does not exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code : 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -242,14 +242,14 @@ exports.updatePromoCode = (req,res) => {
                     if (err.kind === "not_found") {
                         res.status(200).send({
                             status_code : 200,
-                            status: 'success',
-                            message: `Promo code does not exist`
+                            status: "success",
+                            message: "Promo code does not exist"
                         });
                         return;
                     }          
                     res.status(500).send({
                         status_code : 500,
-                        status: 'error',
+                        status: "error",
                         message: err.message
                     });
                     return;
@@ -268,15 +268,15 @@ exports.updatePromoCode = (req,res) => {
                             if (err.kind === "not_updated") {
                                 res.status(500).send({
                                     status_code : 500,
-                                    status: 'error',
-                                    message: `Failed ! Please try again`
+                                    status: "error",
+                                    message: "Failed ! Please try again"
                                 });
                                 return;
                             }
                             res.status(500).send({
                                 status_code : 500,
-                                status: 'error',
-                                message: 'Something Went Wrong'
+                                status: "error",
+                                message: "Something Went Wrong"
                             });
                             return;
                         }
@@ -284,7 +284,7 @@ exports.updatePromoCode = (req,res) => {
                         if(data1){   
                              res.status(200).send({
                                 status_code : 200,
-                                status: 'success',
+                                status: "success",
                                 message : "Promo Code Updated Successfully",
                                 data: data1
                             }); 
@@ -297,7 +297,7 @@ exports.updatePromoCode = (req,res) => {
            
         }  
     });     
-}
+};
 
 
 // delete promo code  by vineet shirdhonkar
@@ -317,15 +317,15 @@ exports.deletePromoCode = (req,res) => {
             if (err.kind === "not_found") {
                 res.status(200).send({
                     status_code : 200,
-                    status: 'success',
-                    message: `Promo code does not exist`
+                    status: "success",
+                    message: "Promo code does not exist"
                 });
                 return;
             }
 
             res.status(500).send({
                 status_code : 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -336,22 +336,22 @@ exports.deletePromoCode = (req,res) => {
                 if(err){
                     res.status(500).send({
                         status_code : 500,
-                        status: 'error',
-                        message: 'Something Went Wrong'
+                        status: "error",
+                        message: "Something Went Wrong"
                     });
                     return;
                 }
                 if (data) {   
                     res.status(200).send({
                         status_code : 200,
-                        status: 'success',
+                        status: "success",
                         message : "Promo code Deleted Successfully",
                         data: data
                     });
                     return;
                 }
-            })
+            });
 
         }
     });     
-}
+};

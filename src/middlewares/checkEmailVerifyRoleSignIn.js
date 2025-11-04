@@ -3,7 +3,7 @@ const helperFunction = require("../helper/helperFunction");
 const helperQuery = require("../helper/helperQuery");
 const User = require("../models/user.model");
 const { transporter: transporter } = require("../helper/helper");
-const { hash: hashPassword, compare: comparePassword } = require('../utils/password');
+const { hash: hashPassword, compare: comparePassword } = require("../utils/password");
 
 const checkEmailVerify = (req, res, next) => {
   const { email, role_id, password } = req.body;
@@ -27,12 +27,12 @@ const checkEmailVerify = (req, res, next) => {
 
           const forgot_otp = await helperFunction.generateOTP(6);
           const id = userData[0]?.id ?? 0;
-          const token = helperFunction.genrateToken({ id }, '1d');
+          const token = helperFunction.genrateToken({ id }, "1d");
 
           if (comparePassword(password.trim(), userData[0]?.password) == true) {
-            var msg = `Sorry!,Your account is not verified!.`;
+            var msg = "Sorry!,Your account is not verified!.";
           } else {
-            var msg = 'Your password is incorrect.';
+            var msg = "Your password is incorrect.";
             return res.status(500).send({
               status_code: 500,
               status: "error",

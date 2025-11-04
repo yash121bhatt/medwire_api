@@ -1,5 +1,5 @@
-const Joi = require('joi');
-const validatorHandler = require('../middlewares/validatorHandler');
+const Joi = require("joi");
+const validatorHandler = require("../middlewares/validatorHandler");
 
 const add_baby = (req, res, next) => {
     const schema = Joi.object().keys({

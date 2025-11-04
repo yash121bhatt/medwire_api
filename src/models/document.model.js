@@ -1,10 +1,10 @@
-const db = require('../config/db.config');
-const { logger } = require('../utils/logger');
-const helperFunction = require('../helper/helperFunction');
-const helperQuery = require('../helper/helperQuery');
+const db = require("../config/db.config");
+const { logger } = require("../utils/logger");
+const helperFunction = require("../helper/helperFunction");
+const helperQuery = require("../helper/helperQuery");
 class Document {
     static list_document(user_id,member_id,type, cb) {
-        db.query(`SELECT * FROM users_documents WHERE user_id = ? AND member_id = ? AND type = ?  ORDER BY id DESC `,
+        db.query("SELECT * FROM users_documents WHERE user_id = ? AND member_id = ? AND type = ?  ORDER BY id DESC ",
             [
                 user_id,member_id,type  
             ], (err, res) => {
@@ -32,7 +32,7 @@ class Document {
         if (scan_doc_text===undefined) {
             scan_doc_text = null;
         }
-        db.query(`INSERT INTO users_documents( user_id, member_id, document_title, document_file, document_date , type,scan_doc_text, created_at) VALUES(?,?,?,?,?,?,?,NOW())`,
+        db.query("INSERT INTO users_documents( user_id, member_id, document_title, document_file, document_date , type,scan_doc_text, created_at) VALUES(?,?,?,?,?,?,?,NOW())",
             [
                 user_id,member_id,document_title,document_file,document_date,type,scan_doc_text
             ], (err, res) => {
@@ -47,7 +47,7 @@ class Document {
         });
     }
     static delete_document(id,user_id, cb) {
-        db.query(`DELETE FROM users_documents WHERE id = ? AND user_id = ?`,
+        db.query("DELETE FROM users_documents WHERE id = ? AND user_id = ?",
             [
                 id,user_id
             ], (err, res) => {
@@ -63,7 +63,7 @@ class Document {
     }
 
     static list_document_six(user_id,member_id,cb) {
-        db.query(`SELECT * FROM users_documents WHERE user_id = ? AND member_id = ? AND type !='lab_report' ORDER BY id DESC LIMIT 5`,
+        db.query("SELECT * FROM users_documents WHERE user_id = ? AND member_id = ? AND type !='lab_report' ORDER BY id DESC LIMIT 5",
             [
                 user_id,member_id
             ], (err, res) => {
@@ -86,7 +86,7 @@ class Document {
         });
     }
     static search_document(search,user_id ,cb){
-        if (search==undefined || search=='' || search==null)
+        if (search==undefined || search=="" || search==null)
         {
             var qu =`SELECT ud.id,u.profile_image,u.first_name,ud.document_title,ud.document_file,ud.document_date,ud.scan_doc_text 
             FROM users_documents ud JOIN users u ON u.id = ud.member_id
@@ -105,7 +105,7 @@ class Document {
                 return;
             }
             cb(null,res);
-        })
+        });
     }
     static searchDocumentTimeline(date,year,month,user_id ,cb){
         // if (year!=undefined && month!=undefined) {
@@ -150,7 +150,7 @@ class Document {
                 return;
             }
             cb(null,res);
-        })
+        });
     }
     static latestTestDocs(user_id,member_id,type){
         return new Promise((resolve,reject)=>{
@@ -170,7 +170,7 @@ class Document {
                     return reject(err);
                 }
                 return resolve(res);
-            })
+            });
 
         });
     }
@@ -197,9 +197,9 @@ class Document {
                             return reject(err);
                         }
                         return resolve(res);
-                    }) 
+                    }); 
 
-            })
+            });
      
         });
     }

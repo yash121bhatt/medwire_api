@@ -1,11 +1,11 @@
-const { async, resolve, reject } = require('q');
-const db = require('../config/db.config');
-const { logger } = require('../utils/logger');
+const { async, resolve, reject } = require("q");
+const db = require("../config/db.config");
+const { logger } = require("../utils/logger");
 class doctorSpecialityMaster {
     static show(){
         return new Promise((resolve,reject)=>{
             const data=[];
-            db.query(`SELECT*FROM doctor_speciality_master`,(err,res)=>{
+            db.query("SELECT*FROM doctor_speciality_master",(err,res)=>{
                 if (err) {
                     return reject(err);
                 }

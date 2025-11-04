@@ -1,5 +1,5 @@
-const Joi = require('joi');
-const validatorHandler = require('../middlewares/validatorHandler');
+const Joi = require("joi");
+const validatorHandler = require("../middlewares/validatorHandler");
 
 
 const dashboardChart = (req, res, next) => {

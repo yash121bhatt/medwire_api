@@ -16,4 +16,4 @@ exports.show =async(req,res)=>{
             message:"Something went to wrong!"
         });
     }
-}
+};

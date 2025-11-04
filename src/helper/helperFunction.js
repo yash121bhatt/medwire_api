@@ -16,11 +16,11 @@ const fs = require("fs");
 const { base64encode, base64decode } = require("nodejs-base64");
 const admin = require("firebase-admin");
 const serviceAccount = require("../../public/medwire-8bd32-firebase-adminsdk-pnlgd-39a3686663.json");
-const { transporter:transporter} = require('../helper/helper');
+const { transporter:transporter} = require("../helper/helper");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  projectId: 'medwire-8bd32',
+  projectId: "medwire-8bd32",
 });
 
 class helperFunction {
@@ -421,21 +421,21 @@ class helperFunction {
     static startToEndTimeSlot(slotInterval = 15, opentimes, closetimes, bookedSlot = [], date) {
         console.log("op,cl", opentimes, closetimes);
         var todayDate = new Date().toString();
-        console.log('today', todayDate);
+        console.log("today", todayDate);
         var checkCurentTimeSlot = false;
         if (opentimes == null || opentimes == "" || opentimes == undefined || closetimes == null || closetimes == "" ||
             closetimes == undefined) {
             var opentimes = "00:00";
             var closetimes = "00:00";
         }
-        var opentime_s = moment(opentimes, 'HH:mm A').format("HH:mm");
-        console.log('user open time : ', opentimes);
-        console.log('user close time : ', closetimes);
-        if (closetimes == '12:00 AM') {
+        var opentime_s = moment(opentimes, "HH:mm A").format("HH:mm");
+        console.log("user open time : ", opentimes);
+        console.log("user close time : ", closetimes);
+        if (closetimes == "12:00 AM") {
             var closetime_s = "12:00";
         }
         else {
-           var closetime_s = moment(closetimes, 'HH:mm A').format("HH:mm"); 
+           var closetime_s = moment(closetimes, "HH:mm A").format("HH:mm"); 
         }
 
         var openingMinut = 0;
@@ -450,14 +450,14 @@ class helperFunction {
         }
 
         checkCurentTimeSlot = parseInt(todayDate.slice(16, 21).replace(/:/g, "")) <
-            parseInt(closetime_s.replace(/:/g, ""))
+            parseInt(closetime_s.replace(/:/g, ""));
 
-        var today_date_with_time = moment().format('DD-MM-YYYY')+'T00:00:00.000Z';
+        var today_date_with_time = moment().format("DD-MM-YYYY")+"T00:00:00.000Z";
 
         if (today_date_with_time == date) {
             if (checkCurentTimeSlot) {
                 if (parseInt(todayDate.slice(16, 21).replace(/:/g, "")) >= parseInt(opentime_s.replace(/:/g, ""))) {
-                    var opentime = checkCurentTimeSlot == true ? moment().format('HH:mm') : opentime_s;
+                    var opentime = checkCurentTimeSlot == true ? moment().format("HH:mm") : opentime_s;
 
                     var closetime = closetime_s;
                 }
@@ -467,13 +467,13 @@ class helperFunction {
                 }
             }
             else {
-                console.log('imeldhjdfhk');
+                console.log("imeldhjdfhk");
             }
-            if (openingMinut == '60')   {
-                var opentime =  (opentime != undefined) ? (parseInt(opentime.split(":")[0])+1)+':00' : '';
+            if (openingMinut == "60")   {
+                var opentime =  (opentime != undefined) ? (parseInt(opentime.split(":")[0])+1)+":00" : "";
             }
             else {
-                var opentime = (opentime != undefined) ? opentime.split(":")[0]+ ':' + openingMinut : '';
+                var opentime = (opentime != undefined) ? opentime.split(":")[0]+ ":" + openingMinut : "";
             }
         } else {
             var opentime = opentime_s;
@@ -510,19 +510,19 @@ class helperFunction {
 
     static getGreetingTime() {
         var currentTime = new Date();
-        const currentHour = currentTime.getHours()
+        const currentHour = currentTime.getHours();
         const splitAfternoon = 12; // 24hr time to split the afternoon
         const splitEvening = 17; // 24hr time to split the evening
 
         if (currentHour >= splitAfternoon && currentHour <= splitEvening) {
             // Between 12 PM and 5PM
-            return 'afternoon';
+            return "afternoon";
         } else if (currentHour >= splitEvening) {
             // Between 5PM and Midnight
-            return 'evening';
+            return "evening";
         }
         // Between dawn and noon
-        return ' morning';
+        return " morning";
     }
     static doctorStartToEndTimeSlot(slotInterval = 15, opentimes, closetimes, bookedSlot = [], date, session) {
         var todayDate = new Date().toString();
@@ -532,12 +532,12 @@ class helperFunction {
             var opentimes = "00:00";
             var closetimes = "00:00";
         }
-        var opentime_s = moment(opentimes, 'HH:mm A').format("HH:mm");
-        if (closetimes == '12:00 AM') {
+        var opentime_s = moment(opentimes, "HH:mm A").format("HH:mm");
+        if (closetimes == "12:00 AM") {
             var closetime_s = "12:00";
         }
         else {
-            var closetime_s = moment(closetimes, 'HH:mm A').format("HH:mm");
+            var closetime_s = moment(closetimes, "HH:mm A").format("HH:mm");
         }
 
         var openingMinut = 0;
@@ -551,14 +551,14 @@ class helperFunction {
             }
         }
 
-        var today_date_with_time = moment().format('DD-MM-YYYY') + 'T00:00:00.000Z';
+        var today_date_with_time = moment().format("DD-MM-YYYY") + "T00:00:00.000Z";
 
-        checkCurentTimeSlot = moment().format('DD-MM-YYYY HH:mm:ss') < moment(closetime_s, 'HH:mm A').format("DD-MM-YYYY HH:mm:ss");
+        checkCurentTimeSlot = moment().format("DD-MM-YYYY HH:mm:ss") < moment(closetime_s, "HH:mm A").format("DD-MM-YYYY HH:mm:ss");
 
         if (today_date_with_time == date) {
             if (checkCurentTimeSlot) {
                 if (parseInt(todayDate.slice(16, 21).replace(/:/g, "")) >= parseInt(opentime_s.replace(/:/g, ""))) {
-                    var opentime = checkCurentTimeSlot == true ? moment().format('HH:mm') : opentime_s;
+                    var opentime = checkCurentTimeSlot == true ? moment().format("HH:mm") : opentime_s;
                     var closetime = closetime_s;
                 }
                 else {
@@ -567,10 +567,10 @@ class helperFunction {
                 }
             }
             else {
-                console.log('imeldhjdfhk');
+                console.log("imeldhjdfhk");
             }
             if (helperFunction.getGreetingTime() == session) {
-                var opentime = (opentime != undefined) ? opentime.split(":")[0] + ':' + openingMinut : '';
+                var opentime = (opentime != undefined) ? opentime.split(":")[0] + ":" + openingMinut : "";
             }
             else {
                 var opentime = opentime;
@@ -774,10 +774,10 @@ class helperFunction {
         }
         if (data.match(phoneno)) {
             return message + (isMsg == false ? " with this Mobile No. " + data.substr(0, 2) + "****" + data.substr(data.length - 3) + "."
-                : '');
+                : "");
         }
         if (data.match(mailformat)) {
-            return message + (isMsg == false ? " with this Email Address. " + data.substr(0, 5) + "******" + data.substr(data.length - 10) + "." : '');
+            return message + (isMsg == false ? " with this Email Address. " + data.substr(0, 5) + "******" + data.substr(data.length - 10) + "." : "");
         }
         if (!data.match(phoneno) && !data.match(mailformat)) {
             return "Invalid User Credentials";
@@ -933,7 +933,7 @@ class helperFunction {
             parseInt(opentime_s.replace(/:/g, "")),
             parseInt(todayDate.slice(16, 21).replace(/:/g, "")),
             parseInt(closetime_s.replace(/:/g, "")), "con", checkCurentTimeSlot
-        )
+        );
 
         if (
             helperFunction.dateFormat(todayDate, "yyyymmdd") ==

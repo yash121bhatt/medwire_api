@@ -1,12 +1,12 @@
-const { Promise, reject, resolve, async } = require('q');
-const db = require('../config/db.config');
-const helperFunction = require('../helper/helperFunction');
-const helperQuery = require('../helper/helperQuery');
-const moment = require('moment');
+const { Promise, reject, resolve, async } = require("q");
+const db = require("../config/db.config");
+const helperFunction = require("../helper/helperFunction");
+const helperQuery = require("../helper/helperQuery");
+const moment = require("moment");
 class bookApointment {
     static create(lab_id,user_id,cart_item,cart_name,total_amount){
         return new Promise((resolve,reject)=>{
-            db.query(`INSERT INTO user_carts (user_id,created_by_id,cart_item,cart_name,total_amount,created_at) VALUES (?,?,?,?,?,NOW())`,
+            db.query("INSERT INTO user_carts (user_id,created_by_id,cart_item,cart_name,total_amount,created_at) VALUES (?,?,?,?,?,NOW())",
             [lab_id,user_id,cart_item,cart_name,total_amount],
             (err,res)=>{
                 if (err) {
@@ -51,7 +51,7 @@ class bookApointment {
                 }
                 return resolve(res);
             });
-        })
+        });
     }
     static createAppoint(payment_order_id,user_id,member_id, refer_by_id, promo_code_id, from_time,appointment_date, total_amount, grand_total, created_by_id,doctor_id){
         return new Promise((resolve,reject)=>{
@@ -65,7 +65,7 @@ class bookApointment {
                 }
                 if(res){
                    
-                    db.query(`select first_name from users where id = ? `,[created_by_id],async (err,res)=>{
+                    db.query("select first_name from users where id = ? ",[created_by_id],async (err,res)=>{
                         if (err) {
                             logger.error(err.message);
                             cb(err, null);
@@ -74,7 +74,7 @@ class bookApointment {
 
                         if(res){
                             var patient_name  = res[0].first_name;
-                            db.query(`select first_name from users where id = ? `,[user_id], async (err,res)=>{
+                            db.query("select first_name from users where id = ? ",[user_id], async (err,res)=>{
                                 if (err) {
                                     logger.error(err.message);
                                     cb(err, null);
@@ -83,7 +83,7 @@ class bookApointment {
                                 if(res){
                                     var lab_name  = res[0].first_name;
                                     if(refer_by_id!=undefined){
-                                        db.query(`select first_name,role_id from users where id = ? `,[refer_by_id],async (err,res)=>{
+                                        db.query("select first_name,role_id from users where id = ? ",[refer_by_id],async (err,res)=>{
                                             if(res){
                                                // var doctor_name  =res[0]!== undefined && res[0].first_name !== undefined ? res[0].first_name: null;
                                                 var user_role_id  = res[0]!== undefined && res[0].role_id !== undefined ? res[0].role_id: null;
@@ -91,7 +91,7 @@ class bookApointment {
                                                 var from_user_id = created_by_id;                                
                                                     var to_user_id = refer_by_id;                                
                                                     
-                                                    var title = 'Appointment Booked';
+                                                    var title = "Appointment Booked";
                                                     var type = "lab_appointment_booked";
                                                     var message = "You have been referred in the appointment in lab "+lab_name + " at "+appointment_date + " "+from_time + " with patient " + patient_name;
 
@@ -103,14 +103,14 @@ class bookApointment {
                                                                 title : title,
                                                                 body : message
                                                             }
-                                                        }   
-                                                        if((user_detail[0].device_type == 'Android')||(user_detail[0].device_type == 'IOS')){
+                                                        };   
+                                                        if((user_detail[0].device_type == "Android")||(user_detail[0].device_type == "IOS")){
                                                             await helperFunction.pushNotification(user_detail[0].device_token,payload);
                                                         }
                                                     }
                                                     
-                                                    var created_at = moment().format('YYYY-MM-DD HH:mm:ss');
-                                                    db.query(`INSERT INTO system_notifications(from_user_id,to_user_id,title,type,message,created_at) VALUES(?,?,?,?,?,?)`,[from_user_id,to_user_id,title,type,message,created_at], async (err,res)=>{
+                                                    var created_at = moment().format("YYYY-MM-DD HH:mm:ss");
+                                                    db.query("INSERT INTO system_notifications(from_user_id,to_user_id,title,type,message,created_at) VALUES(?,?,?,?,?,?)",[from_user_id,to_user_id,title,type,message,created_at], async (err,res)=>{
                                                         if (err) {
                                                             logger.error(err.message);
                                                             cb(err, null);
@@ -121,12 +121,12 @@ class bookApointment {
                                                 }
                                                 
                                             }
-                                        })
+                                        });
                                     }
                                     var from_user_id = created_by_id;                                
                                     var to_user_id = user_id;                                
                                     
-                                    var title = 'Appointment Booked';
+                                    var title = "Appointment Booked";
                                     var type = "lab_appointment_booked";
                                     var message = patient_name+" booked appointment in lab "+lab_name + " at "+helperFunction.dateFormat(appointment_date,"dd/mm/yyyy") + " "+from_time;
 
@@ -144,7 +144,7 @@ class bookApointment {
                                     //     }
                                     // }
                                     
-                                    var created_at = moment().format('YYYY-MM-DD HH:mm:ss');
+                                    var created_at = moment().format("YYYY-MM-DD HH:mm:ss");
                                     // db.query(`INSERT INTO system_notifications(from_user_id,to_user_id,title,type,message,created_at) VALUES(?,?,?,?,?,?)`,[from_user_id,to_user_id,title,type,message,created_at],(err,res)=>{
                                     //     if (err) {
                                     //         logger.error(err.message);
@@ -162,8 +162,8 @@ class bookApointment {
                 }
                 
                 return resolve(res);
-            })
-        })
+            });
+        });
     }
 
     static appointmentList(user_id, role_id) {
@@ -394,7 +394,7 @@ class bookApointment {
                     }
                     return resolve(res);
                 });
-        })
+        });
     }
 
     static LabRadioBillingHistory(user_id)
@@ -428,7 +428,7 @@ class bookApointment {
     }
     static doctorSpecialities() {
         return new Promise((resolve, reject) => {
-            db.query(`SELECT id,speciality_name FROM doctor_specialities GROUP BY speciality_name`,
+            db.query("SELECT id,speciality_name FROM doctor_specialities GROUP BY speciality_name",
                 (err, res) => {
                     if (err) {
 
@@ -440,7 +440,7 @@ class bookApointment {
     }
     static allclinicList(){
         return new Promise((resolve,reject)=>{
-            db.query(`SELECT * FROM users WHERE role_id=8 AND approve_status="Approve"`,
+            db.query("SELECT * FROM users WHERE role_id=8 AND approve_status=\"Approve\"",
             (err,res)=>{
                 if (err) {
     
@@ -568,7 +568,7 @@ class bookApointment {
                 }
                 return resolve(res);
             });
-        })
+        });
     }
     static patientBillingHistoryLabRadio({role_id,user_id})
     {
@@ -600,16 +600,16 @@ class bookApointment {
         });
     }
     static viewDoctorAvailability({doctor_id,clinic_id, date,bookedSlots},cb) {
-        let day_name = moment().utc(date).format('dddd');
-        let dateD = moment().utc(date).format('YYYY-MM-DD');
+        let day_name = moment().utc(date).format("dddd");
+        let dateD = moment().utc(date).format("YYYY-MM-DD");
         let result = [];
         let morningSlots = [];
         let afternoonSlots = [];
         let eveningSlots = [];
         let stime =[];
-        var slotInterval = 15
+        var slotInterval = 15;
         
-        db.query(`SELECT * FROM doctor_schedule WHERE days = ? and doctor_id = ? and clinic_id=?`, [day_name, doctor_id,clinic_id], async(err, res) => {
+        db.query("SELECT * FROM doctor_schedule WHERE days = ? and doctor_id = ? and clinic_id=?", [day_name, doctor_id,clinic_id], async(err, res) => {
             if (res) {
                 result = await helperQuery.All(`SELECT * FROM doctor_schedule_date WHERE date = '${dateD}' and doctor_id = '${doctor_id}' and clinic_id='${clinic_id}'`);
                 if (res.length > 0) {
@@ -617,13 +617,13 @@ class bookApointment {
                     let dayStatus = data.status;
                     console.log("Data------>",data);
                     if (data.morning_shift_start && data.morning_shift_end) {
-                        morningSlots = helperFunction.doctorStartToEndTimeSlot(slotInterval, data.morning_shift_start, data.morning_shift_end, bookedSlots, date, 'morning')
+                        morningSlots = helperFunction.doctorStartToEndTimeSlot(slotInterval, data.morning_shift_start, data.morning_shift_end, bookedSlots, date, "morning");
                     }
                     if (data.afternoon_shift_start && data.afternoon_shift_end) {
-                        afternoonSlots = helperFunction.doctorStartToEndTimeSlot(slotInterval, data.afternoon_shift_start, data.afternoon_shift_end, bookedSlots, date, 'afternoon')
+                        afternoonSlots = helperFunction.doctorStartToEndTimeSlot(slotInterval, data.afternoon_shift_start, data.afternoon_shift_end, bookedSlots, date, "afternoon");
                     }
                     if (data.evening_shift_start && data.evening_shift_end) {
-                        eveningSlots = helperFunction.doctorStartToEndTimeSlot(slotInterval, data.evening_shift_start, data.evening_shift_end, bookedSlots, date, 'evening')
+                        eveningSlots = helperFunction.doctorStartToEndTimeSlot(slotInterval, data.evening_shift_start, data.evening_shift_end, bookedSlots, date, "evening");
                     }
                     let resultData = {
                         morningSlots: morningSlots,
@@ -631,7 +631,7 @@ class bookApointment {
                         eveningSlots: eveningSlots,
                         dayStatus : dayStatus,
                         availability: result
-                    }
+                    };
                     cb(null, resultData);
                     return;
                 }else{
@@ -667,8 +667,8 @@ class bookApointment {
                         return reject(err);
                     }
                     return resolve(res);
-                })
-        })
+                });
+        });
     }
     
     static updateAppointBydoctor({user_id,doctor_id,appointmentsId, time_slot, appointment_date, appointments_user_type, total_amount, grand_total, patient_id}) {
@@ -683,8 +683,8 @@ class bookApointment {
                         return reject(err);
                     }
                     return resolve(res);
-                })
-        })
+                });
+        });
     }
 
     static getLabRadioDoctument(appointment_id)

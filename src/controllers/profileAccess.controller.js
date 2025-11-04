@@ -37,7 +37,7 @@ exports.healthResult = async(req,res)=>{
             messages:error.message
         });
     }
-}
+};
 
 
 exports.documentAccess = async(req,res)=>{
@@ -72,7 +72,7 @@ exports.documentAccess = async(req,res)=>{
             message:"Something went to wrong!",
         });
     }
-}
+};
 
 exports.viewProfileAccess = async(req,res)=>{
     try {
@@ -94,7 +94,7 @@ exports.viewProfileAccess = async(req,res)=>{
             message:"Something went to wrong!",
         });
     }
-}
+};
 
 //resend profile access 
 exports.resendProfileAcess = async(req,res)=>
@@ -148,7 +148,7 @@ exports.resendProfileAcess = async(req,res)=>
             message:"Something went to wrong!",
         });
     }
-}
+};
 //profile access accept detail 
 exports.profileAccessDetail=(req,res)=>
 {
@@ -182,4 +182,4 @@ exports.profileAccessDetail=(req,res)=>
             message:"Something went to wrong!",
         });
     });
-}
+};

@@ -1,6 +1,6 @@
-const db = require('../config/db.config');
-const { logger } = require('../utils/logger');
-const {dateFormat:dateFormat} = require('../helper/helper');
+const db = require("../config/db.config");
+const { logger } = require("../utils/logger");
+const {dateFormat:dateFormat} = require("../helper/helper");
 class Baby {
     static list_baby(user_id, cb) {
         db.query(`SELECT *, CONCAT ( 
@@ -20,7 +20,7 @@ class Baby {
         });
     }
     static add_baby(baby_name,date_of_birth,baby_gender,father_height,mother_height, user_id, cb) {
-        db.query(`INSERT INTO user_baby(user_id,baby_name,date_of_birth,baby_gender,father_height,mother_height, created_at) VALUES(?,?,?,?,?,?,NOW())`,
+        db.query("INSERT INTO user_baby(user_id,baby_name,date_of_birth,baby_gender,father_height,mother_height, created_at) VALUES(?,?,?,?,?,?,NOW())",
             [
                 user_id,baby_name,date_of_birth,baby_gender,father_height,mother_height, 
             ], (err, res) => {
@@ -30,7 +30,7 @@ class Baby {
                     return;
                 }
             
-                var date_of_birth_c = dateFormat(date_of_birth, 'yyyy-MM-dd');
+                var date_of_birth_c = dateFormat(date_of_birth, "yyyy-MM-dd");
                 
                 db.query(`INSERT INTO user_baby_vaccination(baby_id, vaccination_name, duration, due_date, dose_date, status, created_at)VALUES
                 ('${res.insertId}','BCG, OPV-0, Hepatitis - B', 'At Birth',ADDDATE(DATE_FORMAT('${date_of_birth_c}','%Y-%m-%d'), INTERVAL 1 DAY),'','Pending',NOW()),
@@ -66,8 +66,8 @@ class Baby {
                 }
                 if(res)
                 {
-                    var old_date_of_birth = dateFormat(res[0].date_of_birth,'yyyy-MM-dd');
-                    var date_of_birth_c = dateFormat(date_of_birth, 'yyyy-MM-dd');
+                    var old_date_of_birth = dateFormat(res[0].date_of_birth,"yyyy-MM-dd");
+                    var date_of_birth_c = dateFormat(date_of_birth, "yyyy-MM-dd");
                     
                     if(old_date_of_birth != date_of_birth_c){
                         db.query(`DELETE FROM user_baby_vaccination WHERE baby_id = '${baby_id}' `,
@@ -80,7 +80,7 @@ class Baby {
                                         return;
                                     }
                                     if(res){
-                                        console.log("baby_id",baby_id)
+                                        console.log("baby_id",baby_id);
                                         db.query(`INSERT INTO user_baby_vaccination(baby_id, vaccination_name, duration, due_date, dose_date, status, created_at)VALUES
                                         ('${baby_id}','BCG, OPV-0, Hepatitis - B', 'At Birth',ADDDATE(DATE_FORMAT('${date_of_birth_c}','%Y-%m-%d'), INTERVAL 1 DAY),'','Pending',NOW()),
                                         ('${baby_id}','DTP - 1, OPV - 1, Hepatitis - B1', '06 weeks age',ADDDATE(DATE_FORMAT('${date_of_birth_c}','%Y-%m-%d'), INTERVAL 42 DAY),'','Pending',NOW()),
@@ -102,7 +102,7 @@ class Baby {
 
              
 
-        db.query(`UPDATE user_baby SET baby_name = ?, date_of_birth = ?, baby_gender = ? , father_height=?,mother_height=? WHERE user_id = ? AND baby_id = ?`,
+        db.query("UPDATE user_baby SET baby_name = ?, date_of_birth = ?, baby_gender = ? , father_height=?,mother_height=? WHERE user_id = ? AND baby_id = ?",
     [
         baby_name,date_of_birth,baby_gender,father_height,mother_height,user_id,baby_id
     ], (err, res) => {
@@ -127,7 +127,7 @@ class Baby {
     });
     }
     static delete_baby(baby_id,user_id, cb) {
-        db.query(`DELETE FROM user_baby WHERE baby_id = ? AND user_id = ?`,
+        db.query("DELETE FROM user_baby WHERE baby_id = ? AND user_id = ?",
             [
                 baby_id,user_id
             ], (err, res) => {
@@ -142,7 +142,7 @@ class Baby {
         });
     }
     static single_baby(user_id,baby_id, cb) {
-        db.query(`SELECT * FROM user_baby WHERE user_id = ? AND baby_id = ?`,
+        db.query("SELECT * FROM user_baby WHERE user_id = ? AND baby_id = ?",
             [
                user_id,baby_id  
             ], (err, res) => {
@@ -156,7 +156,7 @@ class Baby {
     }
     
     static user_baby_vaccination(baby_id,cb){
-        db.query(`SELECT * FROM user_baby_vaccination WHERE baby_id = ?`,
+        db.query("SELECT * FROM user_baby_vaccination WHERE baby_id = ?",
             [
                baby_id  
             ], (err, res) => {
@@ -171,7 +171,7 @@ class Baby {
 
     static single_baby_vaccination(v_id,baby_id, cb) {
         console.log(v_id);
-        db.query(`SELECT * FROM user_baby_vaccination WHERE v_id = ? AND baby_id = ?`,
+        db.query("SELECT * FROM user_baby_vaccination WHERE v_id = ? AND baby_id = ?",
             [
                 v_id,baby_id  
             ], (err, res) => {
@@ -185,7 +185,7 @@ class Baby {
     }
 
     static update_baby_vaccination(v_id,baby_id,dose_date,status, cb) {
-        db.query(`UPDATE user_baby_vaccination SET dose_date = ?, status = ? WHERE v_id = ? AND baby_id = ?`,
+        db.query("UPDATE user_baby_vaccination SET dose_date = ?, status = ? WHERE v_id = ? AND baby_id = ?",
             [
                 dose_date,status,v_id,baby_id,
             ], (err, res) => {

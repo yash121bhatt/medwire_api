@@ -1,6 +1,6 @@
-require('dotenv/config');
+require("dotenv/config");
 
-const { logger } = require('./logger');
+const { logger } = require("./logger");
 
 const {
     DB_HOST,
@@ -12,12 +12,12 @@ const {
 } = process.env;
 
 const requiredCredentials = [
-    'DB_HOST',
-    'DB_PORT',
-    'DB_USER',
-    'DB_PASS',
-    'DB_NAME',
-    'JWT_SECRET_KEY'
+    "DB_HOST",
+    "DB_PORT",
+    "DB_USER",
+    "DB_PASS",
+    "DB_NAME",
+    "JWT_SECRET_KEY"
 ];
 
 for (const credential of requiredCredentials) {

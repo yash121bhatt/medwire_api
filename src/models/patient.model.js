@@ -1,12 +1,12 @@
-const { JOI } = require('joi');
-const { addPatient: addPatient,updatePatient:updatePatient} = require('../database/queries');
-const User = require('./user.model');
-const db = require('../config/db.config');
-const { logger } = require('../utils/logger');
-const helperFunction = require('../helper/helperFunction');
-const { base64encode, base64decode } = require('nodejs-base64');
-const { async } = require('q');
-const helperQuery = require('../helper/helperQuery');
+const { JOI } = require("joi");
+const { addPatient: addPatient,updatePatient:updatePatient} = require("../database/queries");
+const User = require("./user.model");
+const db = require("../config/db.config");
+const { logger } = require("../utils/logger");
+const helperFunction = require("../helper/helperFunction");
+const { base64encode, base64decode } = require("nodejs-base64");
+const { async } = require("q");
+const helperQuery = require("../helper/helperQuery");
 class Patient {
 
     // vineet
@@ -31,8 +31,8 @@ class Patient {
                     }
                     
                 });
-                const suggested_id = suggested_by_id!=undefined && suggested_by_id!='undefined' && suggested_by_id!=created_by_id ? suggested_by_id:null;
-                const added_by_id = added_by!=undefined && added_by!='undefined' ? added_by:null;
+                const suggested_id = suggested_by_id!=undefined && suggested_by_id!="undefined" && suggested_by_id!=created_by_id ? suggested_by_id:null;
+                const added_by_id = added_by!=undefined && added_by!="undefined" ? added_by:null;
                 db.query("Insert into users_patient(patient_id,user_id,suggested_by_id,added_by) values(?,?,?,?)",[res.insertId,created_by_id,suggested_id,added_by_id],(err,res)=>{
 
                     if (err) {
@@ -56,7 +56,7 @@ class Patient {
                 return;
             }
             if(res.insertId){
-                var permanent_id = "MED"+mobile_number+"/"+"0"+res.insertId
+                var permanent_id = "MED"+mobile_number+"/"+"0"+res.insertId;
                 db.query("UPDATE users set permanent_id = ? where id = ? ", [permanent_id,res.insertId],(err,res)=>{
                     if (err) {
                         logger.error(err.message);
@@ -65,8 +65,8 @@ class Patient {
                     }
                     
                 });
-                const suggested_by_ids = suggested_by_id!=undefined && suggested_by_id!='undefined' ? suggested_by_id:null;
-                const added_by_id = added_by!=undefined && added_by!='undefined' ? added_by:null;
+                const suggested_by_ids = suggested_by_id!=undefined && suggested_by_id!="undefined" ? suggested_by_id:null;
+                const added_by_id = added_by!=undefined && added_by!="undefined" ? added_by:null;
                 db.query("Insert into users_patient(patient_id,user_id) values(?,?)",[res.insertId,created_by_id],(err,res)=>{
 
                     if (err) {
@@ -83,7 +83,7 @@ class Patient {
 
 
     static findAll(user_id,login_role_id,cb){
-        var staff_name = '';
+        var staff_name = "";
         db.query(`SELECT u.id,u.email,u.mobile,u.alternate_mobile,u.profile_image,u.first_name,u.suggested_by,u.suggested_by_id,u.pin_code,u.permanent_id,u.gender,u.date_of_birth,u.address,u.enquiry_date,u.added_by,u.role_id 
         FROM users as u 
         left join users_patient as up on u.id = up.patient_id 
@@ -100,7 +100,7 @@ class Patient {
                     const id = item.id;
                     const email = item.email;
                     const mobile_number = parseInt(item.mobile);
-                    const profile_image_name = (item.profile_image == null) ? '' :item.profile_image;
+                    const profile_image_name = (item.profile_image == null) ? "" :item.profile_image;
                     const profile_image_path =  process.env.APP_URL+"member/"+profile_image_name;
                     const full_name = item.first_name;
                     const date_of_birth = item.date_of_birth;
@@ -109,7 +109,7 @@ class Patient {
                     const suggested_by_id = item.suggested_by_id;
                     const pin_code = parseInt(item.pin_code);
                     const address = item.address;
-                    var suggested_by_name = '';
+                    var suggested_by_name = "";
                     const medwire_id = item.permanent_id;
                     const enquiry_date = item.enquiry_date;
                     var added_by = item.added_by;
@@ -122,40 +122,40 @@ class Patient {
                                 return 0;
                             }
                             if(data){
-                                staff_name = data[0].first_name
+                                staff_name = data[0].first_name;
                             }
                         });   
                     }
-                    if(login_role_id == '2' || login_role_id == '3'){
-                        db.query(`SELECT u.first_name from users u inner join radio_lab_doctors rld on rld.doctor_id = u.id where rld.id = ? `,[item.suggested_by_id],(err,res1)=>{                  
+                    if(login_role_id == "2" || login_role_id == "3"){
+                        db.query("SELECT u.first_name from users u inner join radio_lab_doctors rld on rld.doctor_id = u.id where rld.id = ? ",[item.suggested_by_id],(err,res1)=>{                  
                             if (err) {
                                 logger.error(err.message);
                                 cb(err, null);
                                 return;
                             }
                            
-                            if(suggested_by == 'self'){
-                                suggested_by_name = 'Self';
+                            if(suggested_by == "self"){
+                                suggested_by_name = "Self";
                             } else {
-                                suggested_by_name =  (res1.length > 0)  ? res1[0].first_name : '';
+                                suggested_by_name =  (res1.length > 0)  ? res1[0].first_name : "";
                             } 
                             
                             response.push({id,full_name,gender,date_of_birth,email,mobile_number,date_of_birth,gender,profile_image_name,profile_image_path,suggested_by_name,suggested_by_id,pin_code,address,medwire_id,enquiry_date,staff_name});
 
-                        })
+                        });
 
                     } else {
-                        db.query(`SELECT first_name from users where id = ?`,[item.suggested_by_id],(err,res1)=>{                  
+                        db.query("SELECT first_name from users where id = ?",[item.suggested_by_id],(err,res1)=>{                  
                             if (err) {
                                 logger.error(err.message);
                                 cb(err, null);
                                 return;
                             }
                             
-                            if(suggested_by == 'self'){
-                                suggested_by_name = 'Self';
+                            if(suggested_by == "self"){
+                                suggested_by_name = "Self";
                             } else {
-                                suggested_by_name =  (res1.length > 0)  ? res1[0].first_name : '';
+                                suggested_by_name =  (res1.length > 0)  ? res1[0].first_name : "";
                             } 
                              
                          response.push({id,full_name,gender,date_of_birth,email,mobile_number,date_of_birth,gender,profile_image_name,profile_image_path,suggested_by_name,suggested_by_id,pin_code,address,medwire_id,enquiry_date,staff_name});
@@ -170,7 +170,7 @@ class Patient {
                 cb({ kind: "not_found" }, null);
             }
             
-        })
+        });
     }
     static findAllClinicData(user_id){
         return new Promise((resolve,reject)=>{
@@ -206,7 +206,7 @@ class Patient {
                         }
                         
                         const id = item.id;
-                        const profile_image_name = (item.profile_image == null) ? '' :item.profile_image;
+                        const profile_image_name = (item.profile_image == null) ? "" :item.profile_image;
                         const profile_image_path =  process.env.APP_URL+"member/"+profile_image_name;
                         const full_name = item.first_name;
                         const date_of_birth = item.date_of_birth;
@@ -219,7 +219,7 @@ class Patient {
                         var added_by = item.added_by??null;
                         var role_id = item.role_id;
                         var staff_name = item.staff_name??null;
-                        var suggested_by_name = item.suggested_by_name!=null && item.suggested_by_name!='' ? item.suggested_by_name:'Self';
+                        var suggested_by_name = item.suggested_by_name!=null && item.suggested_by_name!="" ? item.suggested_by_name:"Self";
             
                         response.push({id,full_name,gender,date_of_birth,email,mobile_number,date_of_birth,gender,profile_image_name,profile_image_path,suggested_by_name,suggested_by_id,pin_code,address,medwire_id,enquiry_date,staff_name,added_by,role_id});
                     
@@ -229,7 +229,7 @@ class Patient {
                     return resolve({ kind: "not_found" });
                 }
                 
-            })
+            });
         });
     }
 
@@ -248,7 +248,7 @@ class Patient {
                     const id = item.id;
                     const email = item.email;
                     const mobile_number = parseInt(item.mobile);
-                    const profile_image_name = (item.profile_image == null) ? '' :item.profile_image;
+                    const profile_image_name = (item.profile_image == null) ? "" :item.profile_image;
                     const profile_image_path =  process.env.APP_URL+"member/"+profile_image_name;
                     const full_name = item.first_name;
                     const date_of_birth = item.date_of_birth;
@@ -257,21 +257,21 @@ class Patient {
                     const suggested_by_id = item.suggested_by_id;
                     const pin_code = parseInt(item.pin_code);
                     const address = item.address;
-                    var suggested_by_name = '';
+                    var suggested_by_name = "";
                     const medwire_id = item.permanent_id;
                     const enquiry_date = item.enquiry_date;
 
-                     db.query(`SELECT first_name from users where id = ?`,[item.suggested_by_id],(err,res1)=>{                  
+                     db.query("SELECT first_name from users where id = ?",[item.suggested_by_id],(err,res1)=>{                  
                         if (err) {
                             logger.error(err.message);
                             cb(err, null);
                             return;
                         }
                         
-                        if(suggested_by == 'self'){
-                            suggested_by_name = 'Self';
+                        if(suggested_by == "self"){
+                            suggested_by_name = "Self";
                         } else {
-                            suggested_by_name =  (res1.length > 0)  ? res1[0].first_name : '';
+                            suggested_by_name =  (res1.length > 0)  ? res1[0].first_name : "";
                         } 
                          
                      response.push({id,full_name,gender,date_of_birth,email,mobile_number,date_of_birth,gender,profile_image_name,profile_image_path,suggested_by_name,suggested_by_id,pin_code,address,medwire_id,enquiry_date});
@@ -285,12 +285,12 @@ class Patient {
             } else {
                 cb({ kind: "not_found" }, null);
             }
-        })
+        });
     }
 
     static findByMobileNumber(mobile_number,cb) {
         var role_id = 2;
-        var deleted_at = 'IS NULL'
+        var deleted_at = "IS NULL";
         db.query(`SELECT * FROM users WHERE mobile = '${mobile_number}' and role_id = '${role_id}' and deleted_at ${deleted_at}`, [mobile_number,role_id,deleted_at], (err, res) => {
             
             if (err) {
@@ -304,14 +304,14 @@ class Patient {
             } else {
                 cb({ kind: "not_found" }, null);
             }
-        })
+        });
     }
 
 
 
     static findByIdAndRole(user_id,role_id, cb) {  
      
-        var deleted_at = 'IS NULL'
+        var deleted_at = "IS NULL";
         db.query(`SELECT * FROM users WHERE id = '${user_id}' and role_id = ${role_id} and deleted_at ${deleted_at} order by id desc`, [user_id,role_id,deleted_at], (err,res)=>{
             if(err){
                 logger.error(err.message);
@@ -324,7 +324,7 @@ class Patient {
                     const id = item.id;
                     const email = item.email;
                     const mobile_number = parseInt(item.mobile);
-                    const profile_image_name = (item.profile_image == null) ? '' :item.profile_image;
+                    const profile_image_name = (item.profile_image == null) ? "" :item.profile_image;
                     const profile_image_path = process.env.APP_URL+"member/"+profile_image_name;
                     const full_name = item.first_name;
                     const date_of_birth = item.date_of_birth;
@@ -337,17 +337,17 @@ class Patient {
                     const address = item.address;
                     
 
-                    db.query(`SELECT first_name from users where id = ?`,[item.suggested_by_id],(err,res1)=>{                  
+                    db.query("SELECT first_name from users where id = ?",[item.suggested_by_id],(err,res1)=>{                  
                         if (err) {
                             logger.error(err.message);
                             cb(err, null);
                             return;
                         }
                         
-                        if(suggested_by == 'self'){
-                            suggested_by_name = 'self';
+                        if(suggested_by == "self"){
+                            suggested_by_name = "self";
                         } else {
-                            var suggested_by_name =  (res1.length > 0)  ? res1[0].first_name : '';
+                            var suggested_by_name =  (res1.length > 0)  ? res1[0].first_name : "";
                         }
                         response.push({id,full_name,gender,date_of_birth,email,mobile_number,date_of_birth,gender,profile_image_name,profile_image_path,suggested_by_name,suggested_by_id,pin_code,medwire_id,enquiry_date,address});
                     });                    
@@ -360,7 +360,7 @@ class Patient {
                 cb({ kind: "not_found" }, null);
             }
             
-        })
+        });
     }
 
 
@@ -372,10 +372,10 @@ class Patient {
         enquiry_date,user_id,created_by_id,cb){
 
     
-        var deleted_at = 'IS NULL';
+        var deleted_at = "IS NULL";
         var updated_at = helperFunction.getCurrentDateTime();
 
-        if(suggested_by == 'self'){
+        if(suggested_by == "self"){
             suggested_by_id = created_by_id;
         } 
 
@@ -385,8 +385,8 @@ class Patient {
           
             if(res.length > 0){
 
-                if(profile_image!='' && profile_image!=undefined){
-                    db.query(`update users SET profile_image = ? , alternate_mobile = ?, first_name = ?,  date_of_birth = ?,  gender = ?  ,pin_code = ? ,address = ? , suggested_by = ?,suggested_by_id = ?, enquiry_date = ? ,updated_at = ?  WHERE id = ?`,[profile_image,alternate_mobile_number,first_name,date_of_birth,sex,pin_code,address,suggested_by,suggested_by_id,enquiry_date,updated_at,user_id],(err,res)=>{
+                if(profile_image!="" && profile_image!=undefined){
+                    db.query("update users SET profile_image = ? , alternate_mobile = ?, first_name = ?,  date_of_birth = ?,  gender = ?  ,pin_code = ? ,address = ? , suggested_by = ?,suggested_by_id = ?, enquiry_date = ? ,updated_at = ?  WHERE id = ?",[profile_image,alternate_mobile_number,first_name,date_of_birth,sex,pin_code,address,suggested_by,suggested_by_id,enquiry_date,updated_at,user_id],(err,res)=>{
             
                         if (err) {
                             logger.error(err.message);
@@ -396,7 +396,7 @@ class Patient {
 
                     });
                 } else {
-                   db.query(`update users SET alternate_mobile = ?, first_name = ?,  date_of_birth = ?,  gender = ?  ,pin_code = ? ,address = ? , suggested_by = ?,suggested_by_id = ?, enquiry_date = ? ,updated_at = ?  WHERE id = ?`,[alternate_mobile_number,first_name,date_of_birth,sex,pin_code,address,suggested_by,suggested_by_id,enquiry_date,updated_at,user_id],(err,res)=>{
+                   db.query("update users SET alternate_mobile = ?, first_name = ?,  date_of_birth = ?,  gender = ?  ,pin_code = ? ,address = ? , suggested_by = ?,suggested_by_id = ?, enquiry_date = ? ,updated_at = ?  WHERE id = ?",[alternate_mobile_number,first_name,date_of_birth,sex,pin_code,address,suggested_by,suggested_by_id,enquiry_date,updated_at,user_id],(err,res)=>{
             
                         if (err) {
                             logger.error(err.message);
@@ -426,14 +426,14 @@ class Patient {
                   
 
             } else {
-                if(suggested_by == 'self'){
+                if(suggested_by == "self"){
                     suggested_by_id = created_by_id;
                 }   
         
             
                 
-                if(profile_image!='' && profile_image!=undefined){
-                    db.query(`update users SET alternate_mobile = ?, first_name = ?, email = ?, mobile = ?, date_of_birth = ?,  gender = ?  ,pin_code = ? ,address = ? , suggested_by = ?,suggested_by_id = ?, enquiry_date = ? ,updated_at = ?  WHERE id = ?`,[alternate_mobile_number,first_name,email_id,mobile_number,date_of_birth,sex,pin_code,address,suggested_by,suggested_by_id,enquiry_date,updated_at,user_id],(err,res)=>{
+                if(profile_image!="" && profile_image!=undefined){
+                    db.query("update users SET alternate_mobile = ?, first_name = ?, email = ?, mobile = ?, date_of_birth = ?,  gender = ?  ,pin_code = ? ,address = ? , suggested_by = ?,suggested_by_id = ?, enquiry_date = ? ,updated_at = ?  WHERE id = ?",[alternate_mobile_number,first_name,email_id,mobile_number,date_of_birth,sex,pin_code,address,suggested_by,suggested_by_id,enquiry_date,updated_at,user_id],(err,res)=>{
         
                     if (err) {
                         logger.error(err.message);
@@ -472,7 +472,7 @@ class Patient {
                     } else {
                         cb({ kind: "failed_to_update" }, null);
                     }              
-                }) 
+                }); 
 
 
                 } else {
@@ -515,12 +515,12 @@ class Patient {
                     } else {
                         cb({ kind: "failed_to_update" }, null);
                     }              
-                }) 
+                }); 
 
                 }              
             }           
 
-        })  
+        });  
     }
     static deleteStaffPatient(id,added_by, cb){
         var added_by = null;
@@ -535,7 +535,7 @@ class Patient {
         cb(null, {id: id});
     }
     static delete(id,created_by_id,cb){
-        db.query(`delete from users_patient WHERE patient_id = ? and user_id = ? `,[id,created_by_id],(err,res)=>{
+        db.query("delete from users_patient WHERE patient_id = ? and user_id = ? ",[id,created_by_id],(err,res)=>{
             if (err) {
                 logger.error(err.message);
                 cb(err, null);
@@ -547,9 +547,9 @@ class Patient {
     }
 
     static search(search_key,cb) {
-        var deleted_at = 'IS NULL';
+        var deleted_at = "IS NULL";
         var role_id = 2;
-        var approve_status = 'Approve';
+        var approve_status = "Approve";
 
         db.query(`SELECT * FROM users WHERE (mobile = '${search_key}' OR permanent_id = '${search_key}')  and role_id = '${role_id}'  and deleted_at ${deleted_at}`, [search_key,role_id,deleted_at], (err, res) => {
      
@@ -567,7 +567,7 @@ class Patient {
                     const email = item.email;
                     const mobile_number = parseInt(item.mobile);
                     const alternate_mobile_number = parseInt(item.alternate_mobile);
-                    const profile_image_name = (item.profile_image == null) ? '' :item.profile_image;
+                    const profile_image_name = (item.profile_image == null) ? "" :item.profile_image;
                     const  profile_image_path = process.env.APP_URL+"member/"+profile_image_name;
                     const full_name = item.first_name;
                     const date_of_birth = item.date_of_birth;
@@ -581,7 +581,7 @@ class Patient {
                             const email = item1.email;
                             const mobile_number = parseInt(item1.mobile);
                             const alternate_mobile_number = parseInt(item1.alternate_mobile);
-                            const profile_image_name = (item1.profile_image == null) ? '' :item1.profile_image;
+                            const profile_image_name = (item1.profile_image == null) ? "" :item1.profile_image;
                             const  profile_image_path = process.env.APP_URL+"member/"+profile_image_name;
                             const full_name = item1.first_name;
                             const date_of_birth = item1.date_of_birth;
@@ -599,11 +599,11 @@ class Patient {
             } else {
                 cb({ kind: "not_found" }, null);
             }
-        })
+        });
     }
 
     static checkExistence(patient_id,created_by_id,cb){
-        db.query(`select * from users_patient WHERE patient_id = ? and user_id = ? `,[patient_id,created_by_id],(err,res)=>{
+        db.query("select * from users_patient WHERE patient_id = ? and user_id = ? ",[patient_id,created_by_id],(err,res)=>{
             if (err) {
                 logger.error(err.message);
                 cb(err, null);

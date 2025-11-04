@@ -1,7 +1,7 @@
-const { JOI } = require('joi');
-const db = require('../config/db.config');
-const { logger } = require('../utils/logger');
-const helperFunction = require('../helper/helperFunction');
+const { JOI } = require("joi");
+const db = require("../config/db.config");
+const { logger } = require("../utils/logger");
+const helperFunction = require("../helper/helperFunction");
 const moment = require("moment");
 
 class Plan {
@@ -37,12 +37,12 @@ class Plan {
                 cb({ kind: "not_found" }, null);
             }
             
-        })
+        });
     }
 
 
     static findById(plan_id,cb){
-        var deleted_at = 'IS NULL';
+        var deleted_at = "IS NULL";
         db.query(`SELECT * FROM plans WHERE id = '${plan_id}' and deleted_at ${deleted_at}`, [plan_id,deleted_at], (err,res)=>{
             if(err){
                 logger.error(err.message);
@@ -60,8 +60,8 @@ class Plan {
     static purchase(plan_id,user_id,cb){
         var status = "Inactive";
         var purchased_at = helperFunction.getCurrentDateTime();
-        var payment_order_id = process.env.APP_NAME+'_'+new Date().getTime();
-        var deleted_at = 'IS NULL';
+        var payment_order_id = process.env.APP_NAME+"_"+new Date().getTime();
+        var deleted_at = "IS NULL";
         db.query(`SELECT * FROM plans WHERE id = '${plan_id}' and deleted_at ${deleted_at}`, [plan_id,deleted_at], (err,res)=>{
             if(err){
                 logger.error(err.message);
@@ -70,7 +70,7 @@ class Plan {
             }
             if(res.length > 0){
                 console.log("-----res",res);
-                db.query(`SELECT * FROM plan_purchase_history WHERE status = 'active' and user_id = ?`, [user_id], (err,planpurchaseres)=>{
+                db.query("SELECT * FROM plan_purchase_history WHERE status = 'active' and user_id = ?", [user_id], (err,planpurchaseres)=>{
                     if(err){
                         logger.error(err.message);
                         cb(err,null);
@@ -90,16 +90,16 @@ class Plan {
                         var validity_part_1 = validity[0];
                         var validity_part_2 = validity[1];
                        
-                        var date = moment(purchased_at).format('YYYY-MM-DD');
-                        var expired_at = '';
-                        if(validity_part_2 == 'Year'){
-                            expired_at = moment(date).add(parseInt(validity_part_1), 'years').format('YYYY-MM-DD HH:mm:ss');
+                        var date = moment(purchased_at).format("YYYY-MM-DD");
+                        var expired_at = "";
+                        if(validity_part_2 == "Year"){
+                            expired_at = moment(date).add(parseInt(validity_part_1), "years").format("YYYY-MM-DD HH:mm:ss");
                         }
-                        if(validity_part_2 == 'Month'){                    
-                            expired_at = moment(date).add(parseInt(validity_part_1), 'months').format('YYYY-MM-DD HH:mm:ss');
+                        if(validity_part_2 == "Month"){                    
+                            expired_at = moment(date).add(parseInt(validity_part_1), "months").format("YYYY-MM-DD HH:mm:ss");
                         }
-                        if(validity_part_2 == 'day'){
-                            expired_at = moment(date).add(parseInt(validity_part_1), 'days').subtract(1, 'days').format('YYYY-MM-DD HH:mm:ss');
+                        if(validity_part_2 == "day"){
+                            expired_at = moment(date).add(parseInt(validity_part_1), "days").subtract(1, "days").format("YYYY-MM-DD HH:mm:ss");
                         }
 
                         db.query(`SELECT * FROM plan_purchase_history WHERE plan_id = '${plan_id}' and status = 'active' and user_id =  ${user_id}`, [plan_id,user_id], (err,res)=>{
@@ -113,7 +113,7 @@ class Plan {
                                 cb({ kind: "already_purchased" }, null);
                             } else {
 
-                                db.query(`INSERT INTO plan_purchase_history(plan_id,user_id,status,purchased_at,total_limit,expired_at,total_amount,payment_order_id) VALUES(?,?,?,?,?,?,?,?)`, [plan_id,user_id,status,purchased_at,benefit,expired_at,price,payment_order_id], (err,res)=>{
+                                db.query("INSERT INTO plan_purchase_history(plan_id,user_id,status,purchased_at,total_limit,expired_at,total_amount,payment_order_id) VALUES(?,?,?,?,?,?,?,?)", [plan_id,user_id,status,purchased_at,benefit,expired_at,price,payment_order_id], (err,res)=>{
                                     if(err){
                                         logger.error(err.message);
                                         cb(err,null);
@@ -138,16 +138,16 @@ class Plan {
                         var validity_part_1 = validity[0];
                         var validity_part_2 = validity[1];
                        
-                        var date = moment(purchased_at).format('YYYY-MM-DD');
-                        var expired_at = '';
-                        if(validity_part_2 == 'Year'){
-                            expired_at = moment(date).add(parseInt(validity_part_1), 'years').format('YYYY-MM-DD HH:mm:ss');
+                        var date = moment(purchased_at).format("YYYY-MM-DD");
+                        var expired_at = "";
+                        if(validity_part_2 == "Year"){
+                            expired_at = moment(date).add(parseInt(validity_part_1), "years").format("YYYY-MM-DD HH:mm:ss");
                         }
-                        if(validity_part_2 == 'Month'){                    
-                            expired_at = moment(date).add(parseInt(validity_part_1), 'months').format('YYYY-MM-DD HH:mm:ss');
+                        if(validity_part_2 == "Month"){                    
+                            expired_at = moment(date).add(parseInt(validity_part_1), "months").format("YYYY-MM-DD HH:mm:ss");
                         }
-                        if(validity_part_2 == 'day'){
-                            expired_at = moment(date).add(parseInt(validity_part_1), 'days').subtract(1, 'days').format('YYYY-MM-DD HH:mm:ss');
+                        if(validity_part_2 == "day"){
+                            expired_at = moment(date).add(parseInt(validity_part_1), "days").subtract(1, "days").format("YYYY-MM-DD HH:mm:ss");
                         }
 
                         db.query(`SELECT * FROM plan_purchase_history WHERE plan_id = '${plan_id}' and status='active' and user_id =  ${user_id}`, [plan_id,user_id], (err,res)=>{
@@ -169,7 +169,7 @@ class Plan {
                                    
                                 });*/
 
-                                db.query(`INSERT INTO plan_purchase_history(plan_id,user_id,status,purchased_at,total_limit,expired_at,total_amount,payment_order_id) VALUES(?,?,?,?,?,?,?,?)`, [plan_id,user_id,status,purchased_at,benefit,expired_at,price,payment_order_id], (err,res)=>{
+                                db.query("INSERT INTO plan_purchase_history(plan_id,user_id,status,purchased_at,total_limit,expired_at,total_amount,payment_order_id) VALUES(?,?,?,?,?,?,?,?)", [plan_id,user_id,status,purchased_at,benefit,expired_at,price,payment_order_id], (err,res)=>{
                                     if(err){
                                         logger.error(err.message);
                                         cb(err,null);
@@ -191,7 +191,7 @@ class Plan {
     } 
     static renew(plan_purchase_id,cb){
         var purchased_at = helperFunction.getCurrentDateTime();
-        var deleted_at = 'IS NULL';
+        var deleted_at = "IS NULL";
         db.query(`SELECT * FROM plan_purchase_history WHERE id = '${plan_purchase_id}'`, [plan_purchase_id], (err,res)=>{
             if(err){
                 logger.error(err.message);
@@ -217,18 +217,18 @@ class Plan {
                 var validity_part_2 = validity[1];
                
                 var date = new Date(purchased_at);
-                var expired_at = '';
-                if(validity_part_2 == 'Year'){
+                var expired_at = "";
+                if(validity_part_2 == "Year"){
                     var expired_at = date.setFullYear(date.getFullYear() + parseInt(validity_part_1));
                     expired_at = new Date(expired_at);
                 }
 
-                if(validity_part_2 == 'Month'){                    
+                if(validity_part_2 == "Month"){                    
                     var expired_at = date.setMonth(date.getMonth() + parseInt(validity_part_1));
                     expired_at = new Date(expired_at);
                 }
 
-                db.query(`update plan_purchase_history set purchased_at = ? ,total_limit =? ,expired_at = ? where id = ?`, [purchased_at,benefit,expired_at,plan_purchase_id], (err,res)=>{
+                db.query("update plan_purchase_history set purchased_at = ? ,total_limit =? ,expired_at = ? where id = ?", [purchased_at,benefit,expired_at,plan_purchase_id], (err,res)=>{
                     if(err){
                         logger.error(err.message);
                         cb(err,null);

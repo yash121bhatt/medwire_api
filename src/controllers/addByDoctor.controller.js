@@ -15,25 +15,25 @@ exports.labRadiolist = async(req,res)=>{
         const check = await helperQuery.All(`SELECT*FROM radio_lab_doctors WHERE doctor_id='${doctor_id}'`);
         var ids =[];
         check.map((cid)=>{
-            ids.push(cid.user_id!='null' && cid.user_id!=null && cid.user_id!=undefined ? cid.user_id:0);
+            ids.push(cid.user_id!="null" && cid.user_id!=null && cid.user_id!=undefined ? cid.user_id:0);
         });
         console.log(ids,check);
         const result = await addByDoctor.labRadio({role_id,search,ids});
         const data = [];
         result.map((item)=>{
             data.push({
-                id:item.id??'-',
-                role_id:item.role_id??'-',
-                first_name:item.first_name??'-',
-                email:item.email??'-',
-                mobile:item.mobile??'-',
-                profile_image:item.profile_image??'-',
-                profile:item.profile_image!=undefined && item.profile_image!='' ? process.env.APP_URL+'member/'+item.profile_image:'-',
-                opening_time:item.opening_time??'-',
-                closing_time:item.closing_time??'-',
-                approve_status:item.approve_status??'-',
-                created_at:item.created_at??'-',
-                updated_at:item.updated_at??'-',
+                id:item.id??"-",
+                role_id:item.role_id??"-",
+                first_name:item.first_name??"-",
+                email:item.email??"-",
+                mobile:item.mobile??"-",
+                profile_image:item.profile_image??"-",
+                profile:item.profile_image!=undefined && item.profile_image!="" ? process.env.APP_URL+"member/"+item.profile_image:"-",
+                opening_time:item.opening_time??"-",
+                closing_time:item.closing_time??"-",
+                approve_status:item.approve_status??"-",
+                created_at:item.created_at??"-",
+                updated_at:item.updated_at??"-",
             });
         });
         return res.status(200).json({
@@ -49,7 +49,7 @@ exports.labRadiolist = async(req,res)=>{
             message:error.message
         });
     }
-}
+};
 
 exports.AddlabRadio = async(req,res)=>{
     try {
@@ -88,7 +88,7 @@ exports.AddlabRadio = async(req,res)=>{
             message:error.message
         });
     }
-}
+};
 exports.showDoctorlabRadio = async(req,res)=>{
     try {
         const {doctor_id,role_id} = req.body;
@@ -109,7 +109,7 @@ exports.showDoctorlabRadio = async(req,res)=>{
             message:error.message
         });
     }
-}
+};
 exports.DeleteDoctorlabRadio = async(req,res)=>{
     try {
         const {user_id,doctor_id} = req.body;
@@ -140,7 +140,7 @@ exports.DeleteDoctorlabRadio = async(req,res)=>{
             message:"Something Went to wrong!"
         });
     }
-}
+};
 exports.DoctorRequestlabRadio = async(req,res)=>{
     try {
         const {user_id} = req.body;
@@ -158,7 +158,7 @@ exports.DoctorRequestlabRadio = async(req,res)=>{
             const email = item.email??null;
             const mobile = item.mobile??null;
             const pin_code = item.pin_code??null;
-            const request_status = item.status??'Pending';
+            const request_status = item.status??"Pending";
             const address = item.address??null;
             const profile_image = item.profile_image??null;
 
@@ -182,7 +182,7 @@ exports.DoctorRequestlabRadio = async(req,res)=>{
             message:error.message
         });
     }
-}
+};
 exports.statusDoctorlabRadio = async(req,res)=>{
     try {
         const {user_id,request_status} = req.body;
@@ -194,18 +194,18 @@ exports.statusDoctorlabRadio = async(req,res)=>{
 
         let requestData= await addByDoctor.DoctorlabRadioFirst(user_id);
         const userType = requestData.d_user_type.charAt(0).toUpperCase() + requestData.d_user_type.slice(1);
-        var CurrentDate = moment().format('YYYY-MM-DD HH:mm:ss');
+        var CurrentDate = moment().format("YYYY-MM-DD HH:mm:ss");
 
         var data = {
-            'by' :'custom',
-            'from_user_id' : requestData.id,
-            'to_user_id' : requestData.d_id,
-            'title' : userType+' '+request_status+' Confirmation',
-            'type' : userType+'_'+request_status+'_Conformation',
-            'appointment_date' : CurrentDate,
-            'time_slot' : moment().format('hh:mm A'),
-            'message' : 'Hello Dr. '+requestData.doctor_name+',<br> '+requestData.rl_name+' has '+request_status+' your request '+moment().format('YYYY-MM-DD')+" & "+moment().format('hh:mm A'),
-        }   
+            "by" :"custom",
+            "from_user_id" : requestData.id,
+            "to_user_id" : requestData.d_id,
+            "title" : userType+" "+request_status+" Confirmation",
+            "type" : userType+"_"+request_status+"_Conformation",
+            "appointment_date" : CurrentDate,
+            "time_slot" : moment().format("hh:mm A"),
+            "message" : "Hello Dr. "+requestData.doctor_name+",<br> "+requestData.rl_name+" has "+request_status+" your request "+moment().format("YYYY-MM-DD")+" & "+moment().format("hh:mm A"),
+        };   
         await Notification.AddNotification(data);
 
         return res.status(200).json({
@@ -221,7 +221,7 @@ exports.statusDoctorlabRadio = async(req,res)=>{
             message:"Something Went to wrong!"
         });
     }
-}
+};
 exports.DoctorlabRadioApproved = async(req,res)=>{
     try {
         const {user_id} = req.body;
@@ -262,7 +262,7 @@ exports.DoctorlabRadioApproved = async(req,res)=>{
             message:error.message
         });
     }
-}
+};
 exports.DoctorlabRadio = async(req,res)=>{
     try {
         const {user_id,doctor_id,role_id} = req.body;
@@ -283,4 +283,4 @@ exports.DoctorlabRadio = async(req,res)=>{
             message:error.message
         });
     }
-}
+};

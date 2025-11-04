@@ -1,4 +1,4 @@
-const pregnantWomen = require('../models/pregnantWomen.model');
+const pregnantWomen = require("../models/pregnantWomen.model");
 
 exports.create = (req,res) => { 
     const {user_id,name,date_of_pregnancy} =req.body;
@@ -6,23 +6,23 @@ exports.create = (req,res) => {
         if(err){
             res.status(500).send({
                 status_code : "500",
-                status: 'error',
-                message: 'Something Went Wrong'
+                status: "error",
+                message: "Something Went Wrong"
             });
             return;
         }
         if (data) {
             res.status(200).send({
                 status_code : "200",
-                status: 'success',
+                status: "success",
                 message : "Added Successfully",
                 data: data
             });
             return;
         }
-    })
+    });
     
-}
+};
 
 
 exports.show = (req,res) => { 
@@ -31,22 +31,22 @@ exports.show = (req,res) => {
         if(err){
             res.status(500).send({
                 status_code : "500",
-                status: 'error',
-                message: 'Something Went Wrong'
+                status: "error",
+                message: "Something Went Wrong"
             });
             return;
         }
         if (data) {
             res.status(200).send({
                 status_code : "200",
-                status: 'success',
+                status: "success",
                 data: data
             });
             return;
         }
-    })
+    });
     
-}
+};
 
 exports.delete = (req,res) => { 
     const {id} =req.body;
@@ -54,23 +54,23 @@ exports.delete = (req,res) => {
         if(err){
             res.status(500).send({
                 status_code : "500",
-                status: 'error',
-                message: 'Something Went Wrong'
+                status: "error",
+                message: "Something Went Wrong"
             });
             return;
         }
         if (data) {
             res.status(200).send({
                 status_code : "200",
-                status: 'success',
-                message: 'Delete Successfully'
+                status: "success",
+                message: "Delete Successfully"
 
             });
             return;
         }
-    })
+    });
     
-}
+};
 
 exports.findById = (req,res) => { 
     const {id,user_id} =req.body;
@@ -78,18 +78,18 @@ exports.findById = (req,res) => {
         if(err){
             res.status(500).send({
                 status_code : "500",
-                status: 'error',
-                message: 'Something Went Wrong'
+                status: "error",
+                message: "Something Went Wrong"
             });
             return;
         }
         if (data) {
             res.status(200).send({
                 status_code : "200",
-                status: 'success',
+                status: "success",
                 data: data
             });
             return;
         }
-    })
-}
+    });
+};

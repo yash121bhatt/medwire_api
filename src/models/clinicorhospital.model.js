@@ -1,7 +1,7 @@
-const { date } = require('joi');
-const db = require('../config/db.config');
-const { createNewClinicOrHospitalQuery: createNewClinicOrHospitalQuery, findUserByEmail: findUserByEmailQuery, findUserByIdQuery:findUserByIdQuery, verifyOtp:verifyOtp, findMemberByIdQuery: findMemberByIdQuery, resetPassword : resetPassword, createMember : createMember, updateUser : updateUser, updatePassword : updatePassword, oldPassword: oldPassword, updateMember:updateMember,findClinicOrHospitalByIdAndRoleQuery:findClinicOrHospitalByIdAndRoleQuery } = require('../database/queries');
-const { logger } = require('../utils/logger');
+const { date } = require("joi");
+const db = require("../config/db.config");
+const { createNewClinicOrHospitalQuery: createNewClinicOrHospitalQuery, findUserByEmail: findUserByEmailQuery, findUserByIdQuery:findUserByIdQuery, verifyOtp:verifyOtp, findMemberByIdQuery: findMemberByIdQuery, resetPassword : resetPassword, createMember : createMember, updateUser : updateUser, updatePassword : updatePassword, oldPassword: oldPassword, updateMember:updateMember,findClinicOrHospitalByIdAndRoleQuery:findClinicOrHospitalByIdAndRoleQuery } = require("../database/queries");
+const { logger } = require("../utils/logger");
 
 class ClinicOrHospital {
     constructor(name, email_id, mobile_number, password, type, role_id,aadhar_card_number) {
@@ -51,7 +51,7 @@ class ClinicOrHospital {
                 return;
             }
             cb({ kind: "not_found" }, null);
-        })
+        });
     }
     static findByEmailAndMobile(email,mobile, cb) {
         console.log(email);
@@ -66,7 +66,7 @@ class ClinicOrHospital {
                 return;
             }
             cb({ kind: "not_found" }, null);
-        })
+        });
     }
     static findByEmailAndRole(email,role_id, cb) {
         console.log(email);
@@ -80,13 +80,13 @@ class ClinicOrHospital {
                 cb(null, res[0]);
                 return;
             }
-            console.log(res)
-            console.log('test')
+            console.log(res);
+            console.log("test");
             cb({ kind: "not_found" }, null);
-        })
+        });
     }
     static otpVerify(email_id, forgot_otp,cb) {
-        const userData = { email_id : email_id, forgot_otp : forgot_otp }
+        const userData = { email_id : email_id, forgot_otp : forgot_otp };
         db.query(verifyOtp, 
             [
                 forgot_otp,
@@ -113,7 +113,7 @@ class ClinicOrHospital {
                     return;
                 }
                 if(res.affectedRows==0){
-                    const message = 'Otp Not Matched';
+                    const message = "Otp Not Matched";
                     cb(message,null);
                     return;
                 }
@@ -131,7 +131,7 @@ class ClinicOrHospital {
             cb(null,{
                 id : id
             });
-        })
+        });
     }
     static updatePassword(password,id,cb){
         db.query(updatePassword,[password,id],(err,res)=>{
@@ -143,7 +143,7 @@ class ClinicOrHospital {
             cb(null,{
                 id : id
             });
-        })
+        });
     }
 
     static findByIdAndRole(id, cb) {
@@ -161,7 +161,7 @@ class ClinicOrHospital {
                 return;    
             }
             
-        })
+        });
     }
 
     static findByIdAndRoleforcl(id, cb) {
@@ -178,7 +178,7 @@ class ClinicOrHospital {
                     return resolve({ kind: "not_found" });
                 }
                 
-            })
+            });
         });
         
     }
@@ -225,7 +225,7 @@ class ClinicOrHospital {
                 return;
             }            
             
-        })
+        });
     }
     static findDoctorCountClinic(id,role_id) {   
         return new Promise((resolve,reject)=>{
@@ -263,7 +263,7 @@ class ClinicOrHospital {
                     return resolve(1);
                 }            
                 
-            })
+            });
         });
         
     }

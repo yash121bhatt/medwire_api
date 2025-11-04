@@ -1,15 +1,15 @@
-const Staff = require('../models/staff.model');
-const ClinicOrHospital = require('../models/clinicorhospital.model');
-const { hash: hashPassword, compare: comparePassword } = require('../utils/password');
-const {transporter:transporter,mailOptions:mailOptions,autoGenPassword:autoGenPassword,convertDate:convertDate,dateFormat:dateFormat} = require('../helper/helper');
-const helperFunction = require('../helper/helperFunction');
-const { async } = require('q');
-const helperQuery = require('../helper/helperQuery');
+const Staff = require("../models/staff.model");
+const ClinicOrHospital = require("../models/clinicorhospital.model");
+const { hash: hashPassword, compare: comparePassword } = require("../utils/password");
+const {transporter:transporter,mailOptions:mailOptions,autoGenPassword:autoGenPassword,convertDate:convertDate,dateFormat:dateFormat} = require("../helper/helper");
+const helperFunction = require("../helper/helperFunction");
+const { async } = require("q");
+const helperQuery = require("../helper/helperQuery");
 // add Staff code by vineet shirdhonkar
 
 exports.addStaff = async (req,res) => { 
     const {clinic_id,full_name,email_id,date_of_birth,mobile_number,gender,role_id} = req.body;
-    var profile_image = '';
+    var profile_image = "";
 
     var password = autoGenPassword();
     var encryptedPassword = hashPassword(password.trim());    
@@ -22,7 +22,7 @@ exports.addStaff = async (req,res) => {
     if (req.body.full_name.length < 3) {
         return res.status(400).json({
                 status_code : 400,
-                status: 'error',
+                status: "error",
                 message: "Name should be minimum 3 characters"
             });   
     }
@@ -30,7 +30,7 @@ exports.addStaff = async (req,res) => {
     if (isNaN(req.body.mobile_number)) {
         return res.status(400).json({
                 status_code : 400,
-                status: 'error',
+                status: "error",
                 message: "Mobile number should be numeric"
             });   
     }
@@ -38,7 +38,7 @@ exports.addStaff = async (req,res) => {
     if(req.body.mobile_number.length!=10) {
         return res.status(400).json({
                 status_code : 400,
-                status: 'error',
+                status: "error",
                 message: "Mobile number should be 10 digit"
             });   
     }
@@ -47,7 +47,7 @@ exports.addStaff = async (req,res) => {
     if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(req.body.email_id) == false){
         return res.status(400).json({
                 status_code : 400,
-                status: 'error',
+                status: "error",
                 message: "Please enter valid email id"
             });   
     }  
@@ -57,7 +57,7 @@ exports.addStaff = async (req,res) => {
     if (req.body.role_id!=6 && req.body.role_id!=7) {
         return res.status(400).json({
                 status_code : 400,
-                status: 'error',
+                status: "error",
                 message: "Role id should be valid"
             });   
     }
@@ -66,7 +66,7 @@ exports.addStaff = async (req,res) => {
     if(req.file == undefined){       
         return res.status(400).json({
                 status_code : 400,
-                status: 'error',
+                status: "error",
                 message: "Profile Image field is required"
         }); 
 
@@ -81,14 +81,14 @@ exports.addStaff = async (req,res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code : 404,
-                    status: 'success',
-                    message: `Clinic / Hospital does not exist`
+                    status: "success",
+                    message: "Clinic / Hospital does not exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code : 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -100,36 +100,36 @@ exports.addStaff = async (req,res) => {
                     if (err.kind === "already_added") {
                         res.status(500).send({
                             status_code : 500,
-                            status: 'error',
-                            message: `Email or Mobile Number is already exist`
+                            status: "error",
+                            message: "Email or Mobile Number is already exist"
                         });
                         return;
                     }           
                     res.status(500).send({
                         status_code : 500,
-                        status: 'error',
-                        message: 'Something Went Wrong'
+                        status: "error",
+                        message: "Something Went Wrong"
                     });
                     return;
                 }
                 if (data) {
                     const clinicData = await helperQuery.All(`SELECT first_name FROM users WHERE id = '${clinic_id}'`);
                 
-                    var created_by_name = (clinicData) ? clinicData[0].first_name : '';
+                    var created_by_name = (clinicData) ? clinicData[0].first_name : "";
 
                     const decrypted_password = password;
                     
                     var logo =process.env.APP_LOGO;
                     var app_name = process.env.APP_NAME;
                     var user_login_url =process.env.USER_LOGIN_URL;
-                    var context = 'You have been registered by ' + created_by_name + ' on MedWire. Now you can avail all the benefits by login in the MedWire app.';
+                    var context = "You have been registered by " + created_by_name + " on MedWire. Now you can avail all the benefits by login in the MedWire app.";
 
                     helperFunction.template(transporter,true);
                         transporter.sendMail({
                             from:process.env.MAIL_FROM_ADDRESS,
                             to:email_id,
                             subject:"You have been Registered by "+created_by_name+" on MedWire",
-                            template:'createStaffAccountByClinic',
+                            template:"createStaffAccountByClinic",
                             context:{full_name,email_id,logo,app_name,decrypted_password,mobile_number,user_login_url,created_by_name,context}
                         }, function(error, info){
                         if(error){
@@ -139,16 +139,16 @@ exports.addStaff = async (req,res) => {
 
                     res.status(200).send({
                         status_code : 200,
-                        status: 'success',
+                        status: "success",
                         message : "Staff Added Successfully",
                         data: data
                     });
                     return;
                 }
-            })
+            });
         }
-    }) 
-}
+    }); 
+};
 // get all Staff code by vineet shirdhonkar
 exports.getAllStaffs = (req,res) => { 
     const {clinic_id} = req.body;
@@ -163,14 +163,14 @@ exports.getAllStaffs = (req,res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code : 404,
-                    status: 'success',
-                    message: `Clinic / Hospital does not exist`
+                    status: "success",
+                    message: "Clinic / Hospital does not exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code : 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -184,15 +184,15 @@ exports.getAllStaffs = (req,res) => {
                     if (err.kind === "not_found") {
                         res.status(404).send({
                             status_code : 404,
-                            status: 'success',
-                            message: `No Record Found`,
+                            status: "success",
+                            message: "No Record Found",
                             data : []
                         });
                         return;
                     }         
                     res.status(500).send({
                         status_code : 500,
-                        status: 'error',
+                        status: "error",
                         message: err.message
                     });
                     return;
@@ -201,7 +201,7 @@ exports.getAllStaffs = (req,res) => {
                 if(data.length > 0) {
                     res.status(200).send({
                         status_code : 200,
-                        status: 'success',
+                        status: "success",
                         message : "Staff data found Successfully",
                         data: data
                     });
@@ -211,8 +211,8 @@ exports.getAllStaffs = (req,res) => {
             }); 
         }
 
-    })       
-}
+    });       
+};
 
 // get staff detail code by vineet shirdhonkar
 
@@ -233,14 +233,14 @@ exports.getStaffDetail = (req,res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code : 404,
-                    status: 'success',
-                    message: `Staff does not exist`
+                    status: "success",
+                    message: "Staff does not exist"
                 });
                 return;
             }          
             res.status(500).send({
                 status_code : 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -249,7 +249,7 @@ exports.getStaffDetail = (req,res) => {
         if(data) {
             res.status(200).send({
                 status_code : 200,
-                status: 'success',
+                status: "success",
                 message : "Staff Details Found Successfully",
                 data: data
             });
@@ -257,7 +257,7 @@ exports.getStaffDetail = (req,res) => {
 
         }
     });     
-}
+};
 
 
 // update staff code by vineet shirdhonkar
@@ -274,7 +274,7 @@ exports.updateStaff = (req,res) => {
     if (req.body.full_name.length < 3) {
         return res.status(400).json({
                 status_code : 400,
-                status: 'error',
+                status: "error",
                 message: "Name should be minimum 3 characters"
             });   
     }
@@ -284,7 +284,7 @@ exports.updateStaff = (req,res) => {
     if (isNaN(req.body.mobile_number)) {
         return res.status(400).json({
                 status_code : 400,
-                status: 'error',
+                status: "error",
                 message: "Mobile number should be numeric"
             });   
     }
@@ -292,7 +292,7 @@ exports.updateStaff = (req,res) => {
     if(req.body.mobile_number.length!=10) {
         return res.status(400).json({
                 status_code : 400,
-                status: 'error',
+                status: "error",
                 message: "Mobile number should be 10 digit"
             });   
     }
@@ -302,7 +302,7 @@ exports.updateStaff = (req,res) => {
     if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(req.body.email_id) == false){
         return res.status(400).json({
                 status_code : 400,
-                status: 'error',
+                status: "error",
                 message: "Please enter valid email id"
             });   
     }
@@ -312,7 +312,7 @@ exports.updateStaff = (req,res) => {
     if (req.body.role_id!=6 && req.body.role_id!=7) {
         return res.status(400).json({
                 status_code : 400,
-                status: 'error',
+                status: "error",
                 message: "Role id should be valid"
             });   
     }   
@@ -324,14 +324,14 @@ exports.updateStaff = (req,res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code : 404,
-                    status: 'success',
-                    message: `Clinic / Hospital does not exist`
+                    status: "success",
+                    message: "Clinic / Hospital does not exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code : 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -345,15 +345,15 @@ exports.updateStaff = (req,res) => {
                     if (err.kind === "not_found") {
                         res.status(404).send({
                             status_code : 404,
-                            status: 'success',
-                            message: `Staff does not exist`
+                            status: "success",
+                            message: "Staff does not exist"
                         });
                         return;
                     }
 
                     res.status(500).send({
                         status_code : 500,
-                        status: 'error',
+                        status: "error",
                         message: err.message
                     });
                     return;
@@ -373,8 +373,8 @@ exports.updateStaff = (req,res) => {
                             if (err.kind === "already_added") {
                                 res.status(500).send({
                                     status_code : 500,
-                                    status: 'error',
-                                    message: `Email or Mobile Number is already exist`
+                                    status: "error",
+                                    message: "Email or Mobile Number is already exist"
                                 });
                                 return;
                             } 
@@ -382,23 +382,23 @@ exports.updateStaff = (req,res) => {
                             if(err.kind == "failed"){
                                res.status(500).send({
                                 status_code : 500,
-                                status: 'error',
-                                message: 'Failed ! Please try again'
+                                status: "error",
+                                message: "Failed ! Please try again"
                                 });
                                 return; 
                             }
 
                             res.status(500).send({
                                 status_code : 500,
-                                status: 'error',
-                                message: 'Something Went Wrong'
+                                status: "error",
+                                message: "Something Went Wrong"
                             });
                             return;
                         }
                         if (data) {
                             res.status(200).send({
                                 status_code : 200,
-                                status: 'success',
+                                status: "success",
                                 message : "Staff Updated Successfully",
                                 data: data
                             });
@@ -416,13 +416,13 @@ exports.updateStaff = (req,res) => {
                             });
                             return;
                         }
-                    })
+                    });
 
                 }
             });           
         }        
-    })
-}
+    });
+};
 
 // delete Staff code by vineet shirdhonkar
 
@@ -440,15 +440,15 @@ exports.deleteStaff = (req,res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code : 404,
-                    status: 'success',
-                    message: `Staff does not exist`
+                    status: "success",
+                    message: "Staff does not exist"
                 });
                 return;
             }
 
             res.status(500).send({
                 status_code : 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -459,22 +459,22 @@ exports.deleteStaff = (req,res) => {
                 if(err){
                     res.status(500).send({
                         status_code : 500,
-                        status: 'error',
-                        message: 'Something Went Wrong'
+                        status: "error",
+                        message: "Something Went Wrong"
                     });
                     return;
                 }
                 if (data) {   
                     res.status(200).send({
                         status_code : 200,
-                        status: 'success',
+                        status: "success",
                         message : "Staff Deleted Successfully",
                         data: data
                     });
                     return;
                 }
-            })
+            });
 
         }
     });     
-}
+};

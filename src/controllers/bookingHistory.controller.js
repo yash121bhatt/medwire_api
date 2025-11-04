@@ -17,16 +17,16 @@ exports.clinicAppointmenHistory = async (req, res) => {
             status: "success",
             message: "Successfully!",
             data: result
-        })
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json({
             status_code: 500,
             status: "error",
             message: "something went wrong!"
-        })
+        });
     }
-}
+};
 exports.patientBillingHistoryClinic = async (req, res) => {
     try {
         const { user_id } = req.body;
@@ -43,7 +43,7 @@ exports.patientBillingHistoryClinic = async (req, res) => {
             const pin_code = item.pin_code != undefined ? item.pin_code : null;
             const user_id = item.user_id != undefined ? item.user_id : null;
             const member_id = item.member_id != undefined ? item.member_id : null;
-            const mamber_ids = member_id != undefined && member_id != null && JSON.parse(member_id) ? JSON.parse(member_id ?? '[]') : null;
+            const mamber_ids = member_id != undefined && member_id != null && JSON.parse(member_id) ? JSON.parse(member_id ?? "[]") : null;
             const mamber_names = mamber_ids != undefined && mamber_ids != null && mamber_ids.length > 0 ? await helperQuery.All("SELECT first_name FROM users WHERE id IN (" + mamber_ids + ")") : "Self";
             const patient_id = item.created_by_id != undefined ? item.created_by_id : null;
             const promo_code_id = item.promo_code_id != undefined ? item.promo_code_id : null;
@@ -58,7 +58,7 @@ exports.patientBillingHistoryClinic = async (req, res) => {
             const consulting_fee = item.consulting_fee != undefined ? item.consulting_fee : null;
             const total_amount = item.total_amount != undefined ? item.total_amount : null;
             const grand_total = item.grand_total != undefined ? item.grand_total : null;
-            const reason_of_reschedule = item.reason_of_reschedule ?? '';
+            const reason_of_reschedule = item.reason_of_reschedule ?? "";
             const doctor_id = item.doctor_id != undefined ? item.doctor_id : null;
             const appointments_user_type = item.appointments_user_type != undefined ? item.appointments_user_type : null;
             const doctor = item.doctor_name != undefined ? item.doctor_name : null;
@@ -87,7 +87,7 @@ exports.patientBillingHistoryClinic = async (req, res) => {
             const pin_code = item.pin_code != undefined ? item.pin_code : null;
             const user_id = item.user_id != undefined ? item.user_id : null;
             const member_id = item.member_id != undefined ? item.member_id : null;
-            const mamber_ids = member_id != undefined && member_id != null && JSON.parse(member_id) ? JSON.parse(member_id ?? '[]') : null;
+            const mamber_ids = member_id != undefined && member_id != null && JSON.parse(member_id) ? JSON.parse(member_id ?? "[]") : null;
             const mamber_names = mamber_ids != undefined && mamber_ids != null && mamber_ids.length > 0 ? await helperQuery.All("SELECT first_name FROM users WHERE id IN (" + mamber_ids + ")") : "Self";
             const patient_id = item.created_by_id != undefined ? item.created_by_id : null;
             const promo_code_id = item.promo_code_id != undefined ? item.promo_code_id : null;
@@ -102,7 +102,7 @@ exports.patientBillingHistoryClinic = async (req, res) => {
             const consulting_fee = item.consulting_fee != undefined ? item.consulting_fee : null;
             const total_amount = item.total_amount != undefined ? item.total_amount : null;
             const grand_total = item.grand_total != undefined ? item.grand_total : null;
-            const reason_of_reschedule = item.reason_of_reschedule ?? '';
+            const reason_of_reschedule = item.reason_of_reschedule ?? "";
             const doctor_id = item.doctor_id != undefined ? item.doctor_id : null;
             const appointments_user_type = item.appointments_user_type != undefined ? item.appointments_user_type : null;
             const doctor = item.doctor_name != undefined ? item.doctor_name : null;
@@ -131,16 +131,16 @@ exports.patientBillingHistoryClinic = async (req, res) => {
             status: "success",
             message: "Successfully!",
             data: sortedData
-        })
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json({
             status_code: 500,
             status: "error",
             message: "something went wrong!"
-        })
+        });
     }
-}
+};
 exports.clinicBookingHistory = async (req, res) => {
     try {
         const { user_id } = req.body;
@@ -157,7 +157,7 @@ exports.clinicBookingHistory = async (req, res) => {
             const pin_code = item.pin_code != undefined ? item.pin_code : null;
             const user_id = item.user_id != undefined ? item.user_id : null;
             const member_id = item.member_id != undefined ? item.member_id : null;
-            const mamber_ids = member_id != undefined && member_id != null && JSON.parse(member_id) ? JSON.parse(member_id ?? '[]') : null;
+            const mamber_ids = member_id != undefined && member_id != null && JSON.parse(member_id) ? JSON.parse(member_id ?? "[]") : null;
             const mamber_names = mamber_ids != undefined && mamber_ids != null && mamber_ids.length > 0 ? await helperQuery.All("SELECT first_name FROM users WHERE id IN (" + mamber_ids + ")") : "Self";
             const patient_id = item.created_by_id != undefined ? item.created_by_id : null;
             const promo_code_id = item.promo_code_id != undefined ? item.promo_code_id : null;
@@ -173,7 +173,7 @@ exports.clinicBookingHistory = async (req, res) => {
             const consulting_fee = item.consulting_fee != undefined ? item.consulting_fee : null;
             const total_amount = item.total_amount != undefined ? item.total_amount : null;
             const grand_total = item.grand_total != undefined ? item.grand_total : null;
-            const reason_of_reschedule = item.reason_of_reschedule ?? '';
+            const reason_of_reschedule = item.reason_of_reschedule ?? "";
             const doctor_id = item.doctor_id != undefined ? item.doctor_id : null;
             const doctor = item.doctor_name != undefined ? item.doctor_name : null;
             const clinic_id = item.clinic_id != undefined ? item.clinic_id : null;
@@ -199,13 +199,13 @@ exports.clinicBookingHistory = async (req, res) => {
             status: "success",
             message: "Successfully!",
             data: data
-        })
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json({
             status_code: 500,
             status: "error",
             message: "something went wrong!"
-        })
+        });
     }
-}
+};

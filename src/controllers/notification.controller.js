@@ -1,26 +1,26 @@
-const User = require('../models/user.model');
-const Notification = require('../models/notification.model');
-const helperFunction = require('../helper/helperFunction');
+const User = require("../models/user.model");
+const Notification = require("../models/notification.model");
+const helperFunction = require("../helper/helperFunction");
 const moment = require("moment");
-const helperQuery = require('../helper/helperQuery');
-const { token } = require('morgan');
-const { async } = require('q');
-const db = require('../config/db.config');
-const { logger } = require('../utils/logger');
+const helperQuery = require("../helper/helperQuery");
+const { token } = require("morgan");
+const { async } = require("q");
+const db = require("../config/db.config");
+const { logger } = require("../utils/logger");
 
 
 exports.menturationCycle = async(req,res) => {
     var data =  await Notification.getMenturationCycle();
     var payload = {
         notification : {
-            title : 'Menstrual Cycle Reminder',
-            body : 'From tomorrow your Mesntrual Cycle will begin.Please update your Menstrual Cycle Calendar accordingly'   
+            title : "Menstrual Cycle Reminder",
+            body : "From tomorrow your Mesntrual Cycle will begin.Please update your Menstrual Cycle Calendar accordingly"   
         }
-    }
-    var current_date = moment().format('YYYY-MM-DD');
+    };
+    var current_date = moment().format("YYYY-MM-DD");
     for(let [index,value] of data.entries()){ 
-        var new_start_date = new Date(Date.parse(value.start_date))
-         var start_date = moment(new_start_date).format('YYYY-MM-DD');
+        var new_start_date = new Date(Date.parse(value.start_date));
+         var start_date = moment(new_start_date).format("YYYY-MM-DD");
         
         if(current_date == start_date){
             if(value.device_token){
@@ -28,26 +28,26 @@ exports.menturationCycle = async(req,res) => {
             }
         }
     }
-}
+};
 exports.pregnantWomen = async (req,res) => { 
     /* var device_token = 'fa_15wyZToqEXmLMHeY37q:APA91bF-ppkw0IjArZmNC7aMmPb5eFG8UXNdDHUQOBTbPXcK-uuLJr1DXkfGUtCE8AOftC5cqWNa07wrKusFm8OiD9dIR77gN5M5E0MYBEwWA8QfqxrsS6D7vzxt8YYI30csJgVf_xCO'; */
     var payload = {
         notification : {
-            title : 'Stages of Child Growth Month-by-Month in Pregnancy',
-            body : 'This middle section of pregnancy is often thought of as the best part of the experience. '
+            title : "Stages of Child Growth Month-by-Month in Pregnancy",
+            body : "This middle section of pregnancy is often thought of as the best part of the experience. "
         }
-    }
+    };
     var data =  await Notification.getPregnantWomenNotification();
  
-    var current_date_time = moment().format('YYYY-MM-DD')+'T'+moment().format('HH:mm:ss')+'.000Z';
+    var current_date_time = moment().format("YYYY-MM-DD")+"T"+moment().format("HH:mm:ss")+".000Z";
 
     for(let [index,value] of data.entries()){     
         var end_date_time = moment(value.date_of_pregnancy);
-        var month_difference =  Math.ceil(end_date_time.diff(current_date_time, 'months', true));
+        var month_difference =  Math.ceil(end_date_time.diff(current_date_time, "months", true));
         
         if(month_difference > 0){
             for (let i = 1; i <= month_difference; i++) {
-                var start_date_time = moment(end_date_time).subtract(i, 'months').format('YYYY-MM-DD')+'T'+moment(end_date_time).subtract(i, 'months').format('HH:mm:ss')+'.000Z';
+                var start_date_time = moment(end_date_time).subtract(i, "months").format("YYYY-MM-DD")+"T"+moment(end_date_time).subtract(i, "months").format("HH:mm:ss")+".000Z";
                 
                 if(current_date_time == start_date_time){
                     await helperFunction.pushNotification(value.device_token,payload);
@@ -55,15 +55,15 @@ exports.pregnantWomen = async (req,res) => {
             }
         }
     }
-}
+};
 exports.InsertPreReminder = async (req,res) => { 
     var result = await Notification.getPreNotification(); 
-    var current_moment = moment().format('YYYY-MM-DD HH:mm');
+    var current_moment = moment().format("YYYY-MM-DD HH:mm");
     
     for(let[index,value] of result.entries()){
-        var date_time = moment(value.date_time).format('YYYY-MM-DD HH:mm');
+        var date_time = moment(value.date_time).format("YYYY-MM-DD HH:mm");
 
-        var member_first_name = 'your';
+        var member_first_name = "your";
         var from_user_id = value.member_id;
             var to_user_id = value.user_id;
             var user_result = await helperQuery.Get({table:"users",where:"id ="+to_user_id});
@@ -72,61 +72,61 @@ exports.InsertPreReminder = async (req,res) => {
                 var first_name = user_result[0].first_name;
             }
             else{
-                var first_name = 'User';
+                var first_name = "User";
             }
         if(value.member_id){
             var member_result = await helperQuery.Get({table:"users",where:"id ="+value.member_id});
-            member_first_name = (member_result.length > 0) ? member_result[0].first_name : 'your';
+            member_first_name = (member_result.length > 0) ? member_result[0].first_name : "your";
         }else{
             member_first_name = first_name;
         }
 
         if(current_moment == date_time){
 
-            if(value.type == 'lab_test'){
-                var title = 'Vaccination Reminder';
-                var notification_type = 'pre_vaccination_reminder';
-                var message = 'Hey '+member_first_name+',<br>  This is a reminder regarding your vaccination. '+value.name+'.';
+            if(value.type == "lab_test"){
+                var title = "Vaccination Reminder";
+                var notification_type = "pre_vaccination_reminder";
+                var message = "Hey "+member_first_name+",<br>  This is a reminder regarding your vaccination. "+value.name+".";
             }
             else{
-                var title = 'Appointment Reminder';
-                var notification_type = 'appointment_reminder';
-                var message = 'Hey '+member_first_name+',<br>  This is a reminder regarding your appointment.';
+                var title = "Appointment Reminder";
+                var notification_type = "appointment_reminder";
+                var message = "Hey "+member_first_name+",<br>  This is a reminder regarding your appointment.";
             }
             if(from_user_id){
-                var created_at = moment().format('YYYY-MM-DD HH:mm');
+                var created_at = moment().format("YYYY-MM-DD HH:mm");
                 await Notification.InsertReminder(from_user_id,to_user_id,title,notification_type,message,created_at);
             }
         }
         if(value.time){
-            var get_time = moment(value.date_time).format('YYYY-MM-DD')+' '+value.time;
-            var current_get_time =  moment().format('YYYY-MM-DD hh:mm A');
+            var get_time = moment(value.date_time).format("YYYY-MM-DD")+" "+value.time;
+            var current_get_time =  moment().format("YYYY-MM-DD hh:mm A");
             if(current_get_time == get_time){
                 const user_detail = await helperQuery.Get({table:"users",where:" id="+value.user_id});
 
                 if(user_detail.length > 0){
-                    if(value.type == 'lab_test'){
-                        var title = 'Vaccination Reminder';
-                        var notification_type = 'pre_vaccination_reminder';
-                        var message = 'Hey '+member_first_name+',<br>  This is a reminder regarding your vaccination. '+value.name+'.';
-                        var app_message =  'Hey '+member_first_name+',\nThis is a reminder regarding your vaccination. '+value.name+'.';
+                    if(value.type == "lab_test"){
+                        var title = "Vaccination Reminder";
+                        var notification_type = "pre_vaccination_reminder";
+                        var message = "Hey "+member_first_name+",<br>  This is a reminder regarding your vaccination. "+value.name+".";
+                        var app_message =  "Hey "+member_first_name+",\nThis is a reminder regarding your vaccination. "+value.name+".";
                     }
                     else{
-                        var title = 'Appointment Reminder';
-                        var notification_type = 'appointment_reminder';
-                        var app_message = 'Hey '+member_first_name+',\nThis is a reminder regarding your appointment.';
-                        var message = 'Hey '+member_first_name+',<br>  This is a reminder regarding your appointment.';
+                        var title = "Appointment Reminder";
+                        var notification_type = "appointment_reminder";
+                        var app_message = "Hey "+member_first_name+",\nThis is a reminder regarding your appointment.";
+                        var message = "Hey "+member_first_name+",<br>  This is a reminder regarding your appointment.";
                     }
                     var payload = {
                         notification : {
                             title : title,
                             body : app_message
                         }
-                    }   
-                    if((user_detail[0].device_type == 'Android')||(user_detail[0].device_type == 'IOS')){
+                    };   
+                    if((user_detail[0].device_type == "Android")||(user_detail[0].device_type == "IOS")){
                         await helperFunction.pushNotification(user_detail[0].device_token,payload);
 
-                        var created_at = moment().format('YYYY-MM-DD HH:mm');
+                        var created_at = moment().format("YYYY-MM-DD HH:mm");
                         await Notification.InsertReminder(from_user_id,to_user_id,title,notification_type,message,created_at);
                        
                     }
@@ -134,10 +134,10 @@ exports.InsertPreReminder = async (req,res) => {
             }
         }
     }
-}
+};
 exports.InsertMedicineReminder = async (req,res) => { 
     var get_pre_medicines = await Notification.getPreMedicines(); 
-    var current_moment = moment().format('hh:mm A');
+    var current_moment = moment().format("hh:mm A");
     for(let[index,value] of get_pre_medicines.entries()){
         if((current_moment == value.take_time_one)||(current_moment == value.take_time_two)||(current_moment == value.take_time_third)||(current_moment == value.take_time_fourth)){
             var from_user_id = value.member_id;
@@ -149,15 +149,15 @@ exports.InsertMedicineReminder = async (req,res) => {
                 var first_name = user_result[0].first_name;
             }
             else{
-                var first_name = 'User';
+                var first_name = "User";
             }
 
 
 
-            let member_first_name = 'your';
+            let member_first_name = "your";
             if(from_user_id){
                 const member_detail = await helperQuery.Get({table:"users",where:" id="+from_user_id});
-                member_first_name = (member_detail.length > 0) ? member_detail[0].first_name : 'your';
+                member_first_name = (member_detail.length > 0) ? member_detail[0].first_name : "your";
             }
             else{
                 member_first_name = first_name;
@@ -165,8 +165,8 @@ exports.InsertMedicineReminder = async (req,res) => {
             
 
             
-            var title = 'Medicine Reminder';
-            var notification_type = 'pre_medicine_reminder';
+            var title = "Medicine Reminder";
+            var notification_type = "pre_medicine_reminder";
             var message = "Hey "+member_first_name+",<br> This is a reminder regarding your medicine "+value.medicine_name+". Please take your medicine on time.";
             var app_message = "Hey "+member_first_name+", \nThis is a reminder regarding your medicine "+value.medicine_name+". Please take your medicine on time.";
             if(to_user_id){
@@ -177,44 +177,44 @@ exports.InsertMedicineReminder = async (req,res) => {
                             title : title,
                             body : app_message
                         }
-                    }  
+                    };  
                     if(user_result[0]!=undefined && user_result[0]!=null && user_result[0].device_type !=undefined && user_detail[0].device_type !=null){
-                        if((user_detail[0].device_type == 'Android')||(user_detail[0].device_type == 'IOS')){
+                        if((user_detail[0].device_type == "Android")||(user_detail[0].device_type == "IOS")){
                             await helperFunction.pushNotification(user_detail[0].device_token,payload);
                         }
                     }
                 }
 
-                var created_at = moment().format('YYYY-MM-DD HH:mm');
+                var created_at = moment().format("YYYY-MM-DD HH:mm");
                 await Notification.InsertReminder(from_user_id,to_user_id,title,notification_type,message,created_at); 
             }         
         }
     }
-}
+};
 exports.pre_notification = (req,res) => { 
     const {user_id,member_id, name, date_time, type} =req.body;
     const time = req.body.time!=undefined?req.body.time:null;
-    var new_date_time = moment(date_time).format('YYYY-MM-DD HH:mm:ss'); 
+    var new_date_time = moment(date_time).format("YYYY-MM-DD HH:mm:ss"); 
     Notification.pre_notification(user_id,member_id, name, new_date_time, type,time,(err,data)=>{
         if(err){
             res.status(500).send({
                 status_code : "500",
-                status: 'error',
-                message: 'Something Went Wrong'
+                status: "error",
+                message: "Something Went Wrong"
             });
             return;
         }
         if (data) {
             res.status(200).send({
                 status_code : "200",
-                status: 'success',
+                status: "success",
                 message : "Added Successfully",
                 data: data
             });
             return;
         }
-    })
-}
+    });
+};
 exports.list_pre_notification = (req, res) => {
     const { user_id,member_id,type} = req.body;
     Notification.list_pre_notification(user_id,member_id,type, (err, data) => {
@@ -222,14 +222,14 @@ exports.list_pre_notification = (req, res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code : "404",
-                    status: 'error',
-                    message: `Data not found`
+                    status: "error",
+                    message: "Data not found"
                 });
                 return;
             }
             res.status(500).send({
                 status_code : "500",
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -237,21 +237,21 @@ exports.list_pre_notification = (req, res) => {
         if (data) {
             for(let[index,value] of data.entries()){
             	if(value.time){
-            		data[index].date_time = moment(value.date_time).format('MM/DD/YYYY')+' '+value.time;
+            		data[index].date_time = moment(value.date_time).format("MM/DD/YYYY")+" "+value.time;
             	}
             	else{
-            		data[index].date_time = moment(value.date_time).format('MM/DD/YYYY hh:mm A');
+            		data[index].date_time = moment(value.date_time).format("MM/DD/YYYY hh:mm A");
             	}
             }
             res.status(200).send({
                 status_code : "200",
-                status: 'success',
+                status: "success",
                 data: data
             });
             return;
         }
     });
-}
+};
 
 exports.notification_pre_medicine = (req,res) => { 
     const {user_id,member_id, medicine_name, medicine_type, quantity, frequency, take_time_one, take_dose_one, take_time_two, take_dose_two,take_time_third,take_dose_third,take_time_fourth,take_dose_fourth} =req.body;
@@ -259,7 +259,7 @@ exports.notification_pre_medicine = (req,res) => {
         if(err){
             res.status(500).send({
                 status_code : "500",
-                status: 'error',
+                status: "error",
                 message: err
             });
             return;
@@ -267,36 +267,36 @@ exports.notification_pre_medicine = (req,res) => {
         if (data) {
             res.status(200).send({
                 status_code : "200",
-                status: 'success',
+                status: "success",
                 message : "Added Successfully",
                 data: data
             });
             return;
         }
-    })
-}
+    });
+};
 exports.edit_notification_pre_medicine = (req,res) => { 
     const {medicine_id,user_id,member_id, medicine_name, medicine_type, quantity, frequency, take_time_one, take_dose_one, take_time_two, take_dose_two,take_time_third,take_dose_third,take_time_fourth,take_dose_fourth} =req.body;
     Notification.edit_notification_pre_medicine(user_id,member_id, medicine_name, medicine_type, quantity, frequency, take_time_one, take_dose_one, take_time_two, take_dose_two,take_time_third,take_dose_third,take_time_fourth,take_dose_fourth,medicine_id,(err,data)=>{
         if(err){
             res.status(500).send({
                 status_code : "500",
-                status: 'error',
-                message: 'Something Went Wrong'
+                status: "error",
+                message: "Something Went Wrong"
             });
             return;
         }
         if (data) {
             res.status(200).send({
                 status_code : "200",
-                status: 'success',
+                status: "success",
                 message : "Edit Successfully",
                 data: data
             });
             return;
         }
-    })
-}
+    });
+};
 exports.list_notification_pre_medicine = (req, res) => {
     const { user_id,member_id} = req.body;
     Notification.list_notification_pre_medicine(user_id,member_id, (err, data) => {
@@ -304,14 +304,14 @@ exports.list_notification_pre_medicine = (req, res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code : "404",
-                    status: 'error',
-                    message: `Data not found`
+                    status: "error",
+                    message: "Data not found"
                 });
                 return;
             }
             res.status(500).send({
                 status_code : "500",
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -319,14 +319,14 @@ exports.list_notification_pre_medicine = (req, res) => {
         if (data) {
                 res.status(200).send({
                     status_code : "200",
-                    status: 'success',
+                    status: "success",
                     data: data
                 });
                 return;
         }
     });
 
-}
+};
 exports.delete_notification_pre_medicine = (req, res) => {
     const {medicine_id,user_id,member_id} = req.body;
     Notification.delete_notification_pre_medicine(medicine_id,user_id,member_id, (err, data) => {
@@ -334,14 +334,14 @@ exports.delete_notification_pre_medicine = (req, res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code : "404",
-                    status: 'error',
-                    message: `Data not found`
+                    status: "error",
+                    message: "Data not found"
                 });
                 return;
             }
             res.status(500).send({
                 status_code : "500",
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -349,14 +349,14 @@ exports.delete_notification_pre_medicine = (req, res) => {
         if (data) {
             res.status(200).send({
                 status_code : "200",
-                status: 'success',
+                status: "success",
                 data: "Delete Successfully!"
             });
             return;
         }
     });
 
-}
+};
 exports.deletePreNotification = async (req, res) => {
     const {pre_id,user_id,member_id} = req.body;
     const vali = helperFunction.customValidater(req,{pre_id, user_id, member_id});
@@ -367,18 +367,18 @@ exports.deletePreNotification = async (req, res) => {
     if (result.affectedRows > 0) {
         return res.status(200).send({
             status_code : "200",
-            status: 'success',
+            status: "success",
             data: "Delete Successfully!"
         }); 
     }
     else{
         return res.status(500).send({
             status_code : "500",
-            status: 'error',
+            status: "error",
             message: err.message
         });
     }
-}
+};
 
 // add notification code by vineet shirdhonkar
 exports.addNotification = (req,res) => { 
@@ -390,20 +390,20 @@ exports.addNotification = (req,res) => {
         return res.status(500).json(valid);
     }
 
-    if (req.body.notification_for !== 'promo_code' && req.body.notification_for !== 'doctor' && req.body.notification_for !== 'general' && req.body.notification_for !== 'test') {
+    if (req.body.notification_for !== "promo_code" && req.body.notification_for !== "doctor" && req.body.notification_for !== "general" && req.body.notification_for !== "test") {
         return res.status(400).json({
                 status_code : 400,
-                status: 'error',
+                status: "error",
                 message: "Notification for should be valid"
             });   
     }
 
     switch(req.body.notification_for){
-        case 'promo_code':
-        if(req.body.promo_code_id == ''){
+        case "promo_code":
+        if(req.body.promo_code_id == ""){
           return res.status(400).json({
                 status_code : 400,
-                status: 'error',
+                status: "error",
                 message: "Please select promo code"
             });  
         }
@@ -419,11 +419,11 @@ exports.addNotification = (req,res) => {
         }
         break; */
 
-        case 'test':
-        if(req.body.test_id == ''){
+        case "test":
+        if(req.body.test_id == ""){
           return res.status(400).json({
                 status_code : 400,
-                status: 'error',
+                status: "error",
                 message: "Please select test"
             });  
         }
@@ -435,14 +435,14 @@ exports.addNotification = (req,res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code : 404,
-                    status: 'success',
-                    message: `User does not exist`
+                    status: "success",
+                    message: "User does not exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code : 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -454,25 +454,25 @@ exports.addNotification = (req,res) => {
                 if(err){             
                     res.status(500).send({
                         status_code : 500,
-                        status: 'error',
-                        message: 'Something Went Wrong'
+                        status: "error",
+                        message: "Something Went Wrong"
                     });
                     return;
                 }
                 if (data) {
                     res.status(200).send({
                         status_code : 200,
-                        status: 'success',
+                        status: "success",
                         message : "Notification Added Successfully!",
                         data: data
                     });
                     return;
                 }
-            })
+            });
         }        
-    }) 
+    }); 
 
-}
+};
 
 exports.getAllNotifications = (req,res) => { 
     const {user_id,role_id,staff_id} = req.body;
@@ -487,14 +487,14 @@ exports.getAllNotifications = (req,res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code : 404,
-                    status: 'success',
-                    message: `User does not exist`
+                    status: "success",
+                    message: "User does not exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code : 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -509,15 +509,15 @@ exports.getAllNotifications = (req,res) => {
                         if (err.kind === "not_found") {
                             res.status(404).send({
                                 status_code : 404,
-                                status: 'success',
-                                message: `No Record Found`,
+                                status: "success",
+                                message: "No Record Found",
                                 data : []
                             });
                             return;
                         }         
                         res.status(500).send({
                             status_code : 500,
-                            status: 'error',
+                            status: "error",
                             message: err.message
                         });
                         return;
@@ -525,7 +525,7 @@ exports.getAllNotifications = (req,res) => {
                     if(data.length > 0) {
                         res.status(200).send({
                             status_code : 200,
-                            status: 'success',
+                            status: "success",
                             message : "Notification data found Successfully!",
                             data: data
                         });
@@ -539,15 +539,15 @@ exports.getAllNotifications = (req,res) => {
                         if (err.kind === "not_found") {
                             res.status(404).send({
                                 status_code : 404,
-                                status: 'success',
-                                message: `No Record Found`,
+                                status: "success",
+                                message: "No Record Found",
                                 data : []
                             });
                             return;
                         }         
                         res.status(500).send({
                             status_code : 500,
-                            status: 'error',
+                            status: "error",
                             message: err.message
                         });
                         return;
@@ -555,7 +555,7 @@ exports.getAllNotifications = (req,res) => {
                     if(data.length > 0) {
                         res.status(200).send({
                             status_code : 200,
-                            status: 'success',
+                            status: "success",
                             message : "Notification data found Successfully!",
                             data: data
                         });
@@ -566,8 +566,8 @@ exports.getAllNotifications = (req,res) => {
             
         }
 
-    })       
-}
+    });       
+};
 
 
 
@@ -590,14 +590,14 @@ exports.getNotificationDetail = (req,res) => {
             if (err.kind === "not_found") {
                 res.status(200).send({
                     status_code : 200,
-                    status: 'success',
-                    message: `Notification does not exist`
+                    status: "success",
+                    message: "Notification does not exist"
                 });
                 return;
             }          
             res.status(500).send({
                 status_code : 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -606,7 +606,7 @@ exports.getNotificationDetail = (req,res) => {
         if(data) {
             res.status(200).send({
                 status_code : 200,
-                status: 'success',
+                status: "success",
                 message : "Notification Details Found Successfully!",
                 data: data
             });
@@ -614,7 +614,7 @@ exports.getNotificationDetail = (req,res) => {
 
         }
     });     
-}
+};
 
 
 
@@ -630,21 +630,21 @@ exports.updateNotification = (req,res) => {
     }
 
 
-    if (req.body.notification_for !== 'promo_code' && req.body.notification_for !== 'doctor' && req.body.notification_for !== 'general' && req.body.notification_for !== 'test') {
+    if (req.body.notification_for !== "promo_code" && req.body.notification_for !== "doctor" && req.body.notification_for !== "general" && req.body.notification_for !== "test") {
         return res.status(400).json({
                 status_code : 400,
-                status: 'error',
+                status: "error",
                 message: "Notification for should be valid"
             });   
     }
 
 
     switch(req.body.notification_for){
-        case 'promo_code':
-        if(req.body.promo_code_id == ''){
+        case "promo_code":
+        if(req.body.promo_code_id == ""){
           return res.status(400).json({
                 status_code : 400,
-                status: 'error',
+                status: "error",
                 message: "Please select promo code"
             });  
         }
@@ -660,11 +660,11 @@ exports.updateNotification = (req,res) => {
         }
         break; */
 
-        case 'test':
-        if(req.body.test_id == ''){
+        case "test":
+        if(req.body.test_id == ""){
           return res.status(400).json({
                 status_code : 400,
-                status: 'error',
+                status: "error",
                 message: "Please select test"
             });  
         }
@@ -676,14 +676,14 @@ exports.updateNotification = (req,res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code : 404,
-                    status: 'success',
-                    message: `User does not exist`
+                    status: "success",
+                    message: "User does not exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code : 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -700,32 +700,32 @@ exports.updateNotification = (req,res) => {
                     if (err.kind === "failed") {
                         res.status(500).send({
                             status_code : 500,
-                            status: 'error',
-                            message: `Failed ! Please try again later`
+                            status: "error",
+                            message: "Failed ! Please try again later"
                         });
                         return;
                     }         
                     res.status(500).send({
                         status_code : 500,
-                        status: 'error',
-                        message: 'Something Went Wrong'
+                        status: "error",
+                        message: "Something Went Wrong"
                     });
                     return;
                 }
                 if (data) {
                     res.status(200).send({
                         status_code : 200,
-                        status: 'success',
+                        status: "success",
                         message : "Notification Updated Successfully!",
                         data: data
                     });
                     return;
                 }
-            })
+            });
         }        
-    }) 
+    }); 
 
-}
+};
 // delete Notification code by vineet shirdhonkar
 exports.deleteNotification = (req,res) => { 
     const {notification_id,staff_id} = req.body;
@@ -740,14 +740,14 @@ exports.deleteNotification = (req,res) => {
             if (err.kind === "not_found") {
                 res.status(200).send({
                     status_code : 200,
-                    status: 'success',
-                    message: `Notification does not exist`
+                    status: "success",
+                    message: "Notification does not exist"
                 });
                 return;
             }          
             res.status(500).send({
                 status_code : 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -760,47 +760,47 @@ exports.deleteNotification = (req,res) => {
                     if(err){
                         res.status(500).send({
                             status_code : 500,
-                            status: 'error',
-                            message: 'Something Went Wrong'
+                            status: "error",
+                            message: "Something Went Wrong"
                         });
                         return;
                     }
                     if (data) {   
                         res.status(200).send({
                             status_code : 200,
-                            status: 'success',
+                            status: "success",
                             message : "Notification Deleted Successfully!",
                             data: data
                         });
                         return;
                     }
-                }) 
+                }); 
             } 
             else{
                 Notification.delete(notification_id,(err,data)=>{
                     if(err){
                         res.status(500).send({
                             status_code : 500,
-                            status: 'error',
-                            message: 'Something Went Wrong'
+                            status: "error",
+                            message: "Something Went Wrong"
                         });
                         return;
                     }
                     if (data) {   
                         res.status(200).send({
                             status_code : 200,
-                            status: 'success',
+                            status: "success",
                             message : "Notification Deleted Successfully!",
                             data: data
                         });
                         return;
                     }
-                })
+                });
             }
 
         }
     });     
-}
+};
 exports.getAllSystemNotifications = (req,res) => { 
     const {user_id,role_id,is_get_all} = req.body;
 
@@ -814,14 +814,14 @@ exports.getAllSystemNotifications = (req,res) => {
             if (err.kind === "not_found") {
                 res.status(200).send({
                     status_code : 200,
-                    status: 'success',
-                    message: `User does not exist`
+                    status: "success",
+                    message: "User does not exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code : 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -834,8 +834,8 @@ exports.getAllSystemNotifications = (req,res) => {
                     if (err.kind === "not_found") {
                         res.status(200).send({
                             status_code : 200,
-                            status: 'success',
-                            message: `No Record Found`,
+                            status: "success",
+                            message: "No Record Found",
                             data : [
                                 {
                                     all_notifications:[],
@@ -847,7 +847,7 @@ exports.getAllSystemNotifications = (req,res) => {
                     }         
                     res.status(500).send({
                         status_code : 500,
-                        status: 'error',
+                        status: "error",
                         message: err.message
                     });
                     return;
@@ -855,7 +855,7 @@ exports.getAllSystemNotifications = (req,res) => {
                 if(data.length > 0) {
                     res.status(200).send({
                         status_code : 200,
-                        status: 'success',
+                        status: "success",
                         message : "Notification data found Successfully!",
                         data: data
                     });
@@ -864,8 +864,8 @@ exports.getAllSystemNotifications = (req,res) => {
             }); 
         }
 
-    })       
-}
+    });       
+};
 
 // read all System Notification code by vineet shirdhonkar
 
@@ -883,14 +883,14 @@ exports.readAllSystemNotifications = (req,res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code : 404,
-                    status: 'success',
-                    message: `User does not exist`
+                    status: "success",
+                    message: "User does not exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code : 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -903,14 +903,14 @@ exports.readAllSystemNotifications = (req,res) => {
                     if (err.kind === "failed") {
                         res.status(200).send({
                             status_code : 200,
-                            status: 'success',
-                            message: `Failed! Please try again later`,
+                            status: "success",
+                            message: "Failed! Please try again later",
                         });
                         return;
                     }         
                     res.status(500).send({
                         status_code : 500,
-                        status: 'error',
+                        status: "error",
                         message: err.message
                     });
                     return;
@@ -919,7 +919,7 @@ exports.readAllSystemNotifications = (req,res) => {
                 if(data) {
                     res.status(200).send({
                         status_code : 200,
-                        status: 'success',
+                        status: "success",
                         message : "Notification read Successfully!",
                         data: data
                     });
@@ -928,17 +928,17 @@ exports.readAllSystemNotifications = (req,res) => {
             }); 
         }
 
-    })       
-}
+    });       
+};
 
 exports.sendScheduleNotification = async (req,res) => { 
   
     var data =  await Notification.getScheduledNotifications();
  
-    var current_date_time = moment().format('YYYY-MM-DD')+'T'+moment().format('HH:mm:ss')+'.000Z';
+    var current_date_time = moment().format("YYYY-MM-DD")+"T"+moment().format("HH:mm:ss")+".000Z";
 
     for(let [index,value] of data.entries()){     
-        var notification_date_time = moment(value.notification_date_time).format('YYYY-MM-DD')+'T'+moment(value.notification_date_time).format('HH:mm:ss')+'.000Z';
+        var notification_date_time = moment(value.notification_date_time).format("YYYY-MM-DD")+"T"+moment(value.notification_date_time).format("HH:mm:ss")+".000Z";
         var n_patient_ids = value.patient_ids;
         var notification_for = value.notification_for;
         var promo_code_id = value.promo_code_id;
@@ -1008,14 +1008,14 @@ exports.sendScheduleNotification = async (req,res) => {
                                     title : title,
                                     body : message
                                 }
-                            }   
-                            if((user_detail[0].device_type == 'Android')||(user_detail[0].device_type == 'IOS')){
+                            };   
+                            if((user_detail[0].device_type == "Android")||(user_detail[0].device_type == "IOS")){
                                 await helperFunction.pushNotification(user_detail[0].device_token,payload);
                             }
                         }
                         
-                        var created_at = moment().format('YYYY-MM-DD HH:mm:ss'); 
-                        db.query(`INSERT INTO system_notifications(from_user_id,to_user_id,title,type,message,created_at) VALUES(?,?,?,?,?,?)`,
+                        var created_at = moment().format("YYYY-MM-DD HH:mm:ss"); 
+                        db.query("INSERT INTO system_notifications(from_user_id,to_user_id,title,type,message,created_at) VALUES(?,?,?,?,?,?)",
                                [
                                    from_user_id,to_user_id,title,type,message,created_at
                                ], (err, res) => {
@@ -1048,7 +1048,7 @@ exports.sendScheduleNotification = async (req,res) => {
                                     if(notification_for == "test"){
                                         const procon = await helperQuery.All(`SELECT * FROM lab_tests WHERE test_id = '${test_id}'`);
                                         if(procon.length > 0){
-                                              var test_name =  (procon[0]) ? procon[0].test_name : '';
+                                              var test_name =  (procon[0]) ? procon[0].test_name : "";
 
                                              var title = "Notification for test "+test_name;
                                               var type = "Notification for test "+test_name;
@@ -1068,7 +1068,7 @@ exports.sendScheduleNotification = async (req,res) => {
                                         
                                         const procon = await helperQuery.All(`SELECT * FROM promo_code WHERE id = '${promo_code_id}'`);
                                         if(procon.length > 0){
-                                            var promo_code = ( procon[0]) ? procon[0].promo_code : '';
+                                            var promo_code = ( procon[0]) ? procon[0].promo_code : "";
                                             var title = "Notification for promo code "+promo_code;
                                             var type = "Notification for promo code "+promo_code;
                                             
@@ -1080,7 +1080,7 @@ exports.sendScheduleNotification = async (req,res) => {
                                     if(notification_for == "doctor"){
                                         const procon = await helperQuery.All(`SELECT * FROM users WHERE id = '${doctor_id}'`);
                                         if(procon.length > 0){
-                                            var doctor_name = (procon[0]) ? procon[0].first_name : '';
+                                            var doctor_name = (procon[0]) ? procon[0].first_name : "";
                                             var title = "Notification from doctor "+doctor_name;
                                             var type = "Notification from doctor"+doctor_name;
                                             
@@ -1098,14 +1098,14 @@ exports.sendScheduleNotification = async (req,res) => {
                                                 title : title,
                                                 body : message
                                             }
-                                        }   
-                                        if((user_detail[0].device_type == 'Android')||(user_detail[0].device_type == 'IOS')){
+                                        };   
+                                        if((user_detail[0].device_type == "Android")||(user_detail[0].device_type == "IOS")){
                                             await helperFunction.pushNotification(user_detail[0].device_token,payload);
                                         }
                                     }
                                     
-                                    var created_at = moment().format('YYYY-MM-DD HH:mm:ss'); 
-                                    db.query(`INSERT INTO system_notifications(from_user_id,to_user_id,title,type,message,created_at) VALUES(?,?,?,?,?,?)`,
+                                    var created_at = moment().format("YYYY-MM-DD HH:mm:ss"); 
+                                    db.query("INSERT INTO system_notifications(from_user_id,to_user_id,title,type,message,created_at) VALUES(?,?,?,?,?,?)",
                                            [
                                                from_user_id,to_user_id,title,type,message,created_at
                                            ], (err, res) => {
@@ -1128,4 +1128,4 @@ exports.sendScheduleNotification = async (req,res) => {
         }
     }
 
-}
+};

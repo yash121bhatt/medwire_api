@@ -1,17 +1,17 @@
-const User = require('../models/user.model');
-const ClinicOrHospital = require('../models/clinicorhospital.model');
-const { hash: hashPassword, compare: comparePassword } = require('../utils/password');
-const { generate: generateToken } = require('../utils/token');
+const User = require("../models/user.model");
+const ClinicOrHospital = require("../models/clinicorhospital.model");
+const { hash: hashPassword, compare: comparePassword } = require("../utils/password");
+const { generate: generateToken } = require("../utils/token");
 const { generateOTP } = require("../utils/generateOTP.js");
-const { uniqueEmailAndMobile: uniqueEmailAndMobile } = require('../helper/helper');
-const helperQuery = require('../helper/helperQuery');
-const { async } = require('q');
+const { uniqueEmailAndMobile: uniqueEmailAndMobile } = require("../helper/helper");
+const helperQuery = require("../helper/helperQuery");
+const { async } = require("q");
 
-const { transporter: transporter } = require('../helper/helper');
-const helperFunction = require('../helper/helperFunction');
+const { transporter: transporter } = require("../helper/helper");
+const helperFunction = require("../helper/helperFunction");
 const jwt = require("jsonwebtoken");
-const { JWT_SECRET_KEY } = require('../utils/secrets');
-const doctorSpecialityMaster = require('../models/doctorSpecialityMaster.model');
+const { JWT_SECRET_KEY } = require("../utils/secrets");
+const doctorSpecialityMaster = require("../models/doctorSpecialityMaster.model");
 
 
 exports.logOut = async (req, res) => {
@@ -42,7 +42,7 @@ exports.logOut = async (req, res) => {
             message: "Unauthorized!"
         });
     }
-}
+};
 exports.updateDeviceDetail = async (req, res) => {
     try {
         const { user_id, device_token, device_type } = req.body;
@@ -54,18 +54,18 @@ exports.updateDeviceDetail = async (req, res) => {
 
         return res.status(200).send({
             status_code: "200",
-            status: 'success',
+            status: "success",
             message: "Device detail update Successfully"
         });
     }
     catch (error) {
         return res.status(500).send({
             status_code: "500",
-            status: 'error',
+            status: "error",
             message: error
         });
     }
-}
+};
 exports.trunCate = async (req, res) => {
     try {
         const { tableName } = req.body;
@@ -76,17 +76,17 @@ exports.trunCate = async (req, res) => {
         const result = await helperQuery.TrunCate({ table: tableName });
         return res.status(200).send({
             status_code: "200",
-            status: 'success',
+            status: "success",
             message: "table truncate Successfully!"
         });
     } catch (error) {
         return res.status(500).send({
             status_code: "500",
-            status: 'error',
+            status: "error",
             message: error
         });
     }
-}
+};
 
 exports.radiosignup = async (req, res) => {
     const { username, email, mobile, password, user_type, role_id } = req.body;
@@ -105,7 +105,7 @@ exports.radiosignup = async (req, res) => {
             from: process.env.MAIL_FROM_ADDRESS,
             to: email,
             subject: "MedWire Confirmation Mail",
-            template: 'signUpVarification',
+            template: "signUpVarification",
             context: { name, email, forgot_otp, logo, app_name }
         }, function (error, info) {
             if (error) {
@@ -115,7 +115,7 @@ exports.radiosignup = async (req, res) => {
         });
         const token = generateToken(data.id);
         if (mobile) {
-            var message = forgot_otp + ' is your OTP for Verification of your account at MedWire. Thank you.';
+            var message = forgot_otp + " is your OTP for Verification of your account at MedWire. Thank you.";
             var mobile_number = mobile;
             await helperFunction.sendJapiSMS(mobile_number, message);
         }
@@ -156,7 +156,7 @@ exports.signup = async (req, res) => {
                 from: process.env.MAIL_FROM_ADDRESS,
                 to: email,
                 subject: "MedWire Confirmation Mail",
-                template: 'signUpVarification',
+                template: "signUpVarification",
                 context: { name, email, forgot_otp, logo, app_name }
             }, function (error, info) {
                 if (error) {
@@ -165,7 +165,7 @@ exports.signup = async (req, res) => {
                 // console.log('Message sent: ' + info.response +'test'+posswordt);
             });
             if (mobile) {
-                var message = forgot_otp + ' is your OTP for Verification of your account at MedWire. Thank you.';
+                var message = forgot_otp + " is your OTP for Verification of your account at MedWire. Thank you.";
                 var mobile_number = mobile;
                 await helperFunction.sendJapiSMS(mobile_number, message); // rohit
             }
@@ -188,15 +188,15 @@ exports.signin = (req, res) => {
         if (err) {
             if (err.kind === "not_found") {
                 res.status(400).send({
-                    status_code: '400',
-                    status: 'error',
-                    message: helperFunction.is_mobile_number_email(email, 'User is not found')
+                    status_code: "400",
+                    status: "error",
+                    message: helperFunction.is_mobile_number_email(email, "User is not found")
                 });
                 return;
             }
             res.status(500).send({
-                status_code: '500',
-                status: 'error',
+                status_code: "500",
+                status: "error",
                 message: err.message
             });
             return;
@@ -206,8 +206,8 @@ exports.signin = (req, res) => {
                 const token = generateToken(data.id);
                 await User.saveLogiToken(token, data.id);
                 res.status(200).send({
-                    status_code: '200',
-                    status: 'success',
+                    status_code: "200",
+                    status: "success",
                     data: {
                         token,
                         userData: data,
@@ -216,14 +216,14 @@ exports.signin = (req, res) => {
                 return;
             }
             res.status(400).send({
-                status_code: '400',
-                status: 'error',
-                message: 'Incorrect password'
+                status_code: "400",
+                status: "error",
+                message: "Incorrect password"
             });
         }
     });
 
-}
+};
 
 exports.signinRole = (req, res) => {
     const { email, role_id, password } = req.body;
@@ -231,15 +231,15 @@ exports.signinRole = (req, res) => {
         if (err) {
             if (err.kind === "not_found") {
                 res.status(404).send({
-                    status_code: '404',
-                    status: 'error',
+                    status_code: "404",
+                    status: "error",
                     message: `User with email ${email} was not found`
                 });
                 return;
             }
             res.status(500).send({
-                status_code: '500',
-                status: 'error',
+                status_code: "500",
+                status: "error",
                 message: err.message
             });
             return;
@@ -248,11 +248,11 @@ exports.signinRole = (req, res) => {
         if (data) {
             if (comparePassword(password.trim(), data.password)) {
                 if (data.role_id != 5 && data.role_id != 2 && data.role_id != 6 && data.role_id != 7) {
-                    if (data.approve_status != 'Approve') {
+                    if (data.approve_status != "Approve") {
                         res.status(404).send({
-                            status_code: '404',
-                            status: 'error',
-                            message: `Account is not approved by Admin.`
+                            status_code: "404",
+                            status: "error",
+                            message: "Account is not approved by Admin."
                         });
                         return;
                     } else {
@@ -260,8 +260,8 @@ exports.signinRole = (req, res) => {
                         await User.saveLogiToken(token, data.id);
                         await helperQuery.All(`UPDATE users SET device_token=NULL,device_type=NULL WHERE id=${data.id}`);
                         res.status(200).send({
-                            status_code: '200',
-                            status: 'success',
+                            status_code: "200",
+                            status: "success",
                             data: {
                                 token,
                                 userData: data,
@@ -276,15 +276,15 @@ exports.signinRole = (req, res) => {
                             if (err) {
                                 res.status(500).send({
                                     status_code: 500,
-                                    status: 'error',
+                                    status: "error",
                                     message: err.message
                                 });
                                 return;
                             }
                             if (data1.length == 0) {
                                 res.status(400).send({
-                                    status_code: '400',
-                                    status: 'error',
+                                    status_code: "400",
+                                    status: "error",
                                     message: "Clinic has deleted your account",
                                     data: data1
                                 });
@@ -295,8 +295,8 @@ exports.signinRole = (req, res) => {
                                 const token = generateToken(data.id);
                                 await User.saveLogiToken(token, data.id);
                                 res.status(200).send({
-                                    status_code: '200',
-                                    status: 'success',
+                                    status_code: "200",
+                                    status: "success",
                                     data: {
                                         token,
                                         userData: data,
@@ -305,14 +305,14 @@ exports.signinRole = (req, res) => {
                                 return;
                             }
 
-                        })
+                        });
 
                     } else {
                         const token = generateToken(data.id);
                         await User.saveLogiToken(token, data.id);
                         res.status(200).send({
-                            status_code: '200',
-                            status: 'success',
+                            status_code: "200",
+                            status: "success",
                             data: {
                                 token,
                                 userData: data,
@@ -324,34 +324,34 @@ exports.signinRole = (req, res) => {
             }
             else {
                 res.status(400).send({
-                    status_code: '400',
-                    status: 'error',
-                    message: 'Incorrect password'
+                    status_code: "400",
+                    status: "error",
+                    message: "Incorrect password"
                 });
                 return;
             }
         }
     });
 
-}
+};
 
 exports.profile = (req, res) => {
     const { id } = req.body;
     User.findById(id, async (err, data) => {
         try {
             if (err) {
-                console.log(error)
+                console.log(error);
                 if (err.kind === "not_found") {
                     res.status(404).send({
                         status_code: "404",
-                        status: 'error',
-                        message: `User was not found`
+                        status: "error",
+                        message: "User was not found"
                     });
                     return;
                 }
                 res.status(500).send({
                     status_code: "500",
-                    status: 'error',
+                    status: "error",
                     message: err.message
                 });
                 return;
@@ -364,7 +364,7 @@ exports.profile = (req, res) => {
                         const doctor_degrees = await helperQuery.Get({ table: "doctor_degrees", where: "doctor_id=" + id });
                         return res.status(200).send({
                             status_code: "200",
-                            status: 'success',
+                            status: "success",
                             data: data,
                             doctor_specialities: doctor_specialities,
                             doctor_degrees: doctor_degrees
@@ -374,7 +374,7 @@ exports.profile = (req, res) => {
                         console.log(err);
                         res.status(500).send({
                             status_code: "500",
-                            status: 'error',
+                            status: "error",
                             message: err.message
                         });
                     }
@@ -382,7 +382,7 @@ exports.profile = (req, res) => {
                 } else {
                     return res.status(200).send({
                         status_code: "200",
-                        status: 'success',
+                        status: "success",
                         data: data
                     });
                 }
@@ -390,14 +390,14 @@ exports.profile = (req, res) => {
         } catch (error) {
             res.status(500).send({
                 status_code: "500",
-                status: 'error',
+                status: "error",
                 message: error.message
             });
             return;
         }
     });
 
-}
+};
 exports.myprofiles = (req, res) => {
     const { id } = req.body;
     User.memberfindById(id, (err, data) => {
@@ -405,14 +405,14 @@ exports.myprofiles = (req, res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code: "404",
-                    status: 'error',
-                    message: `User was not found`
+                    status: "error",
+                    message: "User was not found"
                 });
                 return;
             }
             res.status(500).send({
                 status_code: "500",
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -420,14 +420,14 @@ exports.myprofiles = (req, res) => {
         if (data) {
             res.status(200).send({
                 status_code: "200",
-                status: 'success',
+                status: "success",
                 data: data
             });
             return;
         }
     });
 
-}
+};
 exports.forgotPassword = async (req, res) => {
     const { email, role_id } = req.body;
     //const forgot_otp  = Math.floor(1000 + Math.random() * 9000);
@@ -436,7 +436,7 @@ exports.forgotPassword = async (req, res) => {
         if (err) {
             res.status(500).send({
                 status_code: "500",
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -447,9 +447,9 @@ exports.forgotPassword = async (req, res) => {
                 if (userData.length <= 0) {
                     return res.status(500).send({
                         status_code: "500",
-                        status: 'error',
+                        status: "error",
                         //message: `A user with email address '${email}' not exist`
-                        message: `User not exist`
+                        message: "User not exist"
                     });
                 }
                 const name = userData[0].first_name;
@@ -459,7 +459,7 @@ exports.forgotPassword = async (req, res) => {
                 const token = generateToken(userData[0].id);
 
                 if (userData[0].mobile) {
-                    var message = forgot_otp + ' is your OTP for Verification of your account at MedWire. Thank you.';
+                    var message = forgot_otp + " is your OTP for Verification of your account at MedWire. Thank you.";
                     var mobile_number = userData[0].mobile;
                     await helperFunction.sendJapiSMS(mobile_number, message);
                 }
@@ -471,20 +471,20 @@ exports.forgotPassword = async (req, res) => {
                         from: process.env.MAIL_FROM_ADDRESS,
                         to: email_id,
                         subject: "Forgot Password",
-                        template: 'forgotTemplate',
+                        template: "forgotTemplate",
                         context: { name, email_id, forgot_otp, logo, app_name }
                     }, function (error, info) {
                         if (error) {
                             return console.log(error);
                         }
-                        console.log('Message sent: ' + info.response + 'test' + posswordt);
+                        console.log("Message sent: " + info.response + "test" + posswordt);
                     });
                 }
 
 
                 return res.status(200).send({
                     status_code: "200",
-                    status: 'success',
+                    status: "success",
                     token: token
                 });
 
@@ -492,14 +492,14 @@ exports.forgotPassword = async (req, res) => {
 
                 return res.status(500).send({
                     status_code: "500",
-                    status: 'error',
+                    status: "error",
                     message: error.message
                 });
             }
 
         }
-    })
-}
+    });
+};
 exports.resetPassword = async (req, res) => {
     try {
         const { verify_token, otp, password } = req.body;
@@ -520,28 +520,28 @@ exports.resetPassword = async (req, res) => {
                     console.log(verifyUpdate);
                     return res.status(200).send({
                         status_code: "200",
-                        status: 'success',
-                        message: 'Password change Successfully!',
+                        status: "success",
+                        message: "Password change Successfully!",
                     });
                 }
             }
             return res.status(400).send({
                 status_code: "400",
-                status: 'error',
-                message: 'Please enter correct OTP.',
+                status: "error",
+                message: "Please enter correct OTP.",
             });
         } else {
             return res.status(500).send({
                 status_code: "500",
-                status: 'error',
-                message: 'Please enter correct OTP.',
+                status: "error",
+                message: "Please enter correct OTP.",
             });
         }
     } catch (error) {
         res.status(500).send({
             status_code: "500",
-            status: 'error',
-            message: 'Something went to wrong!'
+            status: "error",
+            message: "Something went to wrong!"
         });
     }
     //     const { email,forgot_otp,password } =req.body;
@@ -565,7 +565,7 @@ exports.resetPassword = async (req, res) => {
     //             return;
     //     }
     // })
-}
+};
 
 exports.addMembers = (req, res) => {
     const { first_name, date_of_birth, gender, created_by_id } = req.body;
@@ -573,33 +573,33 @@ exports.addMembers = (req, res) => {
     if (file == undefined) {
         var profile_image = "";
     } else {
-        var profile_image = req.file.filename
+        var profile_image = req.file.filename;
     }
 
     const blood_group = req.body.blood_group != undefined && req.body.blood_group != null ? req.body.blood_group : null;
-    var user_type = 'patient';
+    var user_type = "patient";
     var role_id = 2;
 
     User.addMembers(first_name, date_of_birth, user_type, role_id, gender, profile_image, blood_group, created_by_id, (err, data) => {
         if (err) {
             res.status(500).send({
                 status_code: "500",
-                status: 'error',
-                message: 'Something Went Wrong'
+                status: "error",
+                message: "Something Went Wrong"
             });
             return;
         }
         if (data) {
             res.status(200).send({
                 status_code: "200",
-                status: 'success',
+                status: "success",
                 message: "Member Created Successfully",
                 data: data
             });
             return;
         }
-    })
-}
+    });
+};
 exports.updateMember = (req, res) => {
     const { first_name, mobile, date_of_birth, gender, user_id } = req.body;
     const blood_group = req.body.blood_group ?? null;
@@ -607,28 +607,28 @@ exports.updateMember = (req, res) => {
     if (file == undefined) {
         var profile_image = "";
     } else {
-        var profile_image = req.file.filename
+        var profile_image = req.file.filename;
     }
     User.updateMember(first_name, mobile, date_of_birth, gender, profile_image, blood_group, user_id, (err, data) => {
         if (err) {
             res.status(500).send({
                 status_code: "500",
-                status: 'error',
-                message: 'Something Went Wrong'
+                status: "error",
+                message: "Something Went Wrong"
             });
             return;
         }
         if (data) {
             res.status(200).send({
                 status_code: "200",
-                status: 'success',
+                status: "success",
                 message: "Member Updated Successfully",
                 data: data
             });
             return;
         }
-    })
-}
+    });
+};
 
 
 exports.deleteMember = (req, res) => {
@@ -637,22 +637,22 @@ exports.deleteMember = (req, res) => {
         if (err) {
             res.status(500).send({
                 status_code: "500",
-                status: 'error',
-                message: 'Something Went Wrong'
+                status: "error",
+                message: "Something Went Wrong"
             });
             return;
         }
         if (data) {
             res.status(200).send({
                 status_code: "200",
-                status: 'success',
+                status: "success",
                 message: "Member Deleted Successfully",
                 data: data
             });
             return;
         }
-    })
-}
+    });
+};
 exports.updatePassword = (req, res) => {
     const { old_password, password, id } = req.body;
     const passwordt = hashPassword(password.trim());
@@ -662,8 +662,8 @@ exports.updatePassword = (req, res) => {
             if (!comparePassword(old_password.trim(), data[0].password)) {
                 res.status(400).send({
                     status_code: "400",
-                    status: 'error',
-                    message: 'Old Password is wrong'
+                    status: "error",
+                    message: "Old Password is wrong"
                 });
                 return;
             } else {
@@ -671,26 +671,26 @@ exports.updatePassword = (req, res) => {
                     if (err) {
                         res.status(500).send({
                             status_code: "500",
-                            status: 'error',
-                            message: 'Something Went Wrong'
+                            status: "error",
+                            message: "Something Went Wrong"
                         });
                         return;
                     }
                     if (data) {
                         res.status(200).send({
                             status_code: "200",
-                            status: 'success',
+                            status: "success",
                             message: "Password Updated Successfully",
                             data: data
                         });
                         return;
                     }
-                })
+                });
             }
         }
-    })
+    });
 
-}
+};
 
 exports.updateUser = async (req, res) => {
     try {
@@ -706,7 +706,7 @@ exports.updateUser = async (req, res) => {
         if (file == undefined) {
             var profile_image = "";
         } else {
-            var profile_image = req.file.filename
+            var profile_image = req.file.filename;
         }
 
         const alternate_mobile_number = req.body.alternate_mobile_number != undefined ? req.body.alternate_mobile_number : null;
@@ -729,25 +729,25 @@ exports.updateUser = async (req, res) => {
                 console.log("err", err);
                 res.status(500).send({
                     status_code: 500,
-                    status: 'error',
-                    message: 'Something Went Wrong'
+                    status: "error",
+                    message: "Something Went Wrong"
                 });
                 return;
             }
             if (data) {
                 res.status(200).send({
                     status_code: 200,
-                    status: 'success',
+                    status: "success",
                     message: "Profile Updated Successfully",
                     data: data
                 });
                 return;
             }
-        })
+        });
     } catch (error) {
 
     }
-}
+};
 
 exports.checkOtpVerify = (req, res) => {
     const { email, forgot_otp } = req.body;
@@ -756,40 +756,40 @@ exports.checkOtpVerify = (req, res) => {
         if (err) {
             res.status(400).send({
                 status_code: "400",
-                status: 'error',
-                message: 'Otp Not Matched'
+                status: "error",
+                message: "Otp Not Matched"
             });
             return;
         }
         if (data.length > 0) {
             res.status(200).send({
                 status_code: "200",
-                status: 'success',
-                message: 'Successfully',
+                status: "success",
+                message: "Successfully",
                 data: data
             });
             return;
         } else {
             res.status(400).send({
                 status_code: "400",
-                status: 'error',
-                message: 'Otp Not Matched'
+                status: "error",
+                message: "Otp Not Matched"
             });
             return;
         }
-    })
-}
+    });
+};
 // clinic or hospital signup code by vineet shirdhonkar
 
 exports.clinichospitalsignup = (req, res) => {
     const { name, email_id, mobile_number, password, type, role_id, aadhar_card_number } = req.body;
 
-    const approve_document = '';
+    const approve_document = "";
 
-    if (req.body.name == '') {
+    if (req.body.name == "") {
         return res.status(400).json({
-            status_code: '400',
-            status: 'error',
+            status_code: "400",
+            status: "error",
             message: "Name field is required"
         });
     }
@@ -797,64 +797,64 @@ exports.clinichospitalsignup = (req, res) => {
 
     if (req.body.name.length < 3) {
         return res.status(400).json({
-            status_code: '400',
-            status: 'error',
+            status_code: "400",
+            status: "error",
             message: "Name should be minimum 3 characters"
         });
     }
 
-    if (req.body.email_id == '') {
+    if (req.body.email_id == "") {
         return res.status(400).json({
-            status_code: '400',
-            status: 'error',
+            status_code: "400",
+            status: "error",
             message: "Email id field is required"
         });
     }
 
     if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(req.body.email_id) == false) {
         return res.status(400).json({
-            status_code: '400',
-            status: 'error',
+            status_code: "400",
+            status: "error",
             message: "Please enter valid email id"
         });
     }
 
-    if (req.body.mobile_number == '') {
+    if (req.body.mobile_number == "") {
         return res.status(400).json({
-            status_code: '400',
-            status: 'error',
+            status_code: "400",
+            status: "error",
             message: "Mobile number field is required"
         });
     }
 
     if (isNaN(req.body.mobile_number)) {
         return res.status(400).json({
-            status_code: '400',
-            status: 'error',
+            status_code: "400",
+            status: "error",
             message: "Mobile number should be numeric"
         });
     }
 
     if (req.body.mobile_number.length != 10) {
         return res.status(400).json({
-            status_code: '400',
-            status: 'error',
+            status_code: "400",
+            status: "error",
             message: "Mobile number should be 10 digit"
         });
     }
 
-    if (req.body.password == '') {
+    if (req.body.password == "") {
         return res.status(400).json({
-            status_code: '400',
-            status: 'error',
+            status_code: "400",
+            status: "error",
             message: "Password field is required"
         });
     }
 
     if (req.body.password.length < 8 || (!req.body.password.match(/[a-z]/)) || (!req.body.password.match(/[A-Z]/)) || (!req.body.password.match(/\d/)) || (!req.body.password.match(/[^a-zA-Z0-9\-\/]/)) || req.body.password.length > 36) {
         return res.status(400).json({
-            status_code: '400',
-            status: 'error',
+            status_code: "400",
+            status: "error",
             message: "Password must contain at least one special character , at least one uppercase and lowercase letter,  at least one number and minimum 8 characters and maximum 36 characters "
         });
     }
@@ -862,27 +862,27 @@ exports.clinichospitalsignup = (req, res) => {
 
 
 
-    if (req.body.type == '') {
+    if (req.body.type == "") {
         return res.status(400).json({
-            status_code: '400',
-            status: 'error',
+            status_code: "400",
+            status: "error",
             message: "Type field is required"
         });
     }
 
-    if (req.body.type != 'clinic' && req.body.type != 'hospital') {
+    if (req.body.type != "clinic" && req.body.type != "hospital") {
         return res.status(400).json({
-            status_code: '400',
-            status: 'error',
+            status_code: "400",
+            status: "error",
             message: "Type should be either clinic or hospital"
         });
     }
 
 
-    if (req.body.role_id == '') {
+    if (req.body.role_id == "") {
         return res.status(400).json({
-            status_code: '400',
-            status: 'error',
+            status_code: "400",
+            status: "error",
             message: "Role id field is required"
         });
     }
@@ -892,17 +892,17 @@ exports.clinichospitalsignup = (req, res) => {
 
     if (req.body.role_id != 8) {
         return res.status(400).json({
-            status_code: '400',
-            status: 'error',
+            status_code: "400",
+            status: "error",
             message: "Role id should be valid"
         });
     }
 
-    if (req.body.type == 'clinic') {
+    if (req.body.type == "clinic") {
         if (req.body.role_id != 8) {
             return res.status(400).json({
-                status_code: '400',
-                status: 'error',
+                status_code: "400",
+                status: "error",
                 message: "Role id should be valid"
             });
         }
@@ -910,10 +910,10 @@ exports.clinichospitalsignup = (req, res) => {
 
 
 
-    if (req.body.aadhar_card_number == '') {
+    if (req.body.aadhar_card_number == "") {
         return res.status(400).json({
-            status_code: '400',
-            status: 'error',
+            status_code: "400",
+            status: "error",
             message: "Aadhar card number field is required"
         });
     }
@@ -921,8 +921,8 @@ exports.clinichospitalsignup = (req, res) => {
 
     if (isNaN(req.body.aadhar_card_number)) {
         return res.status(400).json({
-            status_code: '400',
-            status: 'error',
+            status_code: "400",
+            status: "error",
             message: "Aadhar card number should be numeric"
         });
     }
@@ -931,8 +931,8 @@ exports.clinichospitalsignup = (req, res) => {
 
     if (req.body.aadhar_card_number.length != 12) {
         return res.status(400).json({
-            status_code: '400',
-            status: 'error',
+            status_code: "400",
+            status: "error",
             message: "Aadhard card number should be 12 digit"
         });
     }
@@ -941,8 +941,8 @@ exports.clinichospitalsignup = (req, res) => {
     if (req.file == undefined) {
 
         return res.status(400).json({
-            status_code: '400',
-            status: 'error',
+            status_code: "400",
+            status: "error",
             message: "Approve document field is required"
         });
 
@@ -980,7 +980,7 @@ exports.clinichospitalforgotPassword = (req, res) => {
     ClinicOrHospital.otpVerify(email_id, forgot_otp, (err, data) => {
         if (err) {
             res.status(500).send({
-                status: 'error',
+                status: "error",
                 status_code: "500",
                 message: err.message
             });
@@ -989,13 +989,13 @@ exports.clinichospitalforgotPassword = (req, res) => {
         if (data) {
             res.status(200).send({
                 status_code: "200",
-                status: 'success',
+                status: "success",
                 data: data
             });
             return;
         }
-    })
-}
+    });
+};
 
 
 
@@ -1007,15 +1007,15 @@ exports.clinichospitalprofile = (req, res) => {
         if (err) {
             if (err.kind === "not_found") {
                 res.status(404).send({
-                    status_code: '404',
-                    status: 'error',
-                    message: `Clinic / Hospital does not exist`
+                    status_code: "404",
+                    status: "error",
+                    message: "Clinic / Hospital does not exist"
                 });
                 return;
             }
             res.status(500).send({
-                status_code: '500',
-                status: 'error',
+                status_code: "500",
+                status: "error",
                 message: err.message
             });
             return;
@@ -1025,24 +1025,24 @@ exports.clinichospitalprofile = (req, res) => {
         if (data) {
             var profile_details = [];
 
-            var profile_image_name = (data.profile_image == null) ? '' : data.profile_image;
+            var profile_image_name = (data.profile_image == null) ? "" : data.profile_image;
             var profile_image_path = process.env.APP_URL + "member/" + profile_image_name;
-            var doc_name = (data.approve_document == null) ? '' : data.approve_document;
+            var doc_name = (data.approve_document == null) ? "" : data.approve_document;
             var doc_link_path = process.env.APP_URL + "member/" + doc_name;
-            var address = (data.address == null) ? '' : data.address;
-            var pin_code = (data.pin_code == null) ? '' : data.pin_code;
+            var address = (data.address == null) ? "" : data.address;
+            var pin_code = (data.pin_code == null) ? "" : data.pin_code;
 
-            profile_details.push({ "name": data.first_name, "mobile_number": parseInt(data.mobile), "email_id": data.email, 'profile_pic_name': profile_image_name, 'profile_pic_path': profile_image_path, 'document_name': doc_name, 'document_link_path': doc_link_path, 'address': address, 'pin_code': pin_code });
+            profile_details.push({ "name": data.first_name, "mobile_number": parseInt(data.mobile), "email_id": data.email, "profile_pic_name": profile_image_name, "profile_pic_path": profile_image_path, "document_name": doc_name, "document_link_path": doc_link_path, "address": address, "pin_code": pin_code });
 
             res.status(200).send({
                 status_code: "200",
-                status: 'success',
+                status: "success",
                 profile_details: profile_details,
             });
             return;
         }
     });
-}
+};
 
 // clinic or hospital or doctor update profile code by vineet shirdhonkar
 
@@ -1061,8 +1061,8 @@ exports.updateProfile = (req, res) => {
 
     if (req.body.full_name.length < 3) {
         return res.status(400).json({
-            status_code: '400',
-            status: 'error',
+            status_code: "400",
+            status: "error",
             message: "Name should be minimum 3 characters"
         });
     }
@@ -1070,8 +1070,8 @@ exports.updateProfile = (req, res) => {
 
     if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(req.body.email_id) == false) {
         return res.status(400).json({
-            status_code: '400',
-            status: 'error',
+            status_code: "400",
+            status: "error",
             message: "Please Enter Valid Email id"
         });
     }
@@ -1080,8 +1080,8 @@ exports.updateProfile = (req, res) => {
         if (err) {
             res.status(500).send({
                 status_code: "500",
-                status: 'error',
-                message: 'Something Went to Wrong'
+                status: "error",
+                message: "Something Went to Wrong"
             });
             return;
         }
@@ -1097,15 +1097,15 @@ exports.updateProfile = (req, res) => {
                 if (err) {
                     res.status(500).send({
                         status_code: "500",
-                        status: 'error',
-                        message: 'Something Went to Wrong'
+                        status: "error",
+                        message: "Something Went to Wrong"
                     });
                     return;
                 }
                 if (data) {
                     res.status(200).send({
                         status_code: "200",
-                        status: 'success',
+                        status: "success",
                         message: "Profile Updated Successfully",
                         data: data
                     });
@@ -1115,14 +1115,14 @@ exports.updateProfile = (req, res) => {
         } else {
             res.status(200).send({
                 status_code: "404",
-                status: 'success',
+                status: "success",
                 message: "User record not found",
                 data: data
             });
             return;
         }
     });
-}
+};
 exports.onlineOflineStatus = async (req, res) => {
     try {
         const { status, user_id, staff_id } = req.body;
@@ -1140,20 +1140,20 @@ exports.onlineOflineStatus = async (req, res) => {
             var result = await User.onlineOflineStatus(status, user_id);
         }
         return res.status(200).send({
-            status_code: '200',
-            status: 'success',
+            status_code: "200",
+            status: "success",
             message: "Successfully!"
         });
     } catch (error) {
         console.log(error);
         return res.status(500).send({
-            status_code: '500',
-            status: 'error',
+            status_code: "500",
+            status: "error",
             message: "Something went to wong!"
         });
 
     }
-}
+};
 
 exports.EmailOtpVerify = async (req, res) => {
     try {
@@ -1173,32 +1173,32 @@ exports.EmailOtpVerify = async (req, res) => {
 
                     return res.status(200).send({
                         status_code: "200",
-                        status: 'success',
-                        message: 'OTP verify Successfully',
+                        status: "success",
+                        message: "OTP verify Successfully",
                     });
                 }
             }
             return res.status(400).send({
                 status_code: "400",
-                status: 'error',
-                message: 'Please enter correct OTP!',
+                status: "error",
+                message: "Please enter correct OTP!",
             });
         } else {
             return res.status(500).send({
                 status_code: "500",
-                status: 'error',
-                message: 'The OTP has expired.',
+                status: "error",
+                message: "The OTP has expired.",
             });
         }
 
     } catch (error) {
         return res.status(500).send({
             status_code: "500",
-            status: 'error',
-            message: error.message == 'jwt expired' ? 'The OTP has expired.' : 'Something went to wrong!'
+            status: "error",
+            message: error.message == "jwt expired" ? "The OTP has expired." : "Something went to wrong!"
         });
     }
-}
+};
 exports.PasswordOtpVerify = async (req, res) => {
     try {
         const { verify_token, otp } = req.body;
@@ -1212,26 +1212,26 @@ exports.PasswordOtpVerify = async (req, res) => {
 
                     return res.status(200).send({
                         status_code: "200",
-                        status: 'success',
-                        message: 'Verification completed!',
+                        status: "success",
+                        message: "Verification completed!",
                     });
                 }
                 return res.status(200).send({
                     status_code: "200",
-                    status: 'success',
-                    message: 'Verification completed!',
+                    status: "success",
+                    message: "Verification completed!",
                 });
             }
             return res.status(400).send({
                 status_code: "400",
-                status: 'error',
-                message: 'OTP does not match!',
+                status: "error",
+                message: "OTP does not match!",
             });
         } else {
             return res.status(500).send({
                 status_code: "500",
-                status: 'error',
-                message: error.message == 'jwt expired' ? 'The OTP has expired.' : 'Something went to wrong!'
+                status: "error",
+                message: error.message == "jwt expired" ? "The OTP has expired." : "Something went to wrong!"
             });
         }
 
@@ -1240,11 +1240,11 @@ exports.PasswordOtpVerify = async (req, res) => {
 
         return res.status(500).send({
             status_code: "500",
-            status: 'error',
-            message: error.message == 'jwt expired' ? 'The OTP has expired.' : 'Something went to wrong!'
+            status: "error",
+            message: error.message == "jwt expired" ? "The OTP has expired." : "Something went to wrong!"
         });
     }
-}
+};
 
 // exports.resendOtp = async (req, res) => {
 //     try {
@@ -1321,20 +1321,20 @@ exports.resendOtp = async (req, res) => {
         const decoded = jwt.verify(verify_token, JWT_SECRET_KEY);
         if (decoded) {
 
-            const userData = await helperQuery.First({ table: 'users', where: 'id=' + decoded.id });
-            const emailTemplate = userData.account_verify == '1' ? "signInRoleVarification" : 'signUpVarification';
+            const userData = await helperQuery.First({ table: "users", where: "id=" + decoded.id });
+            const emailTemplate = userData.account_verify == "1" ? "signInRoleVarification" : "signUpVarification";
             if (helperFunction.isEmptyObject(userData)) {
                 console.log(userData);
                 return res.status(500).json({
                     status_code: 500,
-                    status: 'error',
-                    message: 'Your Session has expired please sif in again!',
-                })
+                    status: "error",
+                    message: "Your Session has expired please sif in again!",
+                });
             }
             const forgot_otp = helperFunction.generateOTP(6);
             const id = userData?.id ?? 0;
-            const email = userData.email
-            const token = helperFunction.genrateToken({ id }, '365d');
+            const email = userData.email;
+            const token = helperFunction.genrateToken({ id }, "365d");
             const data = await User.otpSave({ email, forgot_otp, id: userData.id });
             if (data) {
                 const name = userData.first_name;
@@ -1348,7 +1348,7 @@ exports.resendOtp = async (req, res) => {
                     await helperFunction.sendJapiSMS(mobile_number, message); // rohit
                 }
 
-                const messageMT = userData.account_verify == '1' ?
+                const messageMT = userData.account_verify == "1" ?
                     "Thank you for choosing MedWire. Use this OTP to complete your Sign In process and verify your account on MedWire." :
                     "Thank you for choosing MedWire. Use this OTP to complete your Sign Up process and verify your account on MedWire.";
 
@@ -1371,26 +1371,26 @@ exports.resendOtp = async (req, res) => {
                 return res.status(200).send({
                     status_code: 200,
                     status: "success",
-                    message: `OTP Resend Successfully!`,
+                    message: "OTP Resend Successfully!",
                     token: token,
                 });
             }
         } else {
             return res.status(500).send({
                 status_code: "500",
-                status: 'error',
-                message: 'Your Session has expired please sign up in again!',
+                status: "error",
+                message: "Your Session has expired please sign up in again!",
             });
         }
 
     } catch (error) {
         return res.status(500).send({
             status_code: "500",
-            status: 'error',
-            message: error.message == 'jwt expired' ? 'The OTP has expired.' : 'Your Session has expired please sign up in again!'
+            status: "error",
+            message: error.message == "jwt expired" ? "The OTP has expired." : "Your Session has expired please sign up in again!"
         });
     }
-}
+};
 
 exports.updateDoctorUser = async (req, res) => {
     try {
@@ -1399,7 +1399,7 @@ exports.updateDoctorUser = async (req, res) => {
         if (file == undefined) {
             var profile_image = "";
         } else {
-            var profile_image = req.file.filename
+            var profile_image = req.file.filename;
         }
         const vali = helperFunction.customValidater(req, { mobile, gender, date_of_birth, first_name, address, experience_in_year, specialities, degrees, pin_code, user_id });
         if (vali) {
@@ -1434,7 +1434,7 @@ exports.updateDoctorUser = async (req, res) => {
 
             return res.status(200).send({
                 status_code: 200,
-                status: 'success',
+                status: "success",
                 message: "Profile Updated Successfully",
             });
         }
@@ -1442,8 +1442,8 @@ exports.updateDoctorUser = async (req, res) => {
         console.log("err", err);
         return res.status(500).send({
             status_code: 500,
-            status: 'error',
-            message: 'Something Went Wrong'
+            status: "error",
+            message: "Something Went Wrong"
         });
     }
-}
+};

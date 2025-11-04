@@ -1,14 +1,14 @@
-const Admin = require('../models/admin.model');
-const { hash: hashPassword, compare: comparePassword } = require('../utils/password');
-const { generate: generateToken } = require('../utils/token');
-const { transporter: transporter } = require('../helper/helper');
-const helperFunction = require('../helper/helperFunction');
+const Admin = require("../models/admin.model");
+const { hash: hashPassword, compare: comparePassword } = require("../utils/password");
+const { generate: generateToken } = require("../utils/token");
+const { transporter: transporter } = require("../helper/helper");
+const helperFunction = require("../helper/helperFunction");
 const jwt = require("jsonwebtoken");
-const { JWT_SECRET_KEY } = require('../utils/secrets');
+const { JWT_SECRET_KEY } = require("../utils/secrets");
 
 const moment = require("moment");
-const { async } = require('q');
-const helperQuery = require('../helper/helperQuery');
+const { async } = require("q");
+const helperQuery = require("../helper/helperQuery");
 exports.signin = (req, res) => {
     const { email, password } = req.body;
     Admin.findByEmail(email.trim(), async (err, data) => {
@@ -16,15 +16,15 @@ exports.signin = (req, res) => {
 
             if (err.kind === "not_found") {
                 res.status(404).send({
-                    status_code: '404',
-                    status: 'error',
+                    status_code: "404",
+                    status: "error",
                     message: `User with email ${email} was not found`
                 });
                 return;
             }
             res.status(500).send({
-                status_code: '500',
-                status: 'error',
+                status_code: "500",
+                status: "error",
                 message: err.message
             });
             return;
@@ -32,10 +32,10 @@ exports.signin = (req, res) => {
         if (data) {
             if (comparePassword(password.trim(), data.password)) {
                 const token = generateToken(data.id);
-                await Admin.saveLogiToken(token, data.id)
+                await Admin.saveLogiToken(token, data.id);
                 res.status(200).send({
-                    status_code: '200',
-                    status: 'success',
+                    status_code: "200",
+                    status: "success",
                     data: {
                         token,
                         userData: data,
@@ -44,119 +44,119 @@ exports.signin = (req, res) => {
                 return;
             }
             res.status(400).send({
-                status_code: '400',
-                status: 'error',
-                message: 'Incorrect password'
+                status_code: "400",
+                status: "error",
+                message: "Incorrect password"
             });
         }
     });
 
-}
+};
 exports.dashboard_count = (req, res) => {
     Admin.dashboard_count((err, data) => {
         if (err) {
             if (err.kind === "not_found") {
                 res.status(404).send({
-                    status: '404',
-                    message: 'Something Went Wrong'
+                    status: "404",
+                    message: "Something Went Wrong"
                 });
                 return;
             }
             res.status(500).send({
-                status: '500',
+                status: "500",
                 message: err.message
             });
             return;
         }
         if (data) {
             res.status(200).send({
-                status: '200',
+                status: "200",
                 data: data
             });
             return;
         }
     });
 
-}
+};
 exports.paitentList = (req, res) => {
     Admin.paitentList((err, data) => {
         if (err) {
             if (err.kind === "not_found") {
                 res.status(404).send({
-                    status: '404',
-                    message: 'Something Went Wrong'
+                    status: "404",
+                    message: "Something Went Wrong"
                 });
                 return;
             }
             res.status(500).send({
-                status: '500',
+                status: "500",
                 message: err.message
             });
             return;
         }
         if (data) {
             res.status(200).send({
-                status: '200',
+                status: "200",
                 data: data
             });
             return;
         }
     });
 
-}
+};
 exports.paitentDetail = (req, res) => {
     const { user_id } = req.body;
     Admin.paitentDetail(user_id, user_id, (err, data) => {
         if (err) {
             if (err.kind === "not_found") {
                 res.status(404).send({
-                    status: '404',
-                    message: 'Something Went Wrong'
+                    status: "404",
+                    message: "Something Went Wrong"
                 });
                 return;
             }
             res.status(500).send({
-                status: '500',
+                status: "500",
                 message: err.message
             });
             return;
         }
         if (data) {
             res.status(200).send({
-                status: '200',
+                status: "200",
                 data: data
             });
             return;
         }
-    })
-}
+    });
+};
 exports.labradList = (req, res) => {
     const { role_id } = req.body;
     Admin.labradList(role_id, (err, data) => {
         if (err) {
             if (err.kind === "not_found") {
                 res.status(404).send({
-                    status: '404',
-                    message: 'Something Went Wrong'
+                    status: "404",
+                    message: "Something Went Wrong"
                 });
                 return;
             }
             res.status(500).send({
-                status: '500',
+                status: "500",
                 message: err.message
             });
             return;
         }
         if (data) {
             res.status(200).send({
-                status: '200',
+                status: "200",
                 data: data
             });
             return;
         }
     });
 
-}
+};
 exports.aprroveLabRadUser = (req, res) => {
     const { user_id, status } = req.body;
     Laboratory.aprroveLabRadUser(user_id, status, async (err, data) => {
@@ -164,14 +164,14 @@ exports.aprroveLabRadUser = (req, res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code: "404",
-                    status: 'error',
-                    message: `Data Not Exist`
+                    status: "error",
+                    message: "Data Not Exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code: "500",
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -179,15 +179,15 @@ exports.aprroveLabRadUser = (req, res) => {
         if (data) {
             res.status(200).send({
                 status_code: "200",
-                status: 'success',
-                message: 'Successfully!',
+                status: "success",
+                message: "Successfully!",
                 data: data
             });
             return;
         }
     });
 
-}
+};
 exports.updatePassword = (req, res) => {
     const { old_password, password, id } = req.body;
     const passwordt = hashPassword(password.trim());
@@ -197,8 +197,8 @@ exports.updatePassword = (req, res) => {
             if (!comparePassword(old_password.trim(), data[0].password)) {
                 res.status(500).send({
                     status_code: "500",
-                    status: 'error',
-                    message: 'Old Password is wrong'
+                    status: "error",
+                    message: "Old Password is wrong"
                 });
                 return;
             } else {
@@ -206,26 +206,26 @@ exports.updatePassword = (req, res) => {
                     if (err) {
                         res.status(500).send({
                             status_code: "500",
-                            status: 'error',
-                            message: 'Something Went Wrong'
+                            status: "error",
+                            message: "Something Went Wrong"
                         });
                         return;
                     }
                     if (data) {
                         res.status(200).send({
                             status_code: "200",
-                            status: 'success',
+                            status: "success",
                             message: "Password Updated Successfully!",
                             data: data
                         });
                         return;
                     }
-                })
+                });
             }
         }
-    })
+    });
 
-}
+};
 exports.updateUser = (req, res) => {
 
     const { name, email, gender, mobile_no, id, } = req.body;
@@ -233,13 +233,13 @@ exports.updateUser = (req, res) => {
     if (file == undefined) {
         var image_name = "";
     } else {
-        var image_name = req.file.filename
+        var image_name = req.file.filename;
     }
     Admin.updateUser(name, email, gender, image_name, mobile_no, id, (err, data) => {
         if (err) {
             res.status(500).send({
                 status_code: "500",
-                status: 'error',
+                status: "error",
                 message: err
             });
             return;
@@ -247,34 +247,34 @@ exports.updateUser = (req, res) => {
         if (data) {
             res.status(200).send({
                 status_code: "200",
-                status: 'success',
+                status: "success",
                 message: "Profile Updated Successfully!",
                 data: data
             });
             return;
         }
-    })
-}
+    });
+};
 exports.findById = (req, res) => {
     const { id } = req.body;
     Admin.findById(id, (err, data) => {
         if (err) {
             res.status(500).json({
                 status_code: "500",
-                status: 'error',
+                status: "error",
                 message: "Something went to wrong"
-            })
+            });
         }
         if (data) {
             res.status(200).json({
                 status_code: "200",
-                status: 'success',
-                message: 'Successfully!',
+                status: "success",
+                message: "Successfully!",
                 data: data
             });
         }
-    })
-}
+    });
+};
 exports.operaterCreate = (req, res) => {
     const { name, email, gender, mobile_no } = req.body;
     var posswordt = helperFunction.autoGeneratePassword();
@@ -286,20 +286,20 @@ exports.operaterCreate = (req, res) => {
     if (file == undefined) {
         var image_name = "";
     } else {
-        var image_name = req.file.filename
+        var image_name = req.file.filename;
     }
     Admin.operaterCreate(name, email, gender, image_name, mobile_no, password, (err, data) => {
         if (err) {
             res.status(500).json({
                 status_code: "500",
-                status: 'error',
+                status: "error",
                 message: "Something went to wrong"
-            })
+            });
         }
         if (data) {
             res.status(200).json({
                 status_code: "200",
-                status: 'success',
+                status: "success",
                 message: "Operator added successfully"
             });
             helperFunction.template(transporter, true);
@@ -307,7 +307,7 @@ exports.operaterCreate = (req, res) => {
                 from: process.env.MAIL_FROM_ADDRESS,
                 to: email,
                 subject: "MedWire Confirmation Mail",
-                template: 'email',
+                template: "email",
                 context: { name, email, gender, mobile_no, posswordt, logo, admin_login, app_name }
             }, function (error, info) {
                 if (error) {
@@ -315,8 +315,8 @@ exports.operaterCreate = (req, res) => {
                 }
             });
         }
-    })
-}
+    });
+};
 exports.operaterFindById = (req, res) => {
     const { id } = req.body;
     const role = "operator";
@@ -324,20 +324,20 @@ exports.operaterFindById = (req, res) => {
         if (err) {
             res.status(500).json({
                 status_code: "500",
-                status: 'error',
+                status: "error",
                 message: "Something went wrong"
-            })
+            });
         }
         if (data) {
             res.status(200).json({
                 status_code: "200",
-                status: 'success',
-                message: 'Successfully!',
+                status: "success",
+                message: "Successfully!",
                 data: data
             });
         }
-    })
-}
+    });
+};
 exports.operaterShow = (req, res) => {
     //const {id} = req.body;
     const role = "operator";
@@ -345,20 +345,20 @@ exports.operaterShow = (req, res) => {
         if (err) {
             res.status(500).json({
                 status_code: "500",
-                status: 'error',
+                status: "error",
                 message: "Something went to wrong"
-            })
+            });
         }
         if (data) {
             res.status(200).json({
                 status_code: "200",
-                status: 'success',
-                message: 'Successfully',
+                status: "success",
+                message: "Successfully",
                 data: data
             });
         }
-    })
-}
+    });
+};
 exports.operaterDelete = (req, res) => {
     const { id } = req.body;
     const role = "operator";
@@ -366,19 +366,19 @@ exports.operaterDelete = (req, res) => {
         if (err) {
             res.status(500).json({
                 status_code: "500",
-                status: 'error',
+                status: "error",
                 message: "Something went to wrong"
-            })
+            });
         }
         if (data) {
             res.status(200).json({
                 status_code: "200",
-                status: 'success',
+                status: "success",
                 message: "Delete Successfully!"
             });
         }
-    })
-}
+    });
+};
 exports.operaterUpdate = (req, res) => {
     const { id, name, email, gender, mobile_no } = req.body;
     const role = "operator";
@@ -387,25 +387,25 @@ exports.operaterUpdate = (req, res) => {
     if (file == undefined) {
         var image_name = "";
     } else {
-        var image_name = req.file.filename
+        var image_name = req.file.filename;
     }
     Admin.operaterUpdate(name, email, gender, image_name, mobile_no, role, id, (err, data) => {
         if (err) {
             res.status(500).json({
                 status_code: "500",
-                status: 'error',
+                status: "error",
                 message: "Something went to wrong"
-            })
+            });
         }
         if (data) {
             res.status(200).json({
                 status_code: "200",
-                status: 'success',
-                message: 'Successfully!',
+                status: "success",
+                message: "Successfully!",
             });
         }
-    })
-}
+    });
+};
 exports.labradListApprove = (req, res) => {
     const { user_id, approve_status } = req.body;
     Admin.labradListApprove(user_id, approve_status, async (err, data) => {
@@ -413,14 +413,14 @@ exports.labradListApprove = (req, res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code: "404",
-                    status: 'error',
-                    message: `Data Not Exist`
+                    status: "error",
+                    message: "Data Not Exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code: "500",
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -443,30 +443,30 @@ exports.labradListApprove = (req, res) => {
                     var validity_part_1 = validity[0];
                     var validity_part_2 = validity[1];
 
-                    var date = moment(purchased_at).format('YYYY-MM-DD');
-                    var expired_at = '';
-                    if (validity_part_2 == 'Year') {
-                        expired_at = moment(date).add(parseInt(validity_part_1), 'years').format('YYYY-MM-DD HH:mm:ss');
+                    var date = moment(purchased_at).format("YYYY-MM-DD");
+                    var expired_at = "";
+                    if (validity_part_2 == "Year") {
+                        expired_at = moment(date).add(parseInt(validity_part_1), "years").format("YYYY-MM-DD HH:mm:ss");
                     }
-                    if (validity_part_2 == 'Month') {
-                        expired_at = moment(date).add(parseInt(validity_part_1), 'months').format('YYYY-MM-DD HH:mm:ss');
+                    if (validity_part_2 == "Month") {
+                        expired_at = moment(date).add(parseInt(validity_part_1), "months").format("YYYY-MM-DD HH:mm:ss");
                     }
-                    if (validity_part_2 == 'day') {
-                        expired_at = moment(date).add(parseInt(validity_part_1), 'days').subtract(1, 'days').format('YYYY-MM-DD HH:mm:ss');
+                    if (validity_part_2 == "day") {
+                        expired_at = moment(date).add(parseInt(validity_part_1), "days").subtract(1, "days").format("YYYY-MM-DD HH:mm:ss");
                     }
 
                     await Admin.addDefaultPlanForActive(user_id, plan_id, benefit, expired_at);
                 }
 
-                let msg = approve_status == 'Approve' && approve_status != null ? 'Approved' : 'Deactivated'
-                if (approve_status == 'Approve' && approve_status != null) {
-                    var message = `Your Profile has been approved by Admin`;
+                let msg = approve_status == "Approve" && approve_status != null ? "Approved" : "Deactivated";
+                if (approve_status == "Approve" && approve_status != null) {
+                    var message = "Your Profile has been approved by Admin";
                     var deactive = false;
                 } else {
-                    var message = `Your Profile has been deactivated by Admin`;
+                    var message = "Your Profile has been deactivated by Admin";
                     var deactive = true;
                 }
-                let status = approve_status == 'Approve' && approve_status != null ? 'Congratulation!' : 'Sorry!'
+                let status = approve_status == "Approve" && approve_status != null ? "Congratulation!" : "Sorry!";
                 // let message=`Your Account is ${msg} by Admin.`;
                 let name = userData.first_name;
                 let email = userData.email;
@@ -478,7 +478,7 @@ exports.labradListApprove = (req, res) => {
                     from: process.env.MAIL_FROM_ADDRESS,
                     to: email,
                     subject: "MedWire Confirmation Mail",
-                    template: 'ApproveDisapprove',
+                    template: "ApproveDisapprove",
                     context: { name, email, logo, app_name, message, status, deactive }
                 }, function (error, info) {
                     if (error) {
@@ -487,21 +487,21 @@ exports.labradListApprove = (req, res) => {
                 });
                 res.status(200).send({
                     status_code: "200",
-                    status: 'success',
-                    message: msg + ' Successfully',
+                    status: "success",
+                    message: msg + " Successfully",
                     data: data
                 });
                 return;
             } catch (error) {
                 res.status(500).send({
                     status_code: "500",
-                    status: 'error',
+                    status: "error",
                     message: "Internal server Error"
                 });
             }
         }
     });
-}
+};
 exports.forgotPassword = (req, res) => {
     const { email } = req.body;
     const forgot_otp = helperFunction.generateOTP(6);
@@ -509,13 +509,13 @@ exports.forgotPassword = (req, res) => {
         if (err) {
             res.status(500).send({
                 status_code: "500",
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
         }
         if (data) {
-            const name = 'admin';
+            const name = "admin";
             const logo = process.env.APP_LOGO;
             const admin_login = process.env.ADMIN_LOGIN_URL;
             const app_name = process.env.APP_NAME;
@@ -524,7 +524,7 @@ exports.forgotPassword = (req, res) => {
                 from: process.env.MAIL_FROM_ADDRESS,
                 to: email,
                 subject: "MedWire Confirmation Mail",
-                template: 'signUpVarification',
+                template: "signUpVarification",
                 context: { name, email, forgot_otp, logo, app_name }
             }, function (error, info) {
                 if (error) {
@@ -535,14 +535,14 @@ exports.forgotPassword = (req, res) => {
             const token = generateToken(data.id);
             res.status(200).send({
                 status_code: "200",
-                status: 'success',
-                message: 'Successfully',
+                status: "success",
+                message: "Successfully",
                 data: data.email
             });
             return;
         }
-    })
-}
+    });
+};
 exports.resetPassword = async (req, res) => {
     try {
         const { forgot_otp, password, verify_token } = req.body;
@@ -550,18 +550,18 @@ exports.resetPassword = async (req, res) => {
         const decoded = jwt.verify(verify_token, JWT_SECRET_KEY);
         console.log(decoded, "----- decoded");
         // console.log(decoded.condition,"decod",decoded);
-        if (decoded.condition != 'reset') {
+        if (decoded.condition != "reset") {
             return res.status(400).send({
                 status_code: "400",
-                status: 'error',
-                message: 'Sorry! Token expire!'
+                status: "error",
+                message: "Sorry! Token expire!"
             });
         }
         if (decoded.length > 0) {
             return res.status(400).send({
                 status_code: "400",
-                status: 'error',
-                message: 'Sorry! Token expire!'
+                status: "error",
+                message: "Sorry! Token expire!"
             });
         }
         // console.log(decoded.condition,"decod",decoded);
@@ -569,8 +569,8 @@ exports.resetPassword = async (req, res) => {
         if (adminData.length == 0) {
             return res.status(400).send({
                 status_code: "400",
-                status: 'error',
-                message: 'Sorry! something went wrong'
+                status: "error",
+                message: "Sorry! something went wrong"
             });
         }
         // const tok = helperFunction.getIdByToken({id:1,condition:"reset"});
@@ -579,8 +579,8 @@ exports.resetPassword = async (req, res) => {
         if (data) {
             return res.status(200).send({
                 status_code: "200",
-                status: 'success',
-                message: 'Successfully',
+                status: "success",
+                message: "Successfully",
                 data: data
             });
         }
@@ -588,19 +588,19 @@ exports.resetPassword = async (req, res) => {
         console.log(error.message);
         res.status(400).send({
             status_code: "400",
-            status: 'error',
-            message: 'something went wrong'
+            status: "error",
+            message: "something went wrong"
         });
     }
-}
+};
 exports.checkOtpVerify = (req, res) => {
     const { email, forgot_otp } = req.body;
     Admin.checkOtpVerify(email, forgot_otp, async (err, data) => {
         if (err) {
             res.status(400).send({
                 status_code: "400",
-                status: 'error',
-                message: 'Otp Not Matched'
+                status: "error",
+                message: "Otp Not Matched"
             });
             return;
         }
@@ -610,8 +610,8 @@ exports.checkOtpVerify = (req, res) => {
                 const token = helperFunction.genrateToken({ id: adminData[0].id, condition: "reset" }, "60s");
                 return res.status(200).send({
                     status_code: "200",
-                    status: 'success',
-                    message: 'Successfully',
+                    status: "success",
+                    message: "Successfully",
                     token: token
                 });
 
@@ -619,20 +619,20 @@ exports.checkOtpVerify = (req, res) => {
                 console.log(error);
                 return res.status(500).send({
                     status_code: "500",
-                    status: 'error',
-                    message: 'Something went to wrong!',
+                    status: "error",
+                    message: "Something went to wrong!",
                 });
             }
 
         } else {
             return res.status(400).send({
                 status_code: "400",
-                status: 'error',
-                message: 'Otp Not Matched'
+                status: "error",
+                message: "Otp Not Matched"
             });
         }
-    })
-}
+    });
+};
 
 
 // vineet
@@ -649,14 +649,14 @@ exports.clinicList = (req, res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code: 404,
-                    status: 'success',
-                    message: `Admin does not exist`
+                    status: "success",
+                    message: "Admin does not exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code: 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -668,7 +668,7 @@ exports.clinicList = (req, res) => {
                 if (err) {
                     res.status(500).send({
                         status_code: 500,
-                        status: 'error',
+                        status: "error",
                         message: err.message
                     });
                     return;
@@ -677,7 +677,7 @@ exports.clinicList = (req, res) => {
                 if (data) {
                     res.status(200).send({
                         status_code: 200,
-                        status: 'success',
+                        status: "success",
                         message: "Clinic data found Successfully",
                         data: data
                     });
@@ -687,8 +687,8 @@ exports.clinicList = (req, res) => {
             });
         }
 
-    })
-}
+    });
+};
 
 // vineet
 
@@ -705,14 +705,14 @@ exports.doctorList = (req, res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code: 404,
-                    status: 'success',
-                    message: `Admin does not exist`
+                    status: "success",
+                    message: "Admin does not exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code: 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -724,7 +724,7 @@ exports.doctorList = (req, res) => {
                 if (err) {
                     res.status(500).send({
                         status_code: 500,
-                        status: 'error',
+                        status: "error",
                         message: err.message
                     });
                     return;
@@ -733,7 +733,7 @@ exports.doctorList = (req, res) => {
                 if (data) {
                     res.status(200).send({
                         status_code: 200,
-                        status: 'success',
+                        status: "success",
                         message: "Doctor data found Successfully",
                         data: data
                     });
@@ -743,8 +743,8 @@ exports.doctorList = (req, res) => {
             });
         }
 
-    })
-}
+    });
+};
 exports.userListApprove = (req, res) => {
     const { user_id, approve_status } = req.body;
     Admin.userListApprove(user_id, approve_status, async (err, data) => {
@@ -752,14 +752,14 @@ exports.userListApprove = (req, res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code: "404",
-                    status: 'error',
-                    message: `Data Not Exist`
+                    status: "error",
+                    message: "Data Not Exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code: "500",
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -772,36 +772,36 @@ exports.userListApprove = (req, res) => {
                 var plan_id = result[0].plan_id;
                 var user_id = result[0].user_id;
                 var total_amount = result[0].total_amount;
-                var payment_order_id = process.env.APP_NAME + '_' + new Date().getTime();
+                var payment_order_id = process.env.APP_NAME + "_" + new Date().getTime();
                 var benefit = parseInt(result[0].benefit);
-                var payment_currency = 'INR';
-                var payment_detail = 'Set As Default';
+                var payment_currency = "INR";
+                var payment_detail = "Set As Default";
 
                 var validity = result[0].validity;
                 validity = validity.split(" ");
                 var validity_part_1 = validity[0];
                 var validity_part_2 = validity[1];
 
-                var date = moment(purchased_at).format('YYYY-MM-DD');
-                var expired_at = '';
-                if (validity_part_2 == 'Year') {
-                    expired_at = moment(date).add(parseInt(validity_part_1), 'years').format('YYYY-MM-DD HH:mm:ss');
+                var date = moment(purchased_at).format("YYYY-MM-DD");
+                var expired_at = "";
+                if (validity_part_2 == "Year") {
+                    expired_at = moment(date).add(parseInt(validity_part_1), "years").format("YYYY-MM-DD HH:mm:ss");
                 }
-                if (validity_part_2 == 'Month') {
-                    expired_at = moment(date).add(parseInt(validity_part_1), 'months').format('YYYY-MM-DD HH:mm:ss');
+                if (validity_part_2 == "Month") {
+                    expired_at = moment(date).add(parseInt(validity_part_1), "months").format("YYYY-MM-DD HH:mm:ss");
                 }
-                if (validity_part_2 == 'day') {
-                    expired_at = moment(date).add(parseInt(validity_part_1), 'days').subtract(1, 'days').format('YYYY-MM-DD HH:mm:ss');
+                if (validity_part_2 == "day") {
+                    expired_at = moment(date).add(parseInt(validity_part_1), "days").subtract(1, "days").format("YYYY-MM-DD HH:mm:ss");
                 }
                 await Admin.addDefaultPlanForActive(user_id, plan_id, benefit, expired_at, total_amount, payment_order_id, payment_currency, payment_detail);
             }
             let userData = await helperQuery.First({ table: "users", where: "id=" + data.user_id });
-            let msg = approve_status == 'Approve' && approve_status != null ? 'Approved' : 'Deactivated'
-            let status = approve_status == 'Approve' && approve_status != null ? 'Congratulation!' : 'Sorry!'
-            let message = `Your Profile has been deactivated by Admin.`;
+            let msg = approve_status == "Approve" && approve_status != null ? "Approved" : "Deactivated";
+            let status = approve_status == "Approve" && approve_status != null ? "Congratulation!" : "Sorry!";
+            let message = "Your Profile has been deactivated by Admin.";
             let deactive = true;
-            if (approve_status == 'Approve') {
-                message = 'Your Profile has been successfully verfied and approved from MedWire Team. You can access your Profile and start serving your patients.';
+            if (approve_status == "Approve") {
+                message = "Your Profile has been successfully verfied and approved from MedWire Team. You can access your Profile and start serving your patients.";
                 deactive = false;
             }
 
@@ -815,7 +815,7 @@ exports.userListApprove = (req, res) => {
                 from: process.env.MAIL_FROM_ADDRESS,
                 to: email,
                 subject: `Your Profile has been ${msg} Successfully`,
-                template: 'ApproveDisapprove',
+                template: "ApproveDisapprove",
                 context: { name, email, logo, app_name, message, status, deactive: deactive }
             }, function (error, info) {
                 if (error) {
@@ -824,13 +824,13 @@ exports.userListApprove = (req, res) => {
             });
             res.status(200).send({
                 status_code: "200",
-                status: 'success',
+                status: "success",
                 data: data
             });
             return;
         }
     });
-}
+};
 exports.addPlan = (req, res) => {
     const { admin_id, plan_for, benefit, plan_name, price, validity, description } = req.body;
 
@@ -839,10 +839,10 @@ exports.addPlan = (req, res) => {
         return res.status(500).json(valid);
     }
 
-    if (req.body.plan_for != 'clinic' && req.body.plan_for != 'laboratories' && req.body.plan_for != 'radiology') {
+    if (req.body.plan_for != "clinic" && req.body.plan_for != "laboratories" && req.body.plan_for != "radiology") {
         return res.status(400).json({
             status_code: 400,
-            status: 'error',
+            status: "error",
             message: "Please select plan only for clinic,laboratories or radiology"
         });
     }
@@ -852,14 +852,14 @@ exports.addPlan = (req, res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code: 404,
-                    status: 'success',
-                    message: `Admin does not exist`
+                    status: "success",
+                    message: "Admin does not exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code: 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -871,7 +871,7 @@ exports.addPlan = (req, res) => {
                 if (err) {
                     res.status(500).send({
                         status_code: 500,
-                        status: 'error',
+                        status: "error",
                         message: err.message
                     });
                     return;
@@ -880,7 +880,7 @@ exports.addPlan = (req, res) => {
                 if (data) {
                     res.status(200).send({
                         status_code: 200,
-                        status: 'success',
+                        status: "success",
                         message: "Plan added Successfully!",
                         data: data
                     });
@@ -890,8 +890,8 @@ exports.addPlan = (req, res) => {
             });
         }
 
-    })
-}
+    });
+};
 
 // find all plans by vineet shirdhonkar
 
@@ -908,14 +908,14 @@ exports.findAllPlans = (req, res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code: 404,
-                    status: 'success',
-                    message: `Admin does not exist`
+                    status: "success",
+                    message: "Admin does not exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code: 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -929,14 +929,14 @@ exports.findAllPlans = (req, res) => {
                     if (err.kind === "not_found") {
                         res.status(200).send({
                             status_code: 200,
-                            status: 'success',
-                            message: `No Plans Found`
+                            status: "success",
+                            message: "No Plans Found"
                         });
                         return;
                     }
                     res.status(500).send({
                         status_code: 500,
-                        status: 'error',
+                        status: "error",
                         message: err.message
                     });
                     return;
@@ -945,7 +945,7 @@ exports.findAllPlans = (req, res) => {
                 if (data) {
                     res.status(200).send({
                         status_code: 200,
-                        status: 'success',
+                        status: "success",
                         message: "Plan data found Successfully!",
                         data: data
                     });
@@ -955,8 +955,8 @@ exports.findAllPlans = (req, res) => {
             });
         }
 
-    })
-}
+    });
+};
 
 // get plan detail by vineet shirdhonkar
 
@@ -973,14 +973,14 @@ exports.getPlanDetail = (req, res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code: 404,
-                    status: 'success',
-                    message: `Plan does not exist`
+                    status: "success",
+                    message: "Plan does not exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code: 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -989,15 +989,15 @@ exports.getPlanDetail = (req, res) => {
         if (data) {
             res.status(200).send({
                 status_code: 200,
-                status: 'success',
+                status: "success",
                 message: "Plan detail found Successfully!",
                 data: data
             });
             return;
         }
 
-    })
-}
+    });
+};
 
 
 
@@ -1011,10 +1011,10 @@ exports.updatePlan = (req, res) => {
         return res.status(500).json(valid);
     }
 
-    if (req.body.plan_for != 'clinic' && req.body.plan_for != 'laboratories' && req.body.plan_for != 'radiology') {
+    if (req.body.plan_for != "clinic" && req.body.plan_for != "laboratories" && req.body.plan_for != "radiology") {
         return res.status(400).json({
             status_code: 400,
-            status: 'error',
+            status: "error",
             message: "Please select plan only for clinic,laboratories or radiology"
         });
     }
@@ -1024,14 +1024,14 @@ exports.updatePlan = (req, res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code: 404,
-                    status: 'success',
-                    message: `Admin does not exist`
+                    status: "success",
+                    message: "Admin does not exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code: 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -1045,14 +1045,14 @@ exports.updatePlan = (req, res) => {
                     if (err.kind === "not_found") {
                         res.status(404).send({
                             status_code: 404,
-                            status: 'success',
-                            message: `Plan does not exist`
+                            status: "success",
+                            message: "Plan does not exist"
                         });
                         return;
                     }
                     res.status(500).send({
                         status_code: 500,
-                        status: 'error',
+                        status: "error",
                         message: err.message
                     });
                     return;
@@ -1063,7 +1063,7 @@ exports.updatePlan = (req, res) => {
                         if (err) {
                             res.status(500).send({
                                 status_code: 500,
-                                status: 'error',
+                                status: "error",
                                 message: err.message
                             });
                             return;
@@ -1072,7 +1072,7 @@ exports.updatePlan = (req, res) => {
                         if (data) {
                             res.status(200).send({
                                 status_code: 200,
-                                status: 'success',
+                                status: "success",
                                 message: "Plan updated Successfully!",
                                 data: data
                             });
@@ -1085,8 +1085,8 @@ exports.updatePlan = (req, res) => {
             });
         }
 
-    })
-}
+    });
+};
 exports.planPurchaseHistory = async (req, res) => {
 
     var result = await Admin.getPlanHistory();
@@ -1094,19 +1094,19 @@ exports.planPurchaseHistory = async (req, res) => {
     if (result) {
         return res.status(200).send({
             status_code: 200,
-            status: 'success',
-            message: 'Plan purchase history are showing',
+            status: "success",
+            message: "Plan purchase history are showing",
             data: result
         });
     }
     else {
         return res.status(500).send({
             status_code: 500,
-            status: 'error',
+            status: "error",
             message: err.message
         });
     }
-}
+};
 exports.setAsDefaultPlan = (req, res) => {
     const { admin_id, plan_for, plan_id, status } = req.body;
 
@@ -1115,10 +1115,10 @@ exports.setAsDefaultPlan = (req, res) => {
         return res.status(500).json(valid);
     }
 
-    if (req.body.plan_for != 'clinic' && req.body.plan_for != 'laboratories' && req.body.plan_for != 'radiology') {
+    if (req.body.plan_for != "clinic" && req.body.plan_for != "laboratories" && req.body.plan_for != "radiology") {
         return res.status(400).json({
             status_code: 400,
-            status: 'error',
+            status: "error",
             message: "Please select plan only for clinic,laboratories or radiology"
         });
     }
@@ -1128,14 +1128,14 @@ exports.setAsDefaultPlan = (req, res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code: 404,
-                    status: 'success',
-                    message: `Admin does not exist`
+                    status: "success",
+                    message: "Admin does not exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code: 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -1149,26 +1149,26 @@ exports.setAsDefaultPlan = (req, res) => {
                     if (err.kind === "not_found") {
                         res.status(404).send({
                             status_code: 404,
-                            status: 'success',
-                            message: `Plan does not exist`
+                            status: "success",
+                            message: "Plan does not exist"
                         });
                         return;
                     }
                     res.status(500).send({
                         status_code: 500,
-                        status: 'error',
+                        status: "error",
                         message: err.message
                     });
                     return;
                 }
 
                 if (data) {
-                    if (status == 'Inactive') {
+                    if (status == "Inactive") {
                         Admin.updateSetAsDefaultPlan(plan_id, status, (err, data) => {
                             if (err) {
                                 res.status(500).send({
                                     status_code: 500,
-                                    status: 'error',
+                                    status: "error",
                                     message: err.message
                                 });
                                 return;
@@ -1177,7 +1177,7 @@ exports.setAsDefaultPlan = (req, res) => {
                             if (data) {
                                 res.status(200).send({
                                     status_code: 200,
-                                    status: 'success',
+                                    status: "success",
                                     message: "Plan has set as default",
                                 });
                                 return;
@@ -1191,15 +1191,15 @@ exports.setAsDefaultPlan = (req, res) => {
                                 if (err.kind === "not_found") {
                                     res.status(404).send({
                                         status_code: 404,
-                                        status: 'success',
-                                        message: `Other plan soft does not remove`
+                                        status: "success",
+                                        message: "Other plan soft does not remove"
                                     });
                                     return;
                                 }
 
                                 res.status(500).send({
                                     status_code: 500,
-                                    status: 'error',
+                                    status: "error",
                                     message: err.message
                                 });
                                 return;
@@ -1209,7 +1209,7 @@ exports.setAsDefaultPlan = (req, res) => {
                                     if (err) {
                                         res.status(500).send({
                                             status_code: 500,
-                                            status: 'error',
+                                            status: "error",
                                             message: err.message
                                         });
                                         return;
@@ -1218,7 +1218,7 @@ exports.setAsDefaultPlan = (req, res) => {
                                     if (data) {
                                         res.status(200).send({
                                             status_code: 200,
-                                            status: 'success',
+                                            status: "success",
                                             message: "Plan has set as default",
                                         });
                                         return;
@@ -1236,8 +1236,8 @@ exports.setAsDefaultPlan = (req, res) => {
             });
         }
 
-    })
-}
+    });
+};
 
 // delete plan by vineet shirdhonkar
 
@@ -1256,15 +1256,15 @@ exports.deletePlan = (req, res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code: 404,
-                    status: 'success',
-                    message: `Plan does not exist`
+                    status: "success",
+                    message: "Plan does not exist"
                 });
                 return;
             }
 
             res.status(500).send({
                 status_code: 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -1275,25 +1275,25 @@ exports.deletePlan = (req, res) => {
                 if (err) {
                     res.status(500).send({
                         status_code: 500,
-                        status: 'error',
-                        message: 'Something Went Wrong'
+                        status: "error",
+                        message: "Something Went Wrong"
                     });
                     return;
                 }
                 if (data) {
                     res.status(200).send({
                         status_code: 200,
-                        status: 'success',
+                        status: "success",
                         message: "Plan Deleted Successfully",
                         data: data
                     });
                     return;
                 }
-            })
+            });
 
         }
     });
-}
+};
 
 
 
@@ -1308,10 +1308,10 @@ exports.addCommission = (req, res) => {
         return res.status(500).json(valid);
     }
 
-    if (commission_for !== 'lab' && commission_for !== 'radiology') {
+    if (commission_for !== "lab" && commission_for !== "radiology") {
         return res.status(400).json({
             status_code: 400,
-            status: 'error',
+            status: "error",
             message: "Commission for should be lab or radiology"
         });
     }
@@ -1323,14 +1323,14 @@ exports.addCommission = (req, res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code: 404,
-                    status: 'error',
-                    message: `Admin does not exist`
+                    status: "error",
+                    message: "Admin does not exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code: 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -1341,7 +1341,7 @@ exports.addCommission = (req, res) => {
             var all_data = [];
             if (user_ids.length > 0) {
                 for (uId of user_ids) {
-                    all_data.push({ 'user_id': uId, 'commission_for': commission_for, 'admin_id': admin_id, 'commission_percent': commission_percent });
+                    all_data.push({ "user_id": uId, "commission_for": commission_for, "admin_id": admin_id, "commission_percent": commission_percent });
                 }
 
                 Admin.addCommission(all_data, (err, data1) => {
@@ -1349,22 +1349,22 @@ exports.addCommission = (req, res) => {
                         if (err.kind === "not_inserted") {
                             res.status(500).send({
                                 status_code: 500,
-                                status: 'error',
-                                message: `Failed ! Please try again later`
+                                status: "error",
+                                message: "Failed ! Please try again later"
                             });
                             return;
                         }
                         res.status(500).send({
                             status_code: 500,
-                            status: 'error',
-                            message: 'Something Went Wrong'
+                            status: "error",
+                            message: "Something Went Wrong"
                         });
                         return;
                     }
                     if (data1) {
                         res.status(200).send({
                             status_code: 200,
-                            status: 'success',
+                            status: "success",
                             message: "Commission Added Successfully",
                             data: data1
                         });
@@ -1379,7 +1379,7 @@ exports.addCommission = (req, res) => {
             }
         }
     });
-}
+};
 
 
 
@@ -1400,14 +1400,14 @@ exports.getSpecificLabAndRadioLogyList = (req, res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code: 404,
-                    status: 'error',
-                    message: `Admin does not exist`
+                    status: "error",
+                    message: "Admin does not exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code: 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -1419,8 +1419,8 @@ exports.getSpecificLabAndRadioLogyList = (req, res) => {
                 if (err) {
                     res.status(500).send({
                         status_code: 500,
-                        status: 'error',
-                        message: 'Something Went Wrong'
+                        status: "error",
+                        message: "Something Went Wrong"
                     });
                     return;
                 }
@@ -1428,16 +1428,16 @@ exports.getSpecificLabAndRadioLogyList = (req, res) => {
                 if (data) {
                     return res.status(200).send({
                         status_code: 200,
-                        status: 'success',
+                        status: "success",
                         message: (data.length > 0) ? "Data Found Successfully" : "No Record Found",
                         data: data
                     });
                 }
-            })
+            });
 
         }
     });
-}
+};
 
 
 
@@ -1456,14 +1456,14 @@ exports.getAllCommissions = (req, res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code: 404,
-                    status: 'error',
-                    message: `Admin does not exist`
+                    status: "error",
+                    message: "Admin does not exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code: 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -1476,15 +1476,15 @@ exports.getAllCommissions = (req, res) => {
                     if (err.kind === "not_found") {
                         res.status(200).send({
                             status_code: 200,
-                            status: 'success',
-                            message: `No Data Found`
+                            status: "success",
+                            message: "No Data Found"
                         });
                         return;
                     }
                     res.status(500).send({
                         status_code: 500,
-                        status: 'error',
-                        message: 'Something Went Wrong'
+                        status: "error",
+                        message: "Something Went Wrong"
                     });
                     return;
                 }
@@ -1492,16 +1492,16 @@ exports.getAllCommissions = (req, res) => {
                 if (data) {
                     return res.status(200).send({
                         status_code: 200,
-                        status: 'success',
+                        status: "success",
                         message: "Data Found Successfully",
                         data: data
                     });
                 }
-            })
+            });
 
         }
     });
-}
+};
 
 // get commission detail code by vineet shirdhonkar
 
@@ -1519,14 +1519,14 @@ exports.getCommissionDetail = (req, res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code: 404,
-                    status: 'error',
-                    message: `Commission Record does not exist`
+                    status: "error",
+                    message: "Commission Record does not exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code: 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -1535,7 +1535,7 @@ exports.getCommissionDetail = (req, res) => {
         if (data) {
             res.status(200).send({
                 status_code: 200,
-                status: 'success',
+                status: "success",
                 message: "Commission Details Found Successfully",
                 data: data
             });
@@ -1543,7 +1543,7 @@ exports.getCommissionDetail = (req, res) => {
 
         }
     });
-}
+};
 
 
 
@@ -1559,10 +1559,10 @@ exports.updateCommission = (req, res) => {
     }
 
 
-    if (commission_for !== 'lab' && commission_for !== 'radiology') {
+    if (commission_for !== "lab" && commission_for !== "radiology") {
         return res.status(400).json({
             status_code: 400,
-            status: 'error',
+            status: "error",
             message: "Commission for should be lab or radiology"
         });
     }
@@ -1573,14 +1573,14 @@ exports.updateCommission = (req, res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code: 404,
-                    status: 'error',
-                    message: `Admin does not exist`
+                    status: "error",
+                    message: "Admin does not exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code: 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -1592,15 +1592,15 @@ exports.updateCommission = (req, res) => {
                 if (err) {
                     res.status(500).send({
                         status_code: 500,
-                        status: 'error',
-                        message: 'Something Went Wrong'
+                        status: "error",
+                        message: "Something Went Wrong"
                     });
                     return;
                 }
                 if (data1) {
                     res.status(200).send({
                         status_code: 200,
-                        status: 'success',
+                        status: "success",
                         message: "Commission Updated Successfully!",
                         data: data1
                     });
@@ -1610,7 +1610,7 @@ exports.updateCommission = (req, res) => {
 
         }
     });
-}
+};
 
 
 
@@ -1630,15 +1630,15 @@ exports.deleteCommission = (req, res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code: 404,
-                    status: 'error',
-                    message: `Commission record does not exist`
+                    status: "error",
+                    message: "Commission record does not exist"
                 });
                 return;
             }
 
             res.status(500).send({
                 status_code: 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -1650,8 +1650,8 @@ exports.deleteCommission = (req, res) => {
                 if (err) {
                     res.status(500).send({
                         status_code: 500,
-                        status: 'error',
-                        message: 'Something Went Wrong'
+                        status: "error",
+                        message: "Something Went Wrong"
                     });
                     return;
                 }
@@ -1660,17 +1660,17 @@ exports.deleteCommission = (req, res) => {
                 if (data) {
                     res.status(200).send({
                         status_code: 200,
-                        status: 'success',
+                        status: "success",
                         message: "Commission Deleted Successfully!",
                         data: data
                     });
                     return;
                 }
-            })
+            });
 
         }
     });
-}
+};
 
 // vineet
 
@@ -1687,14 +1687,14 @@ exports.approvedUserList = (req, res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code: 404,
-                    status: 'success',
-                    message: `Admin does not exist`
+                    status: "success",
+                    message: "Admin does not exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code: 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -1707,14 +1707,14 @@ exports.approvedUserList = (req, res) => {
                     if (err.kind === "not_found") {
                         res.status(200).send({
                             status_code: 200,
-                            status: 'success',
-                            message: `No Data Found`
+                            status: "success",
+                            message: "No Data Found"
                         });
                         return;
                     }
                     res.status(500).send({
                         status_code: 500,
-                        status: 'error',
+                        status: "error",
                         message: err.message
                     });
                     return;
@@ -1722,7 +1722,7 @@ exports.approvedUserList = (req, res) => {
                 if (data) {
                     res.status(200).send({
                         status_code: 200,
-                        status: 'success',
+                        status: "success",
                         message: "Data found Successfully!",
                         data: data
                     });
@@ -1731,8 +1731,8 @@ exports.approvedUserList = (req, res) => {
             });
         }
 
-    })
-}
+    });
+};
 
 // vineet
 
@@ -1749,14 +1749,14 @@ exports.getAllAppointments = (req, res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code: 404,
-                    status: 'success',
-                    message: `Admin does not exist`
+                    status: "success",
+                    message: "Admin does not exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code: 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -1769,14 +1769,14 @@ exports.getAllAppointments = (req, res) => {
                     if (err.kind === "not_found") {
                         res.status(200).send({
                             status_code: 200,
-                            status: 'success',
-                            message: `No Data Found`
+                            status: "success",
+                            message: "No Data Found"
                         });
                         return;
                     }
                     res.status(500).send({
                         status_code: 500,
-                        status: 'error',
+                        status: "error",
                         message: err.message
                     });
                     return;
@@ -1784,7 +1784,7 @@ exports.getAllAppointments = (req, res) => {
                 if (data) {
                     res.status(200).send({
                         status_code: 200,
-                        status: 'success',
+                        status: "success",
                         message: "Data found Successfully!",
                         data: data,
                         total_appointments: data.length
@@ -1794,8 +1794,8 @@ exports.getAllAppointments = (req, res) => {
             });
         }
 
-    })
-}
+    });
+};
 
 // vineet
 
@@ -1812,14 +1812,14 @@ exports.getAllLabVistedAppointments = (req, res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code: 404,
-                    status: 'success',
-                    message: `Admin does not exist`
+                    status: "success",
+                    message: "Admin does not exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code: 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -1832,14 +1832,14 @@ exports.getAllLabVistedAppointments = (req, res) => {
                     if (err.kind === "not_found") {
                         res.status(200).send({
                             status_code: 200,
-                            status: 'success',
-                            message: `No Data Found`
+                            status: "success",
+                            message: "No Data Found"
                         });
                         return;
                     }
                     res.status(500).send({
                         status_code: 500,
-                        status: 'error',
+                        status: "error",
                         message: err.message
                     });
                     return;
@@ -1847,7 +1847,7 @@ exports.getAllLabVistedAppointments = (req, res) => {
                 if (data) {
                     res.status(200).send({
                         status_code: 200,
-                        status: 'success',
+                        status: "success",
                         total_lab_visted_appointments: data.length
                     });
                     return;
@@ -1855,8 +1855,8 @@ exports.getAllLabVistedAppointments = (req, res) => {
             });
         }
 
-    })
-}
+    });
+};
 
 
 // vineet
@@ -1874,14 +1874,14 @@ exports.getInsightAppointments = (req, res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code: 404,
-                    status: 'success',
-                    message: `Admin does not exist`
+                    status: "success",
+                    message: "Admin does not exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code: 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -1894,14 +1894,14 @@ exports.getInsightAppointments = (req, res) => {
                     if (err.kind === "not_found") {
                         res.status(200).send({
                             status_code: 200,
-                            status: 'success',
-                            message: `No Data Found`
+                            status: "success",
+                            message: "No Data Found"
                         });
                         return;
                     }
                     res.status(500).send({
                         status_code: 500,
-                        status: 'error',
+                        status: "error",
                         message: err.message
                     });
                     return;
@@ -1909,7 +1909,7 @@ exports.getInsightAppointments = (req, res) => {
                 if (data) {
                     res.status(200).send({
                         status_code: 200,
-                        status: 'success',
+                        status: "success",
                         //total_appointments : data.length,
                         data: data
                     });
@@ -1918,8 +1918,8 @@ exports.getInsightAppointments = (req, res) => {
             });
         }
 
-    })
-}
+    });
+};
 
 // vineet
 
@@ -1936,14 +1936,14 @@ exports.getAllAppointmentsForAdmin = (req, res) => {
             if (err.kind === "not_found") {
                 res.status(404).send({
                     status_code: 404,
-                    status: 'success',
-                    message: `Admin does not exist`
+                    status: "success",
+                    message: "Admin does not exist"
                 });
                 return;
             }
             res.status(500).send({
                 status_code: 500,
-                status: 'error',
+                status: "error",
                 message: err.message
             });
             return;
@@ -1956,14 +1956,14 @@ exports.getAllAppointmentsForAdmin = (req, res) => {
                     if (err.kind === "not_found") {
                         res.status(200).send({
                             status_code: 200,
-                            status: 'success',
-                            message: `No Data Found`
+                            status: "success",
+                            message: "No Data Found"
                         });
                         return;
                     }
                     res.status(500).send({
                         status_code: 500,
-                        status: 'error',
+                        status: "error",
                         message: err.message
                     });
                     return;
@@ -1971,7 +1971,7 @@ exports.getAllAppointmentsForAdmin = (req, res) => {
                 if (data) {
                     res.status(200).send({
                         status_code: 200,
-                        status: 'success',
+                        status: "success",
                         message: "Data found Successfully!",
                         data: data,
                         total_appointments: data.length
@@ -1981,5 +1981,5 @@ exports.getAllAppointmentsForAdmin = (req, res) => {
             });
         }
 
-    })
-}
+    });
+};

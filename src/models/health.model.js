@@ -1,8 +1,8 @@
-const db = require('../config/db.config');
-const { logger } = require('../utils/logger');
+const db = require("../config/db.config");
+const { logger } = require("../utils/logger");
 class Health {
     static addBmi(user_id,member_id,Height,Weight,BMI,createdate, cb) {
-        db.query(`INSERT INTO users_hwbmi_details(user_id,member_id,Height,Weight,BMI,createdate) VALUES(?,?,?,?,?,?)`,
+        db.query("INSERT INTO users_hwbmi_details(user_id,member_id,Height,Weight,BMI,createdate) VALUES(?,?,?,?,?,?)",
             [
                 user_id,member_id,Height,Weight,BMI,createdate  
             ], (err, res) => {
@@ -24,7 +24,7 @@ class Health {
         
     }
     static listBmi(member_id,user_id, cb) {
-        db.query(`SELECT id,user_id,member_id,Height,Weight,BMI,createdate FROM users_hwbmi_details WHERE member_id = ? AND user_id = ? AND BMI != '' ORDER BY createdate DESC `,
+        db.query("SELECT id,user_id,member_id,Height,Weight,BMI,createdate FROM users_hwbmi_details WHERE member_id = ? AND user_id = ? AND BMI != '' ORDER BY createdate DESC ",
             [
                 member_id,user_id  
             ], (err, res) => {
@@ -38,7 +38,7 @@ class Health {
     }
 
     static heartRate(user_id,member_id,heart_rate,createdate, cb) {
-        db.query(`INSERT INTO users_hwbmi_details(user_id,member_id,heart_rate,createdate) VALUES(?,?,?,?)`,
+        db.query("INSERT INTO users_hwbmi_details(user_id,member_id,heart_rate,createdate) VALUES(?,?,?,?)",
             [
                 user_id,member_id,heart_rate,createdate  
             ], (err, res) => {
@@ -57,7 +57,7 @@ class Health {
         });
     }
     static listHeartRate(member_id,user_id, cb) {
-        db.query(`SELECT id,user_id,member_id,heart_rate,createdate FROM users_hwbmi_details WHERE member_id = ? AND user_id = ? AND heart_rate != '' ORDER BY createdate DESC `,
+        db.query("SELECT id,user_id,member_id,heart_rate,createdate FROM users_hwbmi_details WHERE member_id = ? AND user_id = ? AND heart_rate != '' ORDER BY createdate DESC ",
             [
                 member_id,user_id  
             ], (err, res) => {
@@ -71,7 +71,7 @@ class Health {
     }
 
     static bloodPressure(user_id,member_id,blood_pressure,createdate, cb) {
-        db.query(`INSERT INTO users_hwbmi_details(user_id,member_id,blood_pressure,createdate) VALUES(?,?,?,?)`,
+        db.query("INSERT INTO users_hwbmi_details(user_id,member_id,blood_pressure,createdate) VALUES(?,?,?,?)",
             [
                 user_id,member_id,blood_pressure,createdate  
             ], (err, res) => {
@@ -90,7 +90,7 @@ class Health {
         });
     }
     static listBloodPressure(member_id,user_id, cb) {
-        db.query(`SELECT id,user_id,member_id,blood_pressure,createdate FROM users_hwbmi_details WHERE member_id = ? AND user_id = ? AND blood_pressure != '' ORDER BY createdate DESC `,
+        db.query("SELECT id,user_id,member_id,blood_pressure,createdate FROM users_hwbmi_details WHERE member_id = ? AND user_id = ? AND blood_pressure != '' ORDER BY createdate DESC ",
             [
                 member_id,user_id  
             ], (err, res) => {
@@ -104,7 +104,7 @@ class Health {
     }
 
     static respiratory(user_id,member_id,respiratory_rate,createdate, cb) {
-        db.query(`INSERT INTO users_hwbmi_details(user_id,member_id,respiratory_rate,createdate) VALUES(?,?,?,?)`,
+        db.query("INSERT INTO users_hwbmi_details(user_id,member_id,respiratory_rate,createdate) VALUES(?,?,?,?)",
             [
                 user_id,member_id,respiratory_rate,createdate  
             ], (err, res) => {
@@ -123,7 +123,7 @@ class Health {
         });
     }
     static listRespiratory(member_id,user_id, cb) {
-        db.query(`SELECT id,user_id,member_id,respiratory_rate,createdate FROM users_hwbmi_details WHERE member_id = ? AND user_id = ? AND respiratory_rate != '' ORDER BY createdate DESC `,
+        db.query("SELECT id,user_id,member_id,respiratory_rate,createdate FROM users_hwbmi_details WHERE member_id = ? AND user_id = ? AND respiratory_rate != '' ORDER BY createdate DESC ",
             [
                 member_id,user_id  
             ], (err, res) => {
@@ -137,7 +137,7 @@ class Health {
     }
 
     static oxygen(user_id,member_id,oxygen_saturation,createdate, cb) {
-        db.query(`INSERT INTO users_hwbmi_details(user_id,member_id,oxygen_saturation,createdate) VALUES(?,?,?,?)`,
+        db.query("INSERT INTO users_hwbmi_details(user_id,member_id,oxygen_saturation,createdate) VALUES(?,?,?,?)",
             [
                 user_id,member_id,oxygen_saturation,createdate  
             ], (err, res) => {
@@ -156,7 +156,7 @@ class Health {
         });
     }
     static listOxygen(member_id,user_id, cb) {
-        db.query(`SELECT id,user_id,member_id,oxygen_saturation,createdate FROM users_hwbmi_details WHERE member_id = ? AND user_id = ? AND oxygen_saturation != ''  ORDER BY createdate DESC`,
+        db.query("SELECT id,user_id,member_id,oxygen_saturation,createdate FROM users_hwbmi_details WHERE member_id = ? AND user_id = ? AND oxygen_saturation != ''  ORDER BY createdate DESC",
             [
                 member_id,user_id  
             ], (err, res) => {
@@ -170,7 +170,7 @@ class Health {
     }
 
     static temperature(user_id,member_id,temperature,createdate, cb) {
-        db.query(`INSERT INTO users_hwbmi_details(user_id,member_id,temperature,createdate) VALUES(?,?,?,?)`,
+        db.query("INSERT INTO users_hwbmi_details(user_id,member_id,temperature,createdate) VALUES(?,?,?,?)",
             [
                 user_id,member_id,temperature,createdate  
             ], (err, res) => {
@@ -189,7 +189,7 @@ class Health {
         });
     }
     static listTemperature(member_id,user_id, cb) {
-        db.query(`SELECT id,user_id,member_id,temperature,createdate FROM users_hwbmi_details WHERE member_id = ? AND user_id = ? AND temperature != '' ORDER BY createdate DESC `,
+        db.query("SELECT id,user_id,member_id,temperature,createdate FROM users_hwbmi_details WHERE member_id = ? AND user_id = ? AND temperature != '' ORDER BY createdate DESC ",
             [
                 member_id,user_id  
             ], (err, res) => {
@@ -223,7 +223,7 @@ class Health {
         });
     }
     static list_history_notepad(member_id,user_id, type, cb) {
-        db.query(`SELECT * FROM history_notepad WHERE member_id = ? AND user_id = ? AND type = ? ORDER BY hn_id DESC `,
+        db.query("SELECT * FROM history_notepad WHERE member_id = ? AND user_id = ? AND type = ? ORDER BY hn_id DESC ",
             [
                 member_id,user_id,type  
             ], (err, res) => {
@@ -236,7 +236,7 @@ class Health {
         });
     }
     static history_notepad(user_id,member_id,type,description,created_date, cb) {
-        db.query(`INSERT INTO history_notepad(user_id, member_id, type, description, created_date, created_at) VALUES(?,?,?,?,?,NOW())`,
+        db.query("INSERT INTO history_notepad(user_id, member_id, type, description, created_date, created_at) VALUES(?,?,?,?,?,NOW())",
             [
                 user_id,member_id,type,description,created_date
             ], (err, res) => {
@@ -256,7 +256,7 @@ class Health {
         });
     }
     static update_history_notepad(hn_id,user_id,member_id,type,description,created_date, cb) {
-        db.query(`UPDATE history_notepad SET user_id = ?, member_id = ?, type = ?, description = ?, created_date = ? WHERE hn_id = ?`,
+        db.query("UPDATE history_notepad SET user_id = ?, member_id = ?, type = ?, description = ?, created_date = ? WHERE hn_id = ?",
             [
                 user_id,member_id,type,description,created_date,hn_id
             ], (err, res) => {
@@ -276,7 +276,7 @@ class Health {
         });
     }
     static single_history_notepad(member_id,user_id,hn_id, cb) {
-        db.query(`SELECT * FROM history_notepad WHERE member_id = ? AND user_id = ? AND hn_id = ?`,
+        db.query("SELECT * FROM history_notepad WHERE member_id = ? AND user_id = ? AND hn_id = ?",
             [
                 member_id,user_id,hn_id  
             ], (err, res) => {

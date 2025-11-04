@@ -1,4 +1,4 @@
-const db = require('../config/db.config');
+const db = require("../config/db.config");
 
 class billingHistory {
     static billingHistoryPaid(user_id){
@@ -14,7 +14,7 @@ class billingHistory {
     }
     static billingHistoryByRole(role_id,user_type){
         return new Promise((resolve,reject)=>{
-            if(user_type == 'doctor'){
+            if(user_type == "doctor"){
                 var query = "SELECT clinic_users.first_name, users.created_by_id, clinic_users.mobile, clinic_users.email, clinic_users.pin_code, appointments.doctor_id AS user_id, appointments.admin_status, users.profile_image, SUM(appointments.grand_total) AS total_unpaid FROM appointments INNER JOIN users ON users.id = appointments.doctor_id INNER JOIN users AS clinic_users ON clinic_users.id = users.created_by_id WHERE appointments.status IN ('Completed', 'Visited') AND users.user_type = '"+user_type+"' AND users.role_id = '"+role_id+"'  GROUP by appointments.doctor_id"; 
             } 
             else{
@@ -24,7 +24,7 @@ class billingHistory {
 
             db.query(query,(err,res)=>{
                 if (err) {
-                    console.log(err)
+                    console.log(err);
                     return reject(err);
                 }
                 return resolve(res);
@@ -33,7 +33,7 @@ class billingHistory {
     }
     static unpaidBillingStartDate(user_id,user_type){
         return new Promise((resolve,reject)=>{
-            if(user_type == 'doctor'){
+            if(user_type == "doctor"){
                 var query = "SELECT DATE_FORMAT(appointment_date, '%Y-%m-%d') AS starting_appointment_date FROM `appointments` WHERE `doctor_id` = '"+user_id+"'  AND `status` IN ('Completed', 'Visited') ORDER BY `appointment_date` ASC LIMIT 1"; 
             }
             else{
@@ -49,7 +49,7 @@ class billingHistory {
     }
     static unpaidBillingHistory(start_end,end_date,user_id,user_type){
         return new Promise((resolve,reject)=>{
-            if(user_type == 'doctor'){
+            if(user_type == "doctor"){
                 var query = "SELECT `clinic_users`.`first_name`,`clinic_users`.`email`, SUM(appointments.grand_total) AS total_unpaid, `appointments`.`id` AS appointment_id FROM `appointments` INNER JOIN `users` ON `users`.`id` = `appointments`.`doctor_id` INNER JOIN users AS clinic_users ON clinic_users.id = users.created_by_id  WHERE `appointments`.`doctor_id` = '"+user_id+"'  AND `appointments`.`admin_status` ='Pending' AND `appointments`.`status`  IN  ('Completed', 'Visited') AND `appointments`.`appointment_date` BETWEEN '"+start_end+"' AND '"+end_date+"'";
             }
             else{
@@ -78,7 +78,7 @@ class billingHistory {
     
     static unpaidAppointmentIds(start_end,end_date,user_id,user_type){
         return new Promise((resolve,reject)=>{
-            if(user_type == 'doctor'){
+            if(user_type == "doctor"){
                 var query = "SELECT  `appointments`.`id` AS appointment_id FROM `appointments` INNER JOIN `users` ON `users`.`id` = `appointments`.`doctor_id`  WHERE `appointments`.`doctor_id` = '"+user_id+"'  AND `appointments`.`admin_status` ='Pending' AND `appointments`.`status`  IN  ('Completed', 'Visited') AND `appointments`.`appointment_date` BETWEEN '"+start_end+"' AND '"+end_date+"'";
             }
             else{
@@ -118,7 +118,7 @@ class billingHistory {
     }
     static billingHistoryAppointments(appointment_ids,user_type){
         return new Promise((resolve,reject)=>{
-            if((user_type =='radiology')||(user_type == 'laboratories'))
+            if((user_type =="radiology")||(user_type == "laboratories"))
             {
                 var query = "SELECT `appointments`.`id`,`appointments`.`appointment_date`,`appointments`.`status`,`appointments`.`grand_total`,`appointments`.`payment_txt_id`,`appointments`.`payment_status`,`appointments`.`admin_status`,`appointments`.`from_time`, `user_carts`.`cart_item` FROM `appointments` INNER JOIN `user_carts` ON `user_carts`.`appointment_id` = `appointments`.`id` WHERE `appointments`.`id` IN ("+appointment_ids+")";
             }

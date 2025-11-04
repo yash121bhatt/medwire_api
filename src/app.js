@@ -1,31 +1,31 @@
-const express = require('express');
-const morgan = require('morgan');
-const cors = require('cors');
-const bodyparser = require('body-parser');
+const express = require("express");
+const morgan = require("morgan");
+const cors = require("cors");
+const bodyparser = require("body-parser");
 
-const authRoute = require('./routes/auth.route');
-const adminRoute = require('./routes/admin.route');
-const laboratoryRoute = require('./routes/laboratory.route');
+const authRoute = require("./routes/auth.route");
+const adminRoute = require("./routes/admin.route");
+const laboratoryRoute = require("./routes/laboratory.route");
 
-const { httpLogStream } = require('./utils/logger');
+const { httpLogStream } = require("./utils/logger");
 
 const app = express();
-app.use(bodyparser.json())
+app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({
     extended: true
-}))
-app.use(morgan('dev'));
-app.use(morgan('combined', { stream: httpLogStream }));
+}));
+app.use(morgan("dev"));
+app.use(morgan("combined", { stream: httpLogStream }));
 app.use(cors());
-const path = require('path');
-const helperFunction = require('./helper/helperFunction');
-app.use(express.static('public'));
+const path = require("path");
+const helperFunction = require("./helper/helperFunction");
+app.use(express.static("public"));
 
-app.use('/api/auth', authRoute);
-app.use('/api/admin', adminRoute);
-app.use('/api/laboratory', laboratoryRoute);
+app.use("/api/auth", authRoute);
+app.use("/api/admin", adminRoute);
+app.use("/api/laboratory", laboratoryRoute);
 
-app.get('/', (req, res) => {
+app.get("/", (req, res) => {
 
     // let email_id = 'rk85783@mailinator.com'
 

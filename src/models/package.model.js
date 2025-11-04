@@ -1,5 +1,5 @@
-const db = require('../config/db.config');
-const { logger } = require('../utils/logger');
+const db = require("../config/db.config");
+const { logger } = require("../utils/logger");
 
 class Package {
     static create(lab_id, test_category_id, test_id, test_name, package_name, test_report_time, tasting_time, test_recommended, description, image, amount,cb)
@@ -41,7 +41,7 @@ class Package {
                 }
                 return resolve(res);
             });
-        })
+        });
     }
     static listOne(lab_id,package_id)
     {
@@ -54,7 +54,7 @@ class Package {
                 }
                 return resolve(res);
             });
-        })
+        });
     }
     static listFirst(lab_id,package_id)
     {
@@ -70,7 +70,7 @@ class Package {
                 }
                 
             });
-        })
+        });
     }
     static ShowWhereIn(test_id)
     {
@@ -83,7 +83,7 @@ class Package {
                 }
                 return resolve(res);
             });
-        })
+        });
     }
 
     static allPackage()
@@ -98,15 +98,15 @@ class Package {
                 }
                 return resolve(res);
             });
-        })
+        });
     }
 
     static alltest(lab_name,test_name,pincode,roleid)
     {
-        const  pin_code=pincode!=undefined && pincode!='undefined' ? pincode:'';
-        const  role_id=roleid!=undefined && roleid!='undefined' && roleid!='' ? roleid:3;         
+        const  pin_code=pincode!=undefined && pincode!="undefined" ? pincode:"";
+        const  role_id=roleid!=undefined && roleid!="undefined" && roleid!="" ? roleid:3;         
 
-        if (lab_name!=undefined && lab_name!='' &&  test_name!=undefined &&  test_name!='' && pin_code!='') {
+        if (lab_name!=undefined && lab_name!="" &&  test_name!=undefined &&  test_name!="" && pin_code!="") {
             var qu =`SELECT * FROM 
             lab_tests labt INNER JOIN test_categories ct ON labt.test_category_id=ct.cat_id 
             INNER JOIN users u ON labt.lab_id=u.id 
@@ -114,7 +114,7 @@ class Package {
             AND u.role_id='${role_id}' AND u.online_offline_status='1' 
             ORDER BY labt.test_id`;
         }
-        else if(lab_name!=undefined && lab_name!='' && pin_code!='') {
+        else if(lab_name!=undefined && lab_name!="" && pin_code!="") {
             var qu =`SELECT * FROM 
             lab_tests labt INNER JOIN test_categories ct ON labt.test_category_id=ct.cat_id 
             INNER JOIN users u ON labt.lab_id=u.id 
@@ -122,7 +122,7 @@ class Package {
             AND u.role_id='${role_id}' AND u.online_offline_status='1'
             ORDER BY labt.test_id`;
         }
-        else if(test_name!=undefined &&  test_name!='' && pin_code!='') {
+        else if(test_name!=undefined &&  test_name!="" && pin_code!="") {
             var qu =`SELECT * FROM 
             lab_tests labt INNER JOIN test_categories ct ON labt.test_category_id=ct.cat_id 
             INNER JOIN users u ON labt.lab_id=u.id 
@@ -130,7 +130,7 @@ class Package {
             AND u.role_id='${role_id}' AND u.online_offline_status='1'
             ORDER BY labt.test_id`;
         }  
-        else if(lab_name!=undefined && lab_name!='' &&  test_name!=undefined &&  test_name!=''){
+        else if(lab_name!=undefined && lab_name!="" &&  test_name!=undefined &&  test_name!=""){
             var qu =`SELECT * FROM 
             lab_tests labt INNER JOIN test_categories ct ON labt.test_category_id=ct.cat_id 
             INNER JOIN users u ON labt.lab_id=u.id 
@@ -138,7 +138,7 @@ class Package {
             AND u.role_id='${role_id}' AND u.online_offline_status='1'
             ORDER BY labt.test_id`;
         }
-        else if( pin_code!='') {
+        else if( pin_code!="") {
             var qu =`SELECT * FROM 
             lab_tests labt INNER JOIN test_categories ct ON labt.test_category_id=ct.cat_id 
             INNER JOIN users u ON labt.lab_id=u.id 
@@ -146,7 +146,7 @@ class Package {
             AND u.role_id='${role_id}' AND u.online_offline_status='1'
             ORDER BY labt.test_id`;
         }
-        else if(lab_name!=undefined && lab_name!=''){
+        else if(lab_name!=undefined && lab_name!=""){
             var qu =`SELECT * FROM 
             lab_tests labt INNER JOIN test_categories ct ON labt.test_category_id=ct.cat_id 
             INNER JOIN users u ON labt.lab_id=u.id 
@@ -154,7 +154,7 @@ class Package {
             AND u.role_id='${role_id}' AND u.online_offline_status='1'
             ORDER BY labt.test_id`;
         }
-        else if(test_name!=undefined && test_name!=''){
+        else if(test_name!=undefined && test_name!=""){
             var qu =`SELECT * FROM 
             lab_tests labt INNER JOIN test_categories ct ON labt.test_category_id=ct.cat_id 
             INNER JOIN users u ON labt.lab_id=u.id 
@@ -162,7 +162,7 @@ class Package {
             AND u.role_id='${role_id}' AND u.online_offline_status='1'
             ORDER BY labt.test_id`;
         }
-        else if(test_name!=undefined && test_name!=''){
+        else if(test_name!=undefined && test_name!=""){
             var qu =`SELECT * FROM 
             lab_tests labt INNER JOIN test_categories ct ON labt.test_category_id=ct.cat_id 
             INNER JOIN users u ON labt.lab_id=u.id 
@@ -186,14 +186,14 @@ class Package {
                 }
                 return resolve(res);
             });
-        })
+        });
     }
     //new 29/11/2022 package and testes
     static allTests({lab_name,test_name,tpincode,role_id})
     {
    
-        const  pin_code=tpincode!=undefined && tpincode!='undefined' ? tpincode:'';
-        const  roleid=role_id!=undefined && role_id!='undefined' && role_id!='' ? role_id:3;         
+        const  pin_code=tpincode!=undefined && tpincode!="undefined" ? tpincode:"";
+        const  roleid=role_id!=undefined && role_id!="undefined" && role_id!="" ? role_id:3;         
         
         // if ((lab_name!=undefined && lab_name!='') || (test_name!=undefined &&  test_name!='') || (pin_code!='')) {
         //     var qu =`SELECT * FROM 
@@ -213,7 +213,7 @@ class Package {
         //     ORDER BY labt.test_id`;
         // }
 
-        if (((lab_name!=undefined && lab_name!='') || (test_name!=undefined &&  test_name!='')) && (pin_code!='' && pin_code!='null' && pin_code!=null)) {
+        if (((lab_name!=undefined && lab_name!="") || (test_name!=undefined &&  test_name!="")) && (pin_code!="" && pin_code!="null" && pin_code!=null)) {
             var qu =`SELECT * FROM 
             lab_tests labt INNER JOIN test_categories ct ON labt.test_category_id=ct.cat_id 
             INNER JOIN users u ON labt.lab_id=u.id 
@@ -225,7 +225,7 @@ class Package {
 
 
         }
-        else if ((lab_name!=undefined && lab_name!='')) {
+        else if ((lab_name!=undefined && lab_name!="")) {
             var qu =`SELECT * FROM 
             lab_tests labt INNER JOIN test_categories ct ON labt.test_category_id=ct.cat_id 
             INNER JOIN users u ON labt.lab_id=u.id 
@@ -233,7 +233,7 @@ class Package {
             AND u.role_id='${roleid}' AND u.online_offline_status='1' 
             ORDER BY labt.test_id`;
         }
-        else if ( test_name!=undefined &&  test_name!='') {
+        else if ( test_name!=undefined &&  test_name!="") {
             var qu =`SELECT * FROM 
             lab_tests labt INNER JOIN test_categories ct ON labt.test_category_id=ct.cat_id 
             INNER JOIN users u ON labt.lab_id=u.id 
@@ -242,7 +242,7 @@ class Package {
             ORDER BY labt.test_id`;
 
         }
-        else if (pin_code!='') {
+        else if (pin_code!="") {
             var qu =`SELECT * FROM 
             lab_tests labt INNER JOIN test_categories ct ON labt.test_category_id=ct.cat_id 
             INNER JOIN users u ON labt.lab_id=u.id 
@@ -269,14 +269,14 @@ class Package {
                 }
                 return resolve(res);
             });
-        })
+        });
     }
     static allPackages({lab_name,package_name,pincode,role_id})
     {
-        const  pin_code=pincode!=undefined && pincode!='undefined' ? pincode:'';
-        const  roleid=role_id!=undefined && role_id!='undefined' && role_id!='' ? role_id:3;         
+        const  pin_code=pincode!=undefined && pincode!="undefined" ? pincode:"";
+        const  roleid=role_id!=undefined && role_id!="undefined" && role_id!="" ? role_id:3;         
 
-        if ((lab_name!=undefined && lab_name!='') || (package_name!=undefined &&  package_name!='') || (pin_code!='')) {
+        if ((lab_name!=undefined && lab_name!="") || (package_name!=undefined &&  package_name!="") || (pin_code!="")) {
             var qu =`SELECT * FROM packages p INNER JOIN 
             test_categories ct ON p.test_category_id=ct.cat_id 
             INNER JOIN users u ON u.id=p.lab_id 
@@ -301,7 +301,7 @@ class Package {
                 }
                 return resolve(res);
             });
-        })
+        });
     }
 
     static singlePackage(package_id)
@@ -315,7 +315,7 @@ class Package {
                 }
                 return resolve(res);
             });
-        })
+        });
     }
     static singleTest(test_id)
     {
@@ -331,7 +331,7 @@ class Package {
                 }
                 return resolve(res);
             });
-        })
+        });
     }
 
 }

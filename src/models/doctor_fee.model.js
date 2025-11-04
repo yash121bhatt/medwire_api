@@ -1,14 +1,14 @@
-const { JOI } = require('joi');
-const db = require('../config/db.config');
-const {addDoctorFeeQuery : addDoctorFeeQuery} = require('../database/queries');
-const { logger } = require('../utils/logger');
+const { JOI } = require("joi");
+const db = require("../config/db.config");
+const {addDoctorFeeQuery : addDoctorFeeQuery} = require("../database/queries");
+const { logger } = require("../utils/logger");
 
 class DoctorFee {
 
     // vineet
     static add(doctor_id,is_available_for_offline_visit,is_available_for_online_visit,online_consulting_fee,clinic_visit_consulting_fee,created_by_id,cb){
 
-        db.query(`INSERT INTO doctor_fees(doctor_id,is_available_for_offline_visit,is_available_for_online_visit,online_consulting_fee,clinic_visit_consulting_fee,created_by_id) VALUES(?,?,?,?,?,?)`,[doctor_id,is_available_for_offline_visit,is_available_for_online_visit,online_consulting_fee,clinic_visit_consulting_fee,created_by_id],(err,res)=>{
+        db.query("INSERT INTO doctor_fees(doctor_id,is_available_for_offline_visit,is_available_for_online_visit,online_consulting_fee,clinic_visit_consulting_fee,created_by_id) VALUES(?,?,?,?,?,?)",[doctor_id,is_available_for_offline_visit,is_available_for_online_visit,online_consulting_fee,clinic_visit_consulting_fee,created_by_id],(err,res)=>{
             if (err) {
                 logger.error(err.message);
                 cb(err, null);
@@ -18,7 +18,7 @@ class DoctorFee {
               cb(null,res);   
             }           
             
-        })
+        });
     }
 
 
@@ -34,7 +34,7 @@ class DoctorFee {
                 return;
             }
             cb({ kind: "not_found" }, null);
-        })
+        });
     }
 
 
@@ -68,7 +68,7 @@ class DoctorFee {
 
     static findAllDoctorFees(clinic_id,cb) {
         var clinic_role_id = 8;
-        var deleted_at = 'IS NULL';
+        var deleted_at = "IS NULL";
 
         db.query(`SELECT doctor_fees.id,users.id as doctor_id,users.profile_image, users.first_name as doctor_name,doctor_fees.visit_type,doctor_fees.is_available_for_offline_visit,doctor_fees.is_available_for_online_visit,doctor_fees.online_consulting_fee,doctor_fees.clinic_visit_consulting_fee,users.experience_in_year FROM doctor_fees INNER JOIN users on doctor_fees.doctor_id = users.id WHERE users.role_id = 5 AND doctor_fees.created_by_id = '${clinic_id}' AND users.deleted_at IS NULL AND doctor_fees.deleted_at IS NULL order by doctor_fees.id DESC`, [clinic_id], (err, res) => {
             if (err) {
@@ -87,7 +87,7 @@ class DoctorFee {
                             return;
                         }
                         if(res){
-                            item['specialities'] = res[0].specialities;
+                            item["specialities"] = res[0].specialities;
                             response.push(item); 
                         }                                    
                         
@@ -111,7 +111,7 @@ class DoctorFee {
 
 
     static findById(id,cb) {
-        var deleted_at = 'IS NULL';
+        var deleted_at = "IS NULL";
         db.query(`SELECT doctor_fees.id,users.id as doctor_id,users.profile_image,  users.first_name,doctor_fees.visit_type,doctor_fees.is_available_for_offline_visit,doctor_fees.is_available_for_online_visit,doctor_fees.online_consulting_fee,doctor_fees.clinic_visit_consulting_fee,users.experience_in_year FROM doctor_fees LEFT JOIN users on doctor_fees.doctor_id = users.id  WHERE users.role_id = 5 AND doctor_fees.id = '${id}' AND users.deleted_at IS NULL AND doctor_fees.deleted_at IS NULL order by id desc`, [id], (err, res) => {
 
             if (err) {
@@ -126,7 +126,7 @@ class DoctorFee {
                 cb({ kind: "not_found" }, null);  
             }
             
-        })
+        });
     }
 
 
@@ -142,7 +142,7 @@ class DoctorFee {
                 cb(null, res);
                 return;
             }
-        })
+        });
     }
 
     static update(doctor_id,visit_type,is_available_for_offline_visit,is_available_for_online_visit,online_consulting_fee,clinic_visit_consulting_fee,fee_id,cb){
@@ -158,7 +158,7 @@ class DoctorFee {
             cb(null, {
                 id: fee_id
             });
-        })
+        });
              
     }
 
@@ -186,7 +186,7 @@ class DoctorFee {
         var deleted_at = year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds;
                   
 
-        db.query(`update doctor_fees set deleted_at = ? WHERE id= ?`,[deleted_at,id],(err,res)=>{                  
+        db.query("update doctor_fees set deleted_at = ? WHERE id= ?",[deleted_at,id],(err,res)=>{                  
             if (err) {
                 logger.error(err.message);
                 cb(err, null);
@@ -195,7 +195,7 @@ class DoctorFee {
             cb(null, {
                 id: id
             });
-        })
+        });
 
     }
 

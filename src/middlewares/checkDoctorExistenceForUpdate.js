@@ -1,4 +1,4 @@
-const User = require('../models/user.model');
+const User = require("../models/user.model");
 
 const checkDoctorExistenceForUpdate =  (req, res, next) => {
     const { email_id,mobile_number,doctor_id } = req.body;
@@ -8,12 +8,12 @@ const checkDoctorExistenceForUpdate =  (req, res, next) => {
 
             res.status(500).send({
                 status_code : 500,
-                status: 'error',
-                message: `Email or Mobile Number is already exist`
+                status: "error",
+                message: "Email or Mobile Number is already exist"
             });
             return;
         }
         next();
     });
-}
+};
 module.exports = checkDoctorExistenceForUpdate;
