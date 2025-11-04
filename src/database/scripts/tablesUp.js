@@ -2,11 +2,11 @@ const { logger } = require("../../utils/logger");
 const dbConnection = require("../../config/db.config");
 
 const {
-    createTableUSers,
+    createTableUsers,
 } = require("../queries");
 
 const tableCreationQueries = [
-    { name: "users", query: createTableUSers },
+    { name: "users", query: createTableUsers },
 ];
 
 (async () => {
