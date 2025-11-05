@@ -98,6 +98,7 @@ IF
     id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
     user_id INT NOT NULL,
     member_id INT NOT NULL,
+    medicine_id INT NULL,
     medicine_name VARCHAR (255) NULL, 
     medicine_type VARCHAR (255) NULL, 
     quantity VARCHAR (255) NULL, 
@@ -192,7 +193,7 @@ IF
     plan_name varchar(255) NOT NULL,
     price varchar(255) NOT NULL,
     validity varchar(255) NOT NULL,
-    description varchar(255) NOT NULL,
+    description text NULL,
     deleted_at datetime DEFAULT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -257,6 +258,40 @@ IF
     title varchar (255) null,
     type varchar (255) null,
     message varchar (255) null,
+    is_read tinyint(1) DEFAULT 0,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  );
+`;
+
+const createProfileAccess = `
+CREATE TABLE
+IF
+  NOT EXISTS profile_access (
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    patient_id int not null,
+    member_id int not null,
+    doctor_id int not null,
+    status varchar (255) null,
+    requested_at DATETIME,
+    deleted_at datetime DEFAULT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  );
+`;
+
+const createPreNotification = `
+CREATE TABLE
+IF
+  NOT EXISTS pre_notification (
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    user_id int not null,
+    member_id int not null,
+    name varchar (255) null,
+    date_time varchar (255) null,
+    type varchar (255) null,
+    time varchar (255) null,
+    deleted_at datetime DEFAULT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
   );
@@ -343,6 +378,8 @@ module.exports = {
     createCommissions,
     createAppointments,
     createSystemNotifications,
+    createProfileAccess,
+    createPreNotification,
     
     createNewUser,
     findUserByEmail,

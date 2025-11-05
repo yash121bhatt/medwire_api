@@ -3,6 +3,7 @@ const db = require("../config/db.config");
 const helperFunction = require("../helper/helperFunction");
 const helperQuery = require("../helper/helperQuery");
 const moment = require("moment");
+const { logger } = require("../utils/logger");
 class bookApointment {
     static create(lab_id,user_id,cart_item,cart_name,total_amount){
         return new Promise((resolve,reject)=>{
