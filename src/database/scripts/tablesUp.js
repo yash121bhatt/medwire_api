@@ -13,6 +13,7 @@ const {
     createPlans,
     createCommissions,
     createAppointments,
+    createSystemNotifications,
 } = require("../queries");
 
 const tableCreationQueries = [
@@ -27,6 +28,7 @@ const tableCreationQueries = [
     { name: "plans", query: createPlans },
     { name: "commissions", query: createCommissions },
     { name: "appointments", query: createAppointments },
+    { name: "system_notifications", query: createSystemNotifications },
 ];
 
 (async () => {

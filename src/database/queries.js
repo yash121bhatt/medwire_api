@@ -1,8 +1,12 @@
+const { hash } = require("../utils/password");
 const { DB_NAME } = require("../utils/secrets");
 
 const createDB = `CREATE DATABASE IF NOT EXISTS ${DB_NAME}`;
 
 const dropDB = `DROP DATABASE IF EXISTS ${DB_NAME}`;
+
+const createAdmin = `insert into super_admin (name, email, gender, image_name, mobile_no, password, role)
+values ('${process.env.ADMIN_NAME}', '${process.env.ADMIN_EMAIL}', NULL, NULL, NULL, '${hash(process.env.ADMIN_PASSWORD)}', 'admin');`;
 
 const createTableUsers = `
 CREATE TABLE
@@ -243,6 +247,21 @@ IF
   );
 `;
 
+const createSystemNotifications = `
+CREATE TABLE
+IF
+  NOT EXISTS system_notifications (
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    from_user_id int not null,
+    to_user_id int not null,
+    title varchar (255) null,
+    type varchar (255) null,
+    message varchar (255) null,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  );
+`;
+
 const createNewUser = `
 INSERT INTO users(first_name,email,mobile,alternate_mobile,password,user_type,forgot_otp,role_id,created_at) VALUES(?,?,?,?,?,?,?,?,NOW())
 `;
@@ -310,6 +329,7 @@ const updateDoctorAvailability = "UPDATE doctor_schedule_date SET date = ?,days_
 module.exports = {
     createDB,
     dropDB,
+    createAdmin,
 
     createTableUsers,
     createSuperAdmin,
@@ -322,6 +342,7 @@ module.exports = {
     createPlans,
     createCommissions,
     createAppointments,
+    createSystemNotifications,
     
     createNewUser,
     findUserByEmail,

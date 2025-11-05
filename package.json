@@ -10,6 +10,7 @@
     "db:up": "node src/database/scripts/dbUp.js",
     "db:down": "node src/database/scripts/dbDown.js",
     "tables:up": "node src/database/scripts/tablesUp.js",
+    "create:admin": "node src/database/scripts/createAdmin.js",
     "db:init": "npm run db:up && npm run tables:up",
     "lint": "eslint .",
     "fix": "eslint . --fix"
