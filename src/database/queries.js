@@ -49,6 +49,7 @@ IF
     longitude VARCHAR (255),
     status varchar(255) DEFAULT NULL,
     approve_status varchar(255) DEFAULT NULL,
+    signature varchar(255) DEFAULT NULL,
     deleted_at DATETIME,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -274,6 +275,7 @@ IF
     doctor_id int not null,
     status varchar (255) null,
     requested_at DATETIME,
+    time_interval varchar(255) DEFAULT NULL,
     deleted_at datetime DEFAULT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -292,6 +294,81 @@ IF
     type varchar (255) null,
     time varchar (255) null,
     deleted_at datetime DEFAULT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  );
+`;
+
+const createPlanPurchaseHistory = `
+CREATE TABLE
+IF
+  NOT EXISTS plan_purchase_history (
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    plan_id int not null,
+    user_id int not null,
+    payment_order_id int not null,
+    status varchar (100) null,
+    total_limit int null,
+    total_amount datetime DEFAULT NULL,
+    expired_at datetime DEFAULT NULL,
+    purchased_at datetime DEFAULT NULL,
+    deleted_at datetime DEFAULT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  );
+`;
+
+const createDoctorSpecialities = `
+CREATE TABLE
+IF
+  NOT EXISTS doctor_specialities (
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    doctor_id int not null,
+    created_by_id int not null,
+    speciality_name varchar (255) null,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  );
+`;
+
+const createDoctorDegrees = `
+CREATE TABLE
+IF
+  NOT EXISTS doctor_degrees (
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    doctor_id int not null,
+    created_by_id int not null,
+    degree_name varchar (255) null,
+    deleted_at datetime null,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  );
+`;
+
+const createSpecialityMaster = `
+CREATE TABLE
+IF
+  NOT EXISTS doctor_speciality_master (
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    name varchar (255) null,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  );
+`;
+
+const createDoctorFees = `
+CREATE TABLE
+IF
+  NOT EXISTS doctor_fees (
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    doctor_id int not null,
+    created_by_id int not null,
+    is_available_for_offline_visit varchar (100),
+    is_available_for_online_visit varchar (100),
+    online_consulting_fee int null,
+    clinic_visit_consulting_fee int null,
+    visit_type varchar (255) null,
+    deleted_at datetime null,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
   );
@@ -380,6 +457,11 @@ module.exports = {
     createSystemNotifications,
     createProfileAccess,
     createPreNotification,
+    createPlanPurchaseHistory,
+    createDoctorSpecialities,
+    createDoctorDegrees,
+    createSpecialityMaster,
+    createDoctorFees,
     
     createNewUser,
     findUserByEmail,

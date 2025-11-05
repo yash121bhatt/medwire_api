@@ -15,6 +15,11 @@ const {
     createAppointments,
     createSystemNotifications,
     createProfileAccess,
+    createPlanPurchaseHistory,
+    createDoctorSpecialities,
+    createDoctorDegrees,
+    createSpecialityMaster,
+    createDoctorFees,
 } = require("../queries");
 
 const tableCreationQueries = [
@@ -32,6 +37,11 @@ const tableCreationQueries = [
     { name: "system_notifications", query: createSystemNotifications },
     { name: "profile_access", query: createProfileAccess },
     { name: "pre_notification", query: createProfileAccess },
+    { name: "plan_purchase_history", query: createPlanPurchaseHistory },
+    { name: "doctor_specialities", query: createDoctorSpecialities },
+    { name: "doctor_degrees", query: createDoctorDegrees },
+    { name: "doctor_speciality_master", query: createSpecialityMaster },
+    { name: "doctor_fees", query: createDoctorFees },
 ];
 
 (async () => {

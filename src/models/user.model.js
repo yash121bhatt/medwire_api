@@ -1084,9 +1084,29 @@ class User {
             }, 100);
         });
     }
+
     static findAllClinicDoctors(clinic_id, cb) {
         var staff_name = "";
-        db.query("SELECT distinct u.id,u.email,u.mobile,u.alternate_mobile,u.profile_image,u.first_name,u.adhar_card,u.date_of_birth,u.experience_in_year,u.gender,u.added_by FROM users as u left join doctors_clinic as dc on u.id = dc.doctor_id WHERE dc.clinic_id = ? and u.role_id = 5 order by dc.id desc", [clinic_id], (err, res) => {
+        const selectQuery = `SELECT distinct
+                                u.id,
+                                u.email,
+                                u.mobile,
+                                u.alternate_mobile,
+                                u.profile_image,
+                                u.first_name,
+                                u.adhar_card,
+                                u.date_of_birth,
+                                u.experience_in_year,
+                                u.gender,
+                                u.added_by 
+                                FROM
+                                users as u
+                                left join doctors_clinic as dc on u.id = dc.doctor_id 
+                                WHERE
+                                dc.clinic_id = ? 
+                                and u.role_id = 5`;
+        // const oldQuery = "SELECT distinct u.id,u.email,u.mobile,u.alternate_mobile,u.profile_image,u.first_name,u.adhar_card,u.date_of_birth,u.experience_in_year,u.gender,u.added_by FROM users as u left join doctors_clinic as dc on u.id = dc.doctor_id WHERE dc.clinic_id = ? and u.role_id = 5 order by dc.id desc"
+        db.query(selectQuery, [clinic_id], (err, res) => {
             if (err) {
                 logger.error(err.message);
                 cb(err, null);
@@ -1148,6 +1168,7 @@ class User {
             }, 100);
         });
     }
+
     static updateDoctor(staff_id, doctor_id, clinic_id, full_name, email_id, date_of_birth, mobile_number, alternate_mobile_number, gender, experience_in_year, specialities, degrees, profile_image, cb) {
         var updated_at = helperFunction.getCurrentDateTime();
         var specialities = specialities.split(",");
@@ -1907,18 +1928,29 @@ class User {
     }
     static profileAccessList(user_id, role_id, cb) {
         if (role_id == 5) {
-            db.query(`SELECT u1.mobile,u1.email,u1.gender,
-            u1.profile_image,u1.permanent_id as medwire_id,
-            u1.mobile,u1.pin_code,u1.first_name as patient_name,
-            pa.member_id,pa.time_interval,pa.id as request_id,
-            u.id,u.first_name as doctor_name,
-            pa.status 
-            FROM profile_access pa 
-            inner join  users u on u.id = pa.doctor_id 
-            inner join users u1 on u1.id = pa.patient_id 
-            WHERE pa.doctor_id = '${user_id}'
-            and u1.role_id=2
-            and pa.deleted_at IS NULL`, [user_id], async (err, res) => {
+            db.query(`SELECT
+                        u1.mobile,
+                        u1.email,
+                        u1.gender,
+                        u1.profile_image,
+                        u1.permanent_id as medwire_id,
+                        u1.mobile,
+                        u1.pin_code,
+                        u1.first_name as patient_name,
+                        pa.member_id,
+                        pa.time_interval,
+                        pa.id as request_id,
+                        u.id,
+                        u.first_name as doctor_name,
+                        pa.status 
+                        FROM
+                        profile_access pa
+                        inner join users u on u.id = pa.doctor_id
+                        inner join users u1 on u1.id = pa.patient_id 
+                        WHERE
+                        pa.doctor_id = '${user_id}' 
+                        and u1.role_id = 2 
+                        and pa.deleted_at IS NULL`, [user_id], async (err, res) => {
                 if (err) {
                     logger.error(err.message);
                     cb(err, null);
