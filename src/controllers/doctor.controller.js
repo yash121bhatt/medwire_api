@@ -184,7 +184,6 @@ exports.addDoctors = async (req, res) => {
         var password = autoGenPassword();
         var encryptedPassword = hashPassword(password.trim());
 
-
         if (req.body.full_name.length < 3) {
             return res.status(400).json({
                 status_code: 400,
@@ -207,7 +206,6 @@ exports.addDoctors = async (req, res) => {
             });
         }
 
-
         if (req.body.role_id != 5) {
             return res.status(400).json({
                 status_code: 400,
@@ -215,7 +213,6 @@ exports.addDoctors = async (req, res) => {
                 message: "Role id should be valid"
             });
         }
-
 
         if (req.file == undefined) {
             return res.status(400).json({
@@ -227,6 +224,7 @@ exports.addDoctors = async (req, res) => {
         } else {
             var profile_image = req.file.filename;
         }
+
         const data = await ClinicOrHospital.findByIdAndRoleforcl(req.body.clinic_id);
         if (data.kind === "not_found") {
             res.status(404).send({
@@ -366,12 +364,9 @@ exports.getDoctorDetails = (req, res) => {
                     data: data
                 });
                 return;
-
             }
-
         });
     }
-
 };
 
 // get All Doctors code by vineet shirdhonkar
@@ -774,8 +769,6 @@ exports.getDoctorsClinic = (req, res) => {
             });
             return;
         }
-
-
         if (data) {
             User.findAllClinics(doctor_id, (err, data) => {
                 if (err) {
@@ -786,7 +779,6 @@ exports.getDoctorsClinic = (req, res) => {
                     });
                     return;
                 }
-
                 if (data.length > 0) {
                     res.status(200).send({
                         status_code: 200,
@@ -795,7 +787,6 @@ exports.getDoctorsClinic = (req, res) => {
                         data: data
                     });
                     return;
-
                 } else {
                     res.status(200).send({
                         status_code: 200,

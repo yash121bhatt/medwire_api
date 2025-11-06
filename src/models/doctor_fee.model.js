@@ -7,7 +7,6 @@ class DoctorFee {
 
     // vineet
     static add(doctor_id, is_available_for_offline_visit, is_available_for_online_visit, online_consulting_fee, clinic_visit_consulting_fee, created_by_id, cb) {
-
         db.query("INSERT INTO doctor_fees(doctor_id,is_available_for_offline_visit,is_available_for_online_visit,online_consulting_fee,clinic_visit_consulting_fee,created_by_id) VALUES(?,?,?,?,?,?)", [doctor_id, is_available_for_offline_visit, is_available_for_online_visit, online_consulting_fee, clinic_visit_consulting_fee, created_by_id], (err, res) => {
             if (err) {
                 logger.error(err.message);
@@ -17,7 +16,6 @@ class DoctorFee {
             if (res) {
                 cb(null, res);
             }
-
         });
     }
 
@@ -66,48 +64,94 @@ class DoctorFee {
     }
 
 
-    static findAllDoctorFees(clinic_id, cb) {
-        var clinic_role_id = 8;
-        var deleted_at = "IS NULL";
+    // static findAllDoctorFees(clinic_id, cb) {
+    //     var clinic_role_id = 8;
+    //     var deleted_at = "IS NULL";
 
-        db.query(`SELECT doctor_fees.id,users.id as doctor_id,users.profile_image, users.first_name as doctor_name,doctor_fees.visit_type,doctor_fees.is_available_for_offline_visit,doctor_fees.is_available_for_online_visit,doctor_fees.online_consulting_fee,doctor_fees.clinic_visit_consulting_fee,users.experience_in_year FROM doctor_fees INNER JOIN users on doctor_fees.doctor_id = users.id WHERE users.role_id = 5 AND doctor_fees.created_by_id = '${clinic_id}' AND users.deleted_at IS NULL AND doctor_fees.deleted_at IS NULL order by doctor_fees.id DESC`, [clinic_id], (err, res) => {
-            if (err) {
-                logger.error(err.message);
-                cb(err, null);
-                return;
+    //     db.query(`SELECT doctor_fees.id,users.id as doctor_id,users.profile_image, users.first_name as doctor_name,doctor_fees.visit_type,doctor_fees.is_available_for_offline_visit,doctor_fees.is_available_for_online_visit,doctor_fees.online_consulting_fee,doctor_fees.clinic_visit_consulting_fee,users.experience_in_year FROM doctor_fees INNER JOIN users on doctor_fees.doctor_id = users.id WHERE users.role_id = 5 AND doctor_fees.created_by_id = '${clinic_id}' AND users.deleted_at IS NULL AND doctor_fees.deleted_at IS NULL order by doctor_fees.id DESC`, [clinic_id], (err, res) => {
+    //         if (err) {
+    //             logger.error(err.message);
+    //             cb(err, null);
+    //             return;
+    //         }
+    //         var response = [];
+    //         if (res) {
+    //             for (const item of res) {
+    //                 var doctor_id = item.doctor_id;
+    //                 db.query(`SELECT GROUP_CONCAT(DISTINCT doctor_specialities.speciality_name) as specialities FROM doctor_specialities  WHERE doctor_specialities.doctor_id = '${doctor_id}'  AND doctor_specialities.deleted_at IS NULL order by id DESC`, [doctor_id], (err, res) => {
+    //                     if (err) {
+    //                         logger.error(err.message);
+    //                         cb(err, null);
+    //                         return;
+    //                     }
+    //                     if (res) {
+    //                         item["specialities"] = res[0].specialities;
+    //                         response.push(item);
+    //                     }
+    //                 });
+    //             }
+    //             setTimeout(function () {
+    //                 if (response.length > 0) {
+    //                     cb(null, response);
+    //                     return;
+    //                 }
+    //                 else {
+    //                     cb({ kind: "not_found" }, null);
+    //                     return;
+    //                 }
+    //             }, 100);
+    //         }
+    //     });
+    // }
+
+    static async findAllDoctorFees(clinic_id, cb) {
+        try {
+            const [doctors] = await db.promise().query(`
+            SELECT 
+                doctor_fees.id,
+                users.id AS doctor_id,
+                users.profile_image,
+                users.first_name AS doctor_name,
+                doctor_fees.visit_type,
+                doctor_fees.is_available_for_offline_visit,
+                doctor_fees.is_available_for_online_visit,
+                doctor_fees.online_consulting_fee,
+                doctor_fees.clinic_visit_consulting_fee,
+                users.experience_in_year
+            FROM doctor_fees
+            INNER JOIN users ON doctor_fees.doctor_id = users.id
+            WHERE users.role_id = 5
+              AND doctor_fees.created_by_id = ?
+              AND users.deleted_at IS NULL
+              AND doctor_fees.deleted_at IS NULL
+            ORDER BY doctor_fees.id DESC
+        `, [clinic_id]);
+
+            if (doctors.length === 0) {
+                return cb({ kind: "not_found" }, null);
             }
-            var response = [];
-            if (res) {
-                for (const item of res) {
-                    var doctor_id = item.doctor_id;
-                    db.query(`SELECT GROUP_CONCAT(DISTINCT doctor_specialities.speciality_name) as specialities FROM doctor_specialities  WHERE doctor_specialities.doctor_id = '${doctor_id}'  AND doctor_specialities.deleted_at IS NULL order by id DESC`, [doctor_id], (err, res) => {
-                        if (err) {
-                            logger.error(err.message);
-                            cb(err, null);
-                            return;
-                        }
-                        if (res) {
-                            item["specialities"] = res[0].specialities;
-                            response.push(item);
-                        }
 
-                    });
-                }
+            // Run speciality queries in parallel
+            const results = await Promise.all(doctors.map(async (item) => {
+                const [specialities] = await db.promise().query(`
+                SELECT GROUP_CONCAT(DISTINCT speciality_name) AS specialities
+                FROM doctor_specialities
+                WHERE doctor_id = ?
+                  AND deleted_at IS NULL
+            `, [item.doctor_id]);
 
+                item.specialities = specialities[0]?.specialities || null;
+                return item;
+            }));
 
-                setTimeout(function () {
-                    if (response.length > 0) {
-                        cb(null, response);
-                        return;
-                    }
-                    else {
-                        cb({ kind: "not_found" }, null);
-                        return;
-                    }
-                }, 100);
-            }
-        });
+            return cb(null, results);
+
+        } catch (err) {
+            logger.error(err.message);
+            cb(err, null);
+        }
     }
+
 
 
     static findById(id, cb) {

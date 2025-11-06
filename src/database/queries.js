@@ -29,7 +29,7 @@ IF
     role_id INT NOT NULL,
     user_type VARCHAR (50) NOT NULL,
     forgot_otp VARCHAR (10),
-    added_by INT COMMENT 'ID of the user who added this user (e.g., Clinic adding a Doctor)',
+    added_by VARCHAR (255) NULL COMMENT 'ID of the user who added this user (e.g., Clinic adding a Doctor)',
     created_by_id INT COMMENT 'ID of the primary entity (e.g., Clinic ID)',
     experience_in_year INT,
     doctor_limit INT,
@@ -202,18 +202,16 @@ IF
 `;
 
 const createCommissions = `
-CREATE TABLE
-IF
-  NOT EXISTS commissions (
-    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
-    user_id int not null,
-    commission_for varchar (255) null,
-    created_by_id int not null,
-    commission_percent float(8,2) not null,
-    deleted_at datetime DEFAULT NULL,
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-  );
+CREATE TABLE IF NOT EXISTS commissions (
+  id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  user_id INT NOT NULL,
+  commission_for VARCHAR(255) NULL,
+  created_by_id INT NOT NULL,
+  commission_percent FLOAT(8,2) NOT NULL,
+  deleted_at DATETIME DEFAULT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
 `;
 
 const createAppointments = `
@@ -250,19 +248,17 @@ IF
 `;
 
 const createSystemNotifications = `
-CREATE TABLE
-IF
-  NOT EXISTS system_notifications (
-    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
-    from_user_id int not null,
-    to_user_id int not null,
-    title varchar (255) null,
-    type varchar (255) null,
-    message varchar (255) null,
-    is_read tinyint(1) DEFAULT 0,
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-  );
+CREATE TABLE IF NOT EXISTS system_notifications (
+  id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  from_user_id INT NOT NULL,
+  to_user_id INT NOT NULL,
+  title VARCHAR(255) NULL,
+  type VARCHAR(255) NULL,
+  message VARCHAR(255) NULL,
+  is_read TINYINT(1) DEFAULT 0,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
 `;
 
 const createProfileAccess = `
@@ -326,6 +322,7 @@ IF
     doctor_id int not null,
     created_by_id int not null,
     speciality_name varchar (255) null,
+    deleted_at datetime DEFAULT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
   );
@@ -369,6 +366,17 @@ IF
     clinic_visit_consulting_fee int null,
     visit_type varchar (255) null,
     deleted_at datetime null,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  );
+`;
+
+const kk = `
+CREATE TABLE
+IF
+  NOT EXISTS plan_purchase_history (
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
   );

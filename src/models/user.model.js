@@ -843,71 +843,102 @@ class User {
                 });
 
             } else {
+                const insertQuery = `
+                                        INSERT INTO users (
+                                            added_by,
+                                            first_name,
+                                            email,
+                                            mobile,
+                                            alternate_mobile,
+                                            gender,
+                                            experience_in_year,
+                                            date_of_birth,
+                                            user_type,
+                                            role_id,
+                                            created_by_id,
+                                            password,
+                                            profile_image,
+                                            created_at,
+                                            account_verify
+                                        )
+                                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?)
+                                    `;
 
-                db.query(`INSERT INTO users(added_by,first_name,email,mobile,alternate_mobile,gender,experience_in_year,date_of_birth,user_type,role_id,created_by_id,password,profile_image,created_at,account_verify) 
-                                     VALUES('${added_by}','${full_name}','${email_id}','${mobile_number}','${alternate_mobile_number}','${gender}','${experience_in_year}','${date_of_birth}','${user_type}','5','${clinic_id}','${password}','${profile_image}',NOW(),'1')`,
-                    (err, res) => {
-                        if (err) {
-                            logger.error(err.message);
-                            console.log("plan_purchase_history update", err);
-                            return reject(err);
-                        }
-                        if (res) {
-                            var logo = process.env.APP_LOGO;
-                            var app_name = process.env.APP_NAME;
-                            var user_login_url = process.env.USER_LOGIN_URL;
-                            helperFunction.template(transporter, true);
-                            transporter.sendMail({
-                                from: process.env.MAIL_FROM_ADDRESS,
-                                to: email_id,
-                                subject: "You have been Registered by  " + created_by_name + " on MedWire",
-                                template: "new_invitation",
-                                context: { full_name, email_id, logo, app_name, created_by_name, decrypted_password, user_login_url }
-                            }, function (error, info) {
-                                if (error) {
-                                    return console.log(error);
-                                }
-                            });
+                const insertValues = [
+                    added_by,
+                    full_name,
+                    email_id,
+                    mobile_number,
+                    alternate_mobile_number,
+                    gender,
+                    experience_in_year,
+                    date_of_birth,
+                    user_type,
+                    5,
+                    clinic_id,
+                    password,
+                    profile_image,
+                    "1"
+                ];
+                db.query(insertQuery, insertValues, (err, res) => {
+                    if (err) {
+                        logger.error(err.message);
+                        console.log("plan_purchase_history update", err);
+                        return reject(err);
+                    }
+                    if (res) {
 
-                            db.query(`SELECT * FROM plan_purchase_history WHERE user_id = '${clinic_id}' and status = 'active'`, [clinic_id], (err, pphres) => {
-                                if (err) {
-                                    logger.error(err.message);
-                                    console.log("plan_purchase_history", err);
-                                }
+                        var logo = process.env.APP_LOGO;
+                        var app_name = process.env.APP_NAME;
+                        var user_login_url = process.env.USER_LOGIN_URL;
+                        helperFunction.template(transporter, true);
 
-                                if (pphres.length > 0) {
-                                    var total_limit = pphres[0].total_limit;
-                                    var new_total_limit = total_limit - 1;
+                        transporter.sendMail({
+                            from: process.env.MAIL_FROM_ADDRESS,
+                            to: email_id,
+                            subject: "You have been Registered by  " + created_by_name + " on MedWire",
+                            template: "new_invitation",
+                            context: { full_name, email_id, logo, app_name, created_by_name, decrypted_password, user_login_url }
+                        }, function (error, info) {
+                            if (error) {
+                                return console.log(error);
+                            }
+                        });
 
-                                    db.query("update plan_purchase_history set total_limit = ? where user_id = ? and status = 'active'", [new_total_limit, clinic_id], (err, res) => {
-
-
-                                        if (err) {
-                                            logger.error(err.message);
-                                            console.log("plan_purchase_history update", err);
-                                        }
-                                    });
-
-                                }
-
-                            });
-                            return resolve({
-                                id: res.insertId,
-                                full_name: full_name,
-                                date_of_birth: date_of_birth,
-                                email: email_id,
-                                mobile: parseInt(mobile_number),
-                                gender: gender,
-                                profile_image: profile_image,
-                                experience_in_year: experience_in_year,
-                                created_by_id: parseInt(clinic_id),
-                                password: password
-                            });
-                        }
-                    });
+                        db.query(`SELECT * FROM plan_purchase_history WHERE user_id = '${clinic_id}' and status = 'active'`, [clinic_id], (err, pphres) => {
+                            if (err) {
+                                logger.error(err.message);
+                                console.log("plan_purchase_history", err);
+                            }
+                            if (pphres.length > 0) {
+                                var total_limit = pphres[0].total_limit;
+                                var new_total_limit = total_limit - 1;
+                                db.query("update plan_purchase_history set total_limit = ? where user_id = ? and status = 'active'", [new_total_limit, clinic_id], (err, res) => {
+                                    if (err) {
+                                        logger.error(err.message);
+                                        console.log("plan_purchase_history update", err);
+                                    }
+                                });
+                            }
+                        });
+                        return resolve({
+                            id: res.insertId,
+                            full_name: full_name,
+                            date_of_birth: date_of_birth,
+                            email: email_id,
+                            mobile: parseInt(mobile_number),
+                            gender: gender,
+                            profile_image: profile_image,
+                            experience_in_year: experience_in_year,
+                            created_by_id: parseInt(clinic_id),
+                            password: password
+                        });
+                    }
+                });
             }
         });
     }
+
     static addClinicDoctorForAddDoctor(doctId, clinic_id) {
         return new Promise((resolve, reject) => {
             db.query("Insert into doctors_clinic(doctor_id,clinic_id) values(?,?)", [doctId, clinic_id], (err, res) => {
@@ -956,11 +987,37 @@ class User {
         });
     }
     static findDoctorByIdAndRole(id, cb) {
-        db.query(`SELECT users.signature,users.id,users.mobile,users.alternate_mobile,users.email,
+        const oldQuery = `SELECT users.signature,users.id,users.mobile,users.alternate_mobile,users.email,
         users.profile_image,users.first_name,users.last_name,users.date_of_birth,users.gender,users.experience_in_year,GROUP_CONCAT(DISTINCT doctor_degrees.id) as degrees_ids,doctor_degrees.degree_name,GROUP_CONCAT(DISTINCT doctor_specialities.id) as speciality_ids, GROUP_CONCAT(DISTINCT doctor_specialities.speciality_name) as specialities, GROUP_CONCAT(DISTINCT doctor_degrees.degree_name) as degrees 
         FROM users inner join doctor_specialities ON users.id = doctor_specialities.doctor_id 
         inner join doctor_degrees ON users.id = doctor_degrees.doctor_id 
-        WHERE users.id = ?  and users.deleted_at IS NULL`, [id], (err, res) => {
+        WHERE users.id = ?  and users.deleted_at IS NULL`;
+        const newQuery = `SELECT
+                            users.signature,
+                            users.id,
+                            users.mobile,
+                            users.alternate_mobile,
+                            users.email,
+                            users.profile_image,
+                            users.first_name,
+                            users.last_name,
+                            users.date_of_birth,
+                            users.gender,
+                            users.experience_in_year,
+                            GROUP_CONCAT(DISTINCT doctor_degrees.id) AS degrees_ids,
+                            GROUP_CONCAT(DISTINCT doctor_degrees.degree_name) AS degrees,
+                            GROUP_CONCAT(DISTINCT doctor_specialities.id) AS speciality_ids,
+                            GROUP_CONCAT(DISTINCT doctor_specialities.speciality_name) AS specialities
+                            FROM
+                            users
+                            INNER JOIN doctor_specialities ON users.id = doctor_specialities.doctor_id
+                            INNER JOIN doctor_degrees ON users.id = doctor_degrees.doctor_id
+                            WHERE
+                            users.id = ?
+                            AND users.deleted_at IS NULL
+                            GROUP BY
+                            users.id;`;
+        db.query(newQuery, [id], (err, res) => {
             if (err) {
                 logger.error(err.message);
                 cb(err, null);

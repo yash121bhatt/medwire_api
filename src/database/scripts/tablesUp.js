@@ -15,6 +15,7 @@ const {
     createAppointments,
     createSystemNotifications,
     createProfileAccess,
+    createPreNotification,
     createPlanPurchaseHistory,
     createDoctorSpecialities,
     createDoctorDegrees,
@@ -36,7 +37,7 @@ const tableCreationQueries = [
     { name: "appointments", query: createAppointments },
     { name: "system_notifications", query: createSystemNotifications },
     { name: "profile_access", query: createProfileAccess },
-    { name: "pre_notification", query: createProfileAccess },
+    { name: "pre_notification", query: createPreNotification },
     { name: "plan_purchase_history", query: createPlanPurchaseHistory },
     { name: "doctor_specialities", query: createDoctorSpecialities },
     { name: "doctor_degrees", query: createDoctorDegrees },
@@ -54,7 +55,7 @@ const tableCreationQueries = [
 
     try {
         for (const { name, query } of tableCreationQueries) {
-            await new Promise((resolve, reject) => {
+            await new Promise((resolve) => {
                 dbConnection.query(query, (err, result) => {
                     if (err) {
                         // --- ERROR CASE ---

@@ -4,13 +4,9 @@ const DoctorFee = require("../models/doctor_fee.model");
 const { transporter: transporter, mailOptions: mailOptions, autoGenPassword: autoGenPassword } = require("../helper/helper");
 const helperFunction = require("../helper/helperFunction");
 
-
-// add doctor fee code by vineet shirdhonkar
-
-
 exports.addDoctorFee = (req, res) => {
-
     var { doctor_id, online_consulting_fee, clinic_visit_consulting_fee, is_available_for_offline_visit, is_available_for_online_visit, clinic_id } = req.body;
+
     ClinicOrHospital.findByIdAndRole(req.body.clinic_id, (err, data) => {
         if (err) {
             if (err.kind === "not_found") {
@@ -29,9 +25,7 @@ exports.addDoctorFee = (req, res) => {
             return;
         }
 
-
         if (data) {
-
             DoctorFee.add(doctor_id, is_available_for_offline_visit, is_available_for_online_visit, online_consulting_fee, clinic_visit_consulting_fee, clinic_id, (err, data1) => {
                 if (err) {
                     res.status(500).send({
@@ -50,14 +44,9 @@ exports.addDoctorFee = (req, res) => {
                     });
                 }
             });
-
-
         }
     });
 };
-
-// get fee specific doctor list code by vineet shirdhonkar
-
 
 exports.getFeeSpecificDoctorList = (req, res) => {
     const { clinic_id } = req.body;
@@ -134,13 +123,9 @@ exports.getAllDoctorFeeList = (req, res) => {
             });
             return;
         }
-
-
         if (data) {
             DoctorFee.findAllDoctorFees(clinic_id, (err, data1) => {
-
                 if (err) {
-
                     if (err.kind === "not_found") {
                         res.status(404).send({
                             status_code: 404,
@@ -156,7 +141,6 @@ exports.getAllDoctorFeeList = (req, res) => {
                     });
                     return;
                 }
-
                 if (data1 || data1.id != null) {
                     return res.status(200).send({
                         status_code: 200,
@@ -164,21 +148,13 @@ exports.getAllDoctorFeeList = (req, res) => {
                         message: "Doctor Fee Record Found Successfully",
                         data: data1
                     });
-
                 }
-
-
-
             });
-
         }
     });
 };
 
-
 // get doctor fee detail code by vineet shirdhonkar
-
-
 exports.getDoctorFeeDetail = (req, res) => {
     const { fee_id } = req.body;
     var valid = helperFunction.customValidater(req, { fee_id });
