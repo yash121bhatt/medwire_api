@@ -21,6 +21,8 @@ const {
     createDoctorDegrees,
     createSpecialityMaster,
     createDoctorFees,
+    createUsersPatient,
+    createRole,
 } = require("../queries");
 
 const tableCreationQueries = [
@@ -43,6 +45,8 @@ const tableCreationQueries = [
     { name: "doctor_degrees", query: createDoctorDegrees },
     { name: "doctor_speciality_master", query: createSpecialityMaster },
     { name: "doctor_fees", query: createDoctorFees },
+    { name: "users_patient", query: createUsersPatient },
+    { name: "role", query: createRole },
 ];
 
 (async () => {

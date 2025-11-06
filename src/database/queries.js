@@ -38,7 +38,7 @@ IF
     permanent_id VARCHAR (50),
     suggested_by VARCHAR (100),
     suggested_by_id INT,
-    enquiry_date DATE,
+    enquiry_date VARCHAR (255) NULL,
     account_verify ENUM ('0', '1') DEFAULT '0',
     device_token VARCHAR (255),
     device_type VARCHAR (50),
@@ -196,6 +196,7 @@ IF
     validity varchar(255) NOT NULL,
     description text NULL,
     deleted_at datetime DEFAULT NULL,
+    set_as_default varchar(255) NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
   );
@@ -219,9 +220,9 @@ CREATE TABLE
 IF
   NOT EXISTS appointments (
     id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
-    payment_order_id int null,
+    payment_order_id varchar (255) null,
     user_id int null,
-    member_id int null,
+    member_id varchar (255) null,
     refer_by_id int null,
     promo_code_id int null,
     from_time varchar (255) null,
@@ -242,6 +243,7 @@ IF
     prescription_pdf_name_for_admin varchar(255) DEFAULT NULL,
     reason_of_reschedule varchar(255) DEFAULT NULL,
     admin_status varchar(255) DEFAULT NULL,
+    payment_txt_id varchar(255) DEFAULT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
   );
@@ -302,12 +304,12 @@ IF
     id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
     plan_id int not null,
     user_id int not null,
-    payment_order_id int not null,
+    payment_order_id varchar (255) null,
     status varchar (100) null,
     total_limit int null,
-    total_amount datetime DEFAULT NULL,
-    expired_at datetime DEFAULT NULL,
-    purchased_at datetime DEFAULT NULL,
+    total_amount int NULL,
+    expired_at varchar (255) NULL,
+    purchased_at varchar (255) NULL,
     deleted_at datetime DEFAULT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -371,12 +373,24 @@ IF
   );
 `;
 
-const kk = `
+const createUsersPatient = `
 CREATE TABLE
 IF
-  NOT EXISTS plan_purchase_history (
+  NOT EXISTS users_patient (
     id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
-    
+    patient_id int null,
+    user_id int null,
+    suggested_by_id int null,
+    added_by varchar (255) null,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  );
+`;
+
+const createRole = `
+CREATE TABLE IF NOT EXISTS role (
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    role_name varchar (255) null,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
   );
@@ -470,6 +484,8 @@ module.exports = {
     createDoctorDegrees,
     createSpecialityMaster,
     createDoctorFees,
+    createUsersPatient,
+    createRole,
     
     createNewUser,
     findUserByEmail,
