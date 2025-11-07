@@ -19,7 +19,7 @@ IF
     email VARCHAR (255) UNIQUE,
     mobile VARCHAR (20) UNIQUE,
     alternate_mobile VARCHAR (20),
-    gender ENUM ('Male', 'Female', 'Other'),
+    gender varchar (255) null,
     date_of_birth VARCHAR (255),
     profile_image VARCHAR (255),
     blood_group VARCHAR (10),
@@ -536,6 +536,79 @@ CREATE TABLE IF NOT EXISTS radio_lab_doctors (
   );
 `;
 
+const createTestCategories = `
+CREATE TABLE IF NOT EXISTS test_categories (
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    lab_id varchar (255) null,
+    cat_id varchar (255) null,
+    category_name varchar (255) null,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  );
+`;
+
+const createLabTests = `
+CREATE TABLE IF NOT EXISTS lab_tests (
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    test_category_id varchar (255) null,
+    lab_id varchar (255) null,
+    user_id varchar (255) null,
+    test_id varchar (255) null,
+    member_id varchar (255) null,
+    test_name varchar (255) null,
+    test_report varchar (255) null,
+    fast_time varchar (255) null,
+    test_recommended varchar (255) null,
+    image varchar (255) null,
+    description varchar (255) null,
+    amount varchar (255) null,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  );
+`;
+
+const createPackages = `
+CREATE TABLE IF NOT EXISTS packages (
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    lab_id varchar (255) null,
+    test_category_id varchar (255) null,
+    test_id varchar (255) null,
+    test_name varchar (255) null,
+    package_id varchar (255) null,
+    package_name varchar (255) null,
+    test_report_time varchar (255) null,
+    tasting_time varchar (255) null,
+    test_recommended varchar (255) null,
+    description varchar (255) null,
+    image varchar (255) null,
+    amount varchar (255) null,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  );
+`;
+
+const createPromoCode = `
+CREATE TABLE IF NOT EXISTS promo_code (
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    promo_code_for varchar (255) null,
+    promo_code_for_id varchar (255) null,
+    discount_type varchar (255) null,
+    promo_code varchar (255) null,
+    discount_rate varchar (255) null,
+    discount_price varchar (255) null,
+    validity_start_date varchar (255) null,
+    validity_end_date varchar (255) null,
+    max_uses varchar (255) null,
+    price varchar (255) null,
+    banner_image varchar (255) null,
+    description varchar (255) null,
+    created_by_id varchar (255) null,
+    deleted_at varchar (255) null,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  );
+`;
+
 const createNewUser = `
 INSERT INTO users(first_name,email,mobile,alternate_mobile,password,user_type,forgot_otp,role_id,created_at) VALUES(?,?,?,?,?,?,?,?,NOW())
 `;
@@ -634,6 +707,10 @@ module.exports = {
   createDoctorSchedule,
   createMenturationCycle,
   createRadioLabDoctors,
+  createTestCategories,
+  createLabTests,
+  createPackages,
+  createPromoCode,
 
   createNewUser,
   findUserByEmail,
