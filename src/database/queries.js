@@ -87,6 +87,9 @@ IF
     scan_doc_text VARCHAR (255) NULL,
     type VARCHAR (255) NULL,
     appointment_id VARCHAR (255) NULL,
+    document_description VARCHAR (255) NULL,
+    dcm_document_file VARCHAR (255) NULL,
+    lab_radio_type VARCHAR (255) NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
   );
@@ -310,6 +313,8 @@ IF
     total_amount int NULL,
     expired_at varchar (255) NULL,
     purchased_at varchar (255) NULL,
+    payment_status varchar (255) null,
+    payment_detail varchar (255) null,
     deleted_at datetime DEFAULT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -391,6 +396,75 @@ const createRole = `
 CREATE TABLE IF NOT EXISTS role (
     id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
     role_name varchar (255) null,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  );
+`;
+
+const createBankDetail = `
+CREATE TABLE IF NOT EXISTS bank_detail (
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    beneficiary_name varchar (255) null,
+    bank_name varchar (255) null,
+    bank_account_number varchar (255) null,
+    ifsc_code varchar (255) null,
+    account_type varchar (255) null,
+    created_by_id varchar (255) null,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  );
+`;
+
+const createNotifications = `
+CREATE TABLE IF NOT EXISTS notifications (
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    added_by varchar (255) null,
+    type varchar (255) null,
+    created_by_id varchar (255) null,
+    notification_for varchar (255) null,
+    promo_code_id varchar (255) null,
+    doctor_id varchar (255) null,
+    test_id varchar (255) null,
+    notification_sent_by varchar (255) null,
+    patient_pin_code varchar (255) null,
+    patient_ids varchar (255) null,
+    notification_title varchar (255) null,
+    notification_date_time varchar (255) null,
+    description varchar (255) null,
+    deleted_at varchar(255) DEFAULT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  );
+`;
+
+const createPrescriptions = `
+CREATE TABLE IF NOT EXISTS prescriptions (
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    clinic_name varchar (255) null,
+    clinic_logo varchar (255) null,
+    mobile_number varchar (255) null,
+    alternate_mobile_number varchar (255) null,
+    email_id varchar (255) null,
+    clinic_timing varchar (255) null,
+    created_by_id varchar (255) null,
+    added_by varchar (255) null,
+    clinic_address varchar (255) null,
+    deleted_at varchar(255) DEFAULT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  );
+`;
+
+const createHistoryNotepad = `
+CREATE TABLE IF NOT EXISTS history_notepad (
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    hn_id varchar (255) null, 
+    user_id varchar (255) null, 
+    member_id varchar (255) null, 
+    type varchar (255) null, 
+    description varchar (255) null, 
+    created_date varchar (255) null,
+    deleted_at varchar(255) DEFAULT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
   );
@@ -486,6 +560,10 @@ module.exports = {
     createDoctorFees,
     createUsersPatient,
     createRole,
+    createBankDetail,
+    createNotifications,
+    createPrescriptions,
+    createHistoryNotepad,
     
     createNewUser,
     findUserByEmail,

@@ -111,7 +111,7 @@ exports.radiosignup = async (req, res) => {
             if (error) {
                 console.log(error);
             }
-            // console.log('Message sent: ' + info.response +'test'+posswordt);
+            console.log("Email sent : ", info.response);
         });
         const token = generateToken(data.id);
         if (mobile) {

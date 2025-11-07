@@ -147,69 +147,66 @@ class dashboard {
                  FROM users 
                  WHERE DATE(created_at) > DATE_SUB(NOW(), INTERVAL 1 WEEK) AND MONTH(created_at) = MONTH(CURDATE()) AND YEAR(created_at) = YEAR(CURDATE()) AND role_id = '${role_id}' AND status='Active' AND approve_status ='Approve' 
                  GROUP BY DATE_FORMAT(created_at,"%d-%m-%y") )r`;
-
         }
 
-        db.query(que,
-            [role_id], (err, res) => {
-                if (err) {
-                    logger.error(err.message);
-                    cb(err, null);
-                    return;
-                }
-                const response = [];
-                for (const item of res) {
-                    const day_name = item.DayName;
-                    const date = item.Date;
-                    const current_total = item.current_total;
-                    const tt = item.total;
-                    const sno = item.sno;
-                    if (item.sno == 1) {
-                        var runing_total = current_total + item.total;
-                    } else {
-                        var runing_total = current_total + runing_total;
-                    }
-                    const before_week_total = item.total;
-                    const grandtotal = item.gtotal;
-
-                    response.push({ sno, day_name, date, current_total, runing_total, before_week_total, grandtotal });
-                }
-                var lengths = response.length;
-                if (lengths > 0 && lengths != null && response != null) {
-
-                    cb(null, response);
+        db.query(que, [role_id], (err, res) => {
+            if (err) {
+                logger.error(err.message);
+                cb(err, null);
+                return;
+            }
+            const response = [];
+            for (const item of res) {
+                const day_name = item.DayName;
+                const date = item.Date;
+                const current_total = item.current_total;
+                const tt = item.total;
+                const sno = item.sno;
+                if (item.sno == 1) {
+                    var runing_total = current_total + item.total;
                 } else {
-                    if (role_id == 2) {
-                        var que = `SELECT count(*) as total FROM users WHERE role_id='${role_id}' AND status='Active'`;
-                    } else {
-                        var que = `SELECT count(*) as total FROM users WHERE role_id='${role_id}' AND status='Active' AND approve_status ='Approve'`;
-                    }
-                    db.query(que,
-                        [role_id], (err, res) => {
-                            if (err) {
-                                logger.error(err.message);
-                                cb(err, null);
-                                return;
-                            }
-                            for (const item of res) {
-                                const day_name = "";
-                                const date = "";
-                                const current_total = "";
-                                const tt = "";
-                                const sno = "";
-
-                                const runing_total = item.total;
-
-                                const before_week_total = "";
-                                const grandtotal = "";
-
-                                response.push({ sno, day_name, date, current_total, runing_total, before_week_total, grandtotal });
-                            }
-                            cb(null, response);
-                        });
+                    var runing_total = current_total + runing_total;
                 }
-            });
+                const before_week_total = item.total;
+                const grandtotal = item.gtotal;
+
+                response.push({ sno, day_name, date, current_total, runing_total, before_week_total, grandtotal });
+            }
+            var lengths = response.length;
+            if (lengths > 0 && lengths != null && response != null) {
+                cb(null, response);
+            } else {
+                if (role_id == 2) {
+                    var que = `SELECT count(*) as total FROM users WHERE role_id='${role_id}' AND status='Active'`;
+                } else {
+                    var que = `SELECT count(*) as total FROM users WHERE role_id='${role_id}' AND status='Active' AND approve_status ='Approve'`;
+                }
+                db.query(que, [role_id], (err, res) => {
+                    if (err) {
+                        logger.error(err.message);
+                        cb(err, null);
+                        return;
+                    }
+                    for (const item of res) {
+                        const day_name = "";
+                        const date = "";
+                        const current_total = "";
+                        const tt = "";
+                        const sno = "";
+
+                        const runing_total = item.total;
+
+                        const before_week_total = "";
+                        const grandtotal = "";
+
+                        response.push({ sno, day_name, date, current_total, runing_total, before_week_total, grandtotal });
+                    }
+                    cb(null, response);
+                });
+            }
+        });
     };
+
     static dashboardDayMonthYearCount(lab_id, cb) {
         db.query(`SELECT 
         ( select COUNT(*) from new_visit 
