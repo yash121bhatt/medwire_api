@@ -27,6 +27,10 @@ const {
     createNotifications,
     createPrescriptions,
     createHistoryNotepad,
+    createDoctorScheduleDate,
+    createDoctorSchedule,
+    createMenturationCycle,
+    createRadioLabDoctors,
 } = require("../queries");
 
 const tableCreationQueries = [
@@ -55,6 +59,10 @@ const tableCreationQueries = [
     { name: "notifications", query: createNotifications },
     { name: "prescriptions", query: createPrescriptions },
     { name: "history_notepad", query: createHistoryNotepad },
+    { name: "doctor_schedule_date", query: createDoctorScheduleDate },
+    { name: "doctor_schedule", query: createDoctorSchedule },
+    { name: "menturation_cycle", query: createMenturationCycle },
+    { name: "radio_lab_doctors", query: createRadioLabDoctors },
 ];
 
 (async () => {

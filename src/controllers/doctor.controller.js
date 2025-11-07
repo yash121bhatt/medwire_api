@@ -879,7 +879,8 @@ exports.addDoctorAvailability = (req, res) => {
     });
 };
 
-exports.viewDoctorAvailability = (req, res) => {
+// TODO::RK
+exports.viewDoctorAvailabilityOld = (req, res) => {
     const { doctor_id, clinic_id, date } = req.body;
     var valid = helperFunction.customValidater(req, { doctor_id, clinic_id, date });
     if (valid) {
@@ -917,6 +918,57 @@ exports.viewDoctorAvailability = (req, res) => {
         }
     });
 };
+exports.viewDoctorAvailability = (req, res) => {
+    const { doctor_id, clinic_id, date } = req.body;
+    var valid = helperFunction.customValidater(req, { doctor_id, clinic_id, date });
+    if (valid) {
+        return res.status(500).json(valid);
+    }
+
+    User.viewDoctorAvailability(doctor_id, clinic_id, date, async (err, data) => {
+        if (err) {
+            res.status(500).send({
+                status_code: 500,
+                status: "error",
+                message: "Something Went Wrong"
+            });
+            return;
+        }
+
+        if (data) {
+            console.log(date);
+            const Ddate = helperFunction.dateFormat(date, "yyyy-mm-dd");
+            console.log(Ddate);
+
+            let bookedSlots = [];
+
+            // ✅ yahan sirf ye fix kiya gaya hai ↓
+            let St = await helperQuery.All(`
+                SELECT * 
+                FROM appointments 
+                WHERE doctor_id ='${doctor_id}' 
+                AND DATE_FORMAT(appointment_date, '%Y-%m-%d') = DATE_FORMAT('${Ddate}', '%Y-%m-%d') 
+                AND status != 'Cancelled'
+            `);
+
+            if (St.length > 0) {
+                St.map((item) => {
+                    const Stime = item.from_time ?? "00:00";
+                    bookedSlots.push({ Stime });
+                });
+            }
+
+            res.status(200).send({
+                status_code: 200,
+                status: "success",
+                message: "Doctor availability fetch Successfully",
+                result: data,
+                bookedSlots: bookedSlots
+            });
+        }
+    });
+};
+
 
 exports.viewDoctorWeeklySchedule = (req, res) => {
     const { doctor_id, clinic_id } = req.body;
@@ -946,7 +998,6 @@ exports.viewDoctorWeeklySchedule = (req, res) => {
 
 
 // vineet
-
 exports.profileAccessRequest = async (req, res) => {
     const { doctor_id, patient_id, member_id } = req.body;
     var valid = helperFunction.customValidater(req, { doctor_id, patient_id });
@@ -956,7 +1007,6 @@ exports.profileAccessRequest = async (req, res) => {
 
     const memberData = await User.checkPatientMemberExistence(patient_id, member_id);
     const length = memberData.length;
-
 
     User.requestProfileAccess(doctor_id, patient_id, member_id, length, async (err, data) => {
         if (err) {
@@ -976,8 +1026,6 @@ exports.profileAccessRequest = async (req, res) => {
             return;
         }
         if (data) {
-
-
             res.status(200).send({
                 status_code: 200,
                 status: "success",

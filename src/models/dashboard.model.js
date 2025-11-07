@@ -436,7 +436,9 @@ class dashboard {
             });
         });
     }
-    static clinicCard(clinic_id) {
+
+    // TODO::RK
+    static clinicCardOld(clinic_id) {
         return new Promise((resolve, reject) => {
             db.query(`SELECT
             (SELECT count(*) FROM users as u INNER JOIN users_patient as up on u.id = up.patient_id WHERE up.user_id = '${clinic_id}' AND DATE_FORMAT(up.created_at,"%y-%m-%d") = DATE_FORMAT(NOW(),"%y-%m-%d")) as todays_patient,
@@ -451,14 +453,91 @@ class dashboard {
             });
         });
     }
+    static clinicCard(clinic_id) {
+        return new Promise((resolve, reject) => {
+            const query = `
+                            SELECT
+                                (SELECT COUNT(*) 
+                                FROM users AS u 
+                                INNER JOIN users_patient AS up ON u.id = up.patient_id 
+                                WHERE up.user_id = ? 
+                                AND DATE_FORMAT(up.created_at, '%Y-%m-%d') = DATE_FORMAT(NOW(), '%Y-%m-%d')
+                                ) AS todays_patient,
+
+                                (SELECT COUNT(*) 
+                                FROM users AS u 
+                                INNER JOIN users_patient AS up ON u.id = up.patient_id 
+                                WHERE up.user_id = ?
+                                ) AS total_patient,
+
+                                (SELECT COUNT(*) 
+                                FROM appointments 
+                                WHERE clinic_id = ? 
+                                AND payment_status = 'Success'
+                                ) AS total_appointment,
+
+                                (SELECT COUNT(*) 
+                                FROM appointments 
+                                WHERE clinic_id = ? 
+                                AND status = 'Completed'
+                                ) AS completed_appointment,
+
+                                (SELECT COUNT(*) 
+                                FROM appointments 
+                                WHERE clinic_id = ? 
+                                AND DATE_FORMAT(created_at, '%Y-%m-%d') = DATE_FORMAT(NOW(), '%Y-%m-%d') 
+                                AND payment_status = 'Success'
+                                ) AS todays_appointment
+                            `;
+
+            db.query(query, [clinic_id, clinic_id, clinic_id, clinic_id, clinic_id], (err, res) => {
+                if (err) return reject(err);
+                resolve(res);
+            });
+        });
+    }
+
+    // TODO::RK
+    // static doctorCard(doctor_id) {
+    //     return new Promise((resolve, reject) => {
+    //         db.query(`SELECT
+    //         (SELECT COUNT(DISTINCT(patient_id)) FROM appointments WHERE doctor_id='${doctor_id}' AND DATE_FORMAT(created_at,"%y-%m-%d")=DATE_FORMAT(NOW(),"%y-%m-%d") AND patient_id IS NOT NULL) as todays_patient,
+    //         (SELECT COUNT(DISTINCT(patient_id)) FROM appointments WHERE doctor_id='${doctor_id}' AND patient_id IS NOT NULL ) as total_patient,
+    //         (SELECT COUNT(*) FROM appointments WHERE doctor_id='${doctor_id}' AND (status ='Reschedule' OR status ='Approved' OR status='Completed') ) as total_apppintment,
+    //         (SELECT COUNT(*) FROM appointments WHERE doctor_id='${doctor_id}' AND status='Completed') as completed_apppintment,
+    //         (SELECT COUNT(*) FROM appointments WHERE doctor_id='${doctor_id}' AND DATE_FORMAT(created_at,"%y-%m-%d")=DATE_FORMAT(NOW(),"%y-%m-%d") AND (status ='Reschedule' OR status ='Approved' OR status='Completed')) as todays_apppintment`, (err, res) => {
+    //             if (err) {
+    //                 return reject(err);
+    //             }
+    //             return resolve(res);
+    //         });
+    //     });
+    // }
     static doctorCard(doctor_id) {
         return new Promise((resolve, reject) => {
             db.query(`SELECT
-            (SELECT COUNT(DISTINCT(patient_id)) FROM appointments WHERE doctor_id='${doctor_id}' AND DATE_FORMAT(created_at,"%y-%m-%d")=DATE_FORMAT(NOW(),"%y-%m-%d") AND patient_id IS NOT NULL) as todays_patient,
-            (SELECT COUNT(DISTINCT(patient_id)) FROM appointments WHERE doctor_id='${doctor_id}' AND patient_id IS NOT NULL ) as total_patient,
-            (SELECT COUNT(*) FROM appointments WHERE doctor_id='${doctor_id}' AND (status ='Reschedule' OR status ='Approved' OR status='Completed') ) as total_apppintment,
-            (SELECT COUNT(*) FROM appointments WHERE doctor_id='${doctor_id}' AND status='Completed') as completed_apppintment,
-            (SELECT COUNT(*) FROM appointments WHERE doctor_id='${doctor_id}' AND DATE_FORMAT(created_at,"%y-%m-%d")=DATE_FORMAT(NOW(),"%y-%m-%d") AND (status ='Reschedule' OR status ='Approved' OR status='Completed')) as todays_apppintment`, (err, res) => {
+            (SELECT COUNT(DISTINCT(patient_id)) FROM appointments 
+                WHERE doctor_id='${doctor_id}' 
+                AND DATE_FORMAT(created_at,'%Y-%m-%d') = DATE_FORMAT(NOW(),'%Y-%m-%d') 
+                AND patient_id IS NOT NULL) AS todays_patient,
+
+            (SELECT COUNT(DISTINCT(patient_id)) FROM appointments 
+                WHERE doctor_id='${doctor_id}' 
+                AND patient_id IS NOT NULL) AS total_patient,
+
+            (SELECT COUNT(*) FROM appointments 
+                WHERE doctor_id='${doctor_id}' 
+                AND (status='Reschedule' OR status='Approved' OR status='Completed')) AS total_apppintment,
+
+            (SELECT COUNT(*) FROM appointments 
+                WHERE doctor_id='${doctor_id}' 
+                AND status='Completed') AS completed_apppintment,
+
+            (SELECT COUNT(*) FROM appointments 
+                WHERE doctor_id='${doctor_id}' 
+                AND DATE_FORMAT(created_at,'%Y-%m-%d') = DATE_FORMAT(NOW(),'%Y-%m-%d') 
+                AND (status='Reschedule' OR status='Approved' OR status='Completed')) AS todays_apppintment
+        `, (err, res) => {
                 if (err) {
                     return reject(err);
                 }
@@ -466,6 +545,5 @@ class dashboard {
             });
         });
     }
-
 }
 module.exports = dashboard;

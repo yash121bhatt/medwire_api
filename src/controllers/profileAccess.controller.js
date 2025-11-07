@@ -86,7 +86,6 @@ exports.viewProfileAccess = async(req,res)=>{
             status_code:200,
             status:"success",
         });
-        
     } catch (error) {
         return res.status(500).json({
             status_code:500,

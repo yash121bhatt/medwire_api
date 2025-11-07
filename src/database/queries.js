@@ -248,6 +248,7 @@ IF
     admin_status varchar(255) DEFAULT NULL,
     payment_txt_id varchar(255) DEFAULT NULL,
     prescription_pdf_name varchar(255) DEFAULT NULL,
+    deleted_at varchar(255) DEFAULT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
   );
@@ -276,8 +277,10 @@ IF
     member_id int not null,
     doctor_id int not null,
     status varchar (255) null,
+    resend_status varchar (255) null,
     requested_at DATETIME,
     time_interval varchar(255) DEFAULT NULL,
+    view_start_time varchar(255) DEFAULT NULL,
     deleted_at datetime DEFAULT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -471,6 +474,68 @@ CREATE TABLE IF NOT EXISTS history_notepad (
   );
 `;
 
+const createDoctorScheduleDate = `
+CREATE TABLE IF NOT EXISTS doctor_schedule_date (
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    doctor_id varchar (255) null,
+    clinic_id varchar (255) null,
+    date varchar (255) null,
+    days_status varchar (255) null,
+    morning_shift_status varchar (255) null,
+    afternoon_shift_status varchar (255) null,
+    evening_shift_status varchar (255) null,
+    day_name varchar (255) null,
+    deleted_at varchar(255) DEFAULT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  );
+`;
+
+const createDoctorSchedule = `
+CREATE TABLE IF NOT EXISTS doctor_schedule (
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    doctor_id varchar (255) null,
+    clinic_id varchar (255) null,
+    days varchar (255) null,
+    morning_shift_start varchar (255) null,
+    morning_shift_end varchar (255) null,
+    afternoon_shift_start varchar (255) null,
+    afternoon_shift_end varchar (255) null,
+    evening_shift_start varchar (255) null,
+    evening_shift_end varchar (255) null,
+    status varchar (255) null,
+    deleted_at varchar(255) DEFAULT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  );
+`;
+
+const createMenturationCycle = `
+CREATE TABLE IF NOT EXISTS menturation_cycle (
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    user_id varchar (255) null, 
+    start_date varchar (255) null, 
+    end_date varchar (255) null, 
+    bg_color_class varchar (255) null,
+    period_length varchar (255) null,
+    nextDateCount varchar (255) null,
+    deleted_at varchar(255) DEFAULT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  );
+`;
+
+const createRadioLabDoctors = `
+CREATE TABLE IF NOT EXISTS radio_lab_doctors (
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    user_id int not null,
+    doctor_id int not null,
+    status varchar (255) not null,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  );
+`;
+
 const createNewUser = `
 INSERT INTO users(first_name,email,mobile,alternate_mobile,password,user_type,forgot_otp,role_id,created_at) VALUES(?,?,?,?,?,?,?,?,NOW())
 `;
@@ -536,64 +601,68 @@ const addDoctorAvailability = "Insert into doctor_schedule_date(doctor_id,clinic
 const updateDoctorAvailability = "UPDATE doctor_schedule_date SET date = ?,days_status = ? ,morning_shift_status = ?,afternoon_shift_status = ?,evening_shift_status = ?,day_name = ? where id = ?";
 
 module.exports = {
-    createDB,
-    dropDB,
-    createAdmin,
+  createDB,
+  dropDB,
+  createAdmin,
 
-    createTableUsers,
-    createSuperAdmin,
-    createUsersDocuments,
-    createNotificationPreMedicine,
-    createUsersHWBMIDetails,
-    createNewVisit,
-    createDoctorsClinic,
-    createOperatorPermission,
-    createPlans,
-    createCommissions,
-    createAppointments,
-    createSystemNotifications,
-    createProfileAccess,
-    createPreNotification,
-    createPlanPurchaseHistory,
-    createDoctorSpecialities,
-    createDoctorDegrees,
-    createSpecialityMaster,
-    createDoctorFees,
-    createUsersPatient,
-    createRole,
-    createBankDetail,
-    createNotifications,
-    createPrescriptions,
-    createHistoryNotepad,
-    
-    createNewUser,
-    findUserByEmail,
-    findUserByIdQuery,
-    verifyOtp,
-    verifyOtpUpdate,
-    findMemberByIdQuery,
-    createMember,
-    updateMember,
-    resetPassword,
-    updateUser,
-    updatePassword,
-    oldPassword,
-    createNewradioUserQuery,
-    createNewClinicOrHospitalQuery,
-    createDoctor,
-    findClinicOrHospitalByIdAndRoleQuery,
-    addStaff,
-    updateStaff,
-    addPatient,
-    updatePatient,
-    addDoctorSpeciality,
-    addDoctorDegree,
-    updateDoctorSpeciality,
-    updateDoctorDegree,
-    addPromoCode,
-    updatePromoCode,
-    addDoctorSchedule,
-    updateDoctorSchedule,
-    addDoctorAvailability,
-    updateDoctorAvailability
+  createTableUsers,
+  createSuperAdmin,
+  createUsersDocuments,
+  createNotificationPreMedicine,
+  createUsersHWBMIDetails,
+  createNewVisit,
+  createDoctorsClinic,
+  createOperatorPermission,
+  createPlans,
+  createCommissions,
+  createAppointments,
+  createSystemNotifications,
+  createProfileAccess,
+  createPreNotification,
+  createPlanPurchaseHistory,
+  createDoctorSpecialities,
+  createDoctorDegrees,
+  createSpecialityMaster,
+  createDoctorFees,
+  createUsersPatient,
+  createRole,
+  createBankDetail,
+  createNotifications,
+  createPrescriptions,
+  createHistoryNotepad,
+  createDoctorScheduleDate,
+  createDoctorSchedule,
+  createMenturationCycle,
+  createRadioLabDoctors,
+
+  createNewUser,
+  findUserByEmail,
+  findUserByIdQuery,
+  verifyOtp,
+  verifyOtpUpdate,
+  findMemberByIdQuery,
+  createMember,
+  updateMember,
+  resetPassword,
+  updateUser,
+  updatePassword,
+  oldPassword,
+  createNewradioUserQuery,
+  createNewClinicOrHospitalQuery,
+  createDoctor,
+  findClinicOrHospitalByIdAndRoleQuery,
+  addStaff,
+  updateStaff,
+  addPatient,
+  updatePatient,
+  addDoctorSpeciality,
+  addDoctorDegree,
+  updateDoctorSpeciality,
+  updateDoctorDegree,
+  addPromoCode,
+  updatePromoCode,
+  addDoctorSchedule,
+  updateDoctorSchedule,
+  addDoctorAvailability,
+  updateDoctorAvailability
 };

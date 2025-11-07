@@ -456,6 +456,8 @@ class bookApointment {
         ORDER BY u.first_name ASC
     `;
 
+        console.log(baseQuery);
+
         return new Promise((resolve, reject) => {
             db.query(baseQuery, params, (err, res) => {
                 if (err) {

@@ -1273,11 +1273,13 @@ exports.allDoctorSearch = async (req, res) => {
     try {
         const { user_id, doctor_name, speciality, clinic_name } = req.body;
         const pcode = await helperQuery.All(`SELECT*FROM users WHERE id='${user_id}' LIMIT 1`);
+
         if ((clinic_name != undefined && clinic_name != "") || (doctor_name != undefined && doctor_name != "") || (speciality != undefined && speciality != "")) {
             var pin_code = req.body.pin_code != undefined && req.body.pin_code != "undefined" && req.body.pin_code != "" ? req.body.pin_code : null;
         } else {
             var pin_code = req.body.pin_code != undefined && req.body.pin_code != "undefined" && req.body.pin_code != "" ? req.body.pin_code : pcode != undefined && pcode.length > 0 ? pcode[0]?.pin_code : "0";
         }
+        console.log(pin_code, "------------------");
 
         const result = await bookApointment.allDoctorSearch({ doctor_name, speciality, clinic_name, pin_code });
         if (speciality != undefined && speciality != "") {

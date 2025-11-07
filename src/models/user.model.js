@@ -1799,7 +1799,8 @@ class User {
         });
     }
     static viewDoctorWeeklySchedule(doctor_id, clinic_id, cb) {
-        db.query("SELECT * FROM doctor_schedule WHERE doctor_id = ? AND clinic_id=?", [doctor_id, clinic_id], (err, res) => {
+        db.query("SELECT * FROM doctor_schedule WHERE doctor_id = ? AND clinic_id = ?", [doctor_id, clinic_id], (err, res) => {
+            console.log("---------------------- res", res);
             if (res.length > 0) {
                 let result = [];
                 for (let i = 0; i < res.length; i++) {
@@ -1863,8 +1864,6 @@ class User {
                 var arr = [doctor_id, patient_id];
             }
         }
-
-
         db.query(query, arr, async (err, res) => {
             if (err) {
                 logger.error(err.message);
@@ -1874,8 +1873,6 @@ class User {
             if (res.length > 0) {
                 cb({ kind: "already_requested" }, null);
             } else {
-
-
                 const checkMemberExistence = await helperQuery.All(`SELECT id FROM users WHERE created_by_id = '${patient_id}' and id = '${member_id}'`);
                 if (checkMemberExistence.length > 0) {
                     db.query("INSERT into profile_access(doctor_id,patient_id,member_id,status,requested_at) values(?,?,?,?,NOW())", [doctor_id, patient_id, member_id, "Pending"], async (err, res) => {
