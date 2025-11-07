@@ -1,9 +1,11 @@
 const db = require("../config/db.config");
 const { logger } = require("../utils/logger");
 class dashboard {
+
     static heartchart({ member_id, type, filterdata, filtertype }) {
         return new Promise((resolve, reject) => {
             if (type == "weekly" && filtertype != "" && filtertype != null) {
+                console.log("-------------- 1");
 
                 var query = `SELECT DATE_FORMAT(max_date, '%Y-%m-%d') as createdate,
                 DAYNAME(a.createdate) as DayName,
@@ -55,6 +57,7 @@ class dashboard {
                 return;*/
 
             } else if (type == "monthly" && filtertype != "" && filtertype != null) {
+                console.log("-------------- 2");
 
                 var query = `SELECT DATE_FORMAT(max_date, '%Y-%m-%d') as createdate,
                 MONTHNAME(a.createdate) as MonthName,
@@ -71,8 +74,9 @@ class dashboard {
 
                 var arr = [filterdata, member_id, filtertype];
 
-            }
-            else if (type != "" && type != null && (filterdata == "" || filterdata == null || filterdata == undefined)) {
+            } else if (type != "" && type != null && (filterdata == "" || filterdata == null || filterdata == undefined)) {
+                console.log("-------------- 3");
+
                 var query = `SELECT DATE_FORMAT(max_date, '%Y-%m-%d') as createdate,
                 MONTHNAME(a.createdate) as MonthName,
                 a.${filtertype}
@@ -90,8 +94,8 @@ class dashboard {
                 ORDER BY max_date DESC`;
 
                 var arr = [filterdata, member_id, filtertype];
-            }
-            else {
+            } else {
+                console.log("-------------- 4");
 
                 var query = `SELECT DATE_FORMAT(max_date, '%Y-%m-%d') as createdate,
                 MONTHNAME(a.createdate) as MonthName,
