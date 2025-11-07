@@ -247,6 +247,7 @@ IF
     reason_of_reschedule varchar(255) DEFAULT NULL,
     admin_status varchar(255) DEFAULT NULL,
     payment_txt_id varchar(255) DEFAULT NULL,
+    prescription_pdf_name varchar(255) DEFAULT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
   );

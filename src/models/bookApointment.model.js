@@ -295,7 +295,9 @@ class bookApointment {
                 });
         });
     }
-    static allDoctorSearch({ doctor_name, speciality, clinic_name, pin_code }) {
+
+    // TODO::RK
+    static allDoctorSearchOld({ doctor_name, speciality, clinic_name, pin_code }) {
 
         if ((pin_code != undefined && pin_code != null && pin_code != "")) {
             var qu = `SELECT dc.id,dc.clinic_id,
@@ -385,16 +387,86 @@ class bookApointment {
             GROUP BY dc.id`;
         }
         return new Promise((resolve, reject) => {
-            db.query(qu,
-                (err, res) => {
-                    if (err) {
-                        logger.error(err.message);
-                        return reject(err);
-                    }
-                    return resolve(res);
-                });
+            db.query(qu, (err, res) => {
+                if (err) {
+                    logger.error(err.message);
+                    return reject(err);
+                }
+                return resolve(res);
+            });
         });
     }
+    static allDoctorSearch({ doctor_name, speciality, clinic_name, pin_code }) {
+        let baseQuery = `
+        SELECT 
+        dc.id, 
+        dc.clinic_id,
+        u.first_name AS doctor,
+        u.id AS doctor_id,
+        u.profile_image,
+        c.first_name AS clinic,
+        c.address AS clinic_address,
+        c.pin_code AS clinic_pincode,
+        c.profile_image AS clinic_profile,
+        u.experience_in_year,
+        MAX(df.online_consulting_fee) AS online_fee,
+        MAX(df.clinic_visit_consulting_fee) AS offline_fee,
+        GROUP_CONCAT(DISTINCT ds.speciality_name SEPARATOR ', ') AS speciality_name,
+        GROUP_CONCAT(DISTINCT dd.degree_name SEPARATOR ', ') AS degrees
+    FROM doctors_clinic dc
+    LEFT JOIN users u ON dc.doctor_id = u.id
+    LEFT JOIN users c ON dc.clinic_id = c.id
+    LEFT JOIN doctor_specialities ds ON u.id = ds.doctor_id
+    LEFT JOIN doctor_degrees dd ON u.id = dd.doctor_id
+    LEFT JOIN doctor_fees df ON df.doctor_id = u.id
+    WHERE (df.online_consulting_fee IS NOT NULL OR df.clinic_visit_consulting_fee IS NOT NULL)
+    `;
+
+        // Dynamic filters
+        const filters = [];
+        const params = [];
+
+        if (doctor_name) {
+            filters.push(`u.first_name LIKE ?`);
+            params.push(`%${doctor_name}%`);
+        }
+
+        if (clinic_name) {
+            filters.push(`c.first_name LIKE ?`);
+            params.push(`%${clinic_name}%`);
+        }
+
+        if (speciality) {
+            filters.push(`ds.speciality_name LIKE ?`);
+            params.push(`%${speciality}%`);
+        }
+
+        if (pin_code) {
+            filters.push(`c.pin_code LIKE ?`);
+            params.push(`%${pin_code}%`);
+        }
+
+        // Add filters to query
+        if (filters.length > 0) {
+            baseQuery += " AND " + filters.join(" AND ");
+        }
+
+        baseQuery += `
+        GROUP BY dc.id
+        ORDER BY u.first_name ASC
+    `;
+
+        return new Promise((resolve, reject) => {
+            db.query(baseQuery, params, (err, res) => {
+                if (err) {
+                    logger.error(err.message);
+                    return reject(err);
+                }
+                resolve(res);
+            });
+        });
+    }
+
 
     static LabRadioBillingHistory(user_id) {
         return new Promise((resolve, reject) => {
@@ -438,14 +510,13 @@ class bookApointment {
     }
     static allclinicList() {
         return new Promise((resolve, reject) => {
-            db.query("SELECT * FROM users WHERE role_id=8 AND approve_status=\"Approve\"",
-                (err, res) => {
-                    if (err) {
-
-                        return reject(err);
-                    }
-                    return resolve(res);
-                });
+            // db.query("SELECT * FROM users WHERE role_id=8 AND approve_status=\"Approve\"", (err, res) => {
+            db.query("SELECT * FROM users WHERE role_id = 8 AND approve_status = ?", ["Approve"], (err, res) => {
+                if (err) {
+                    return reject(err);
+                }
+                return resolve(res);
+            });
         });
     }
 
