@@ -2,7 +2,8 @@ const db = require("../config/db.config");
 const { logger } = require("../utils/logger");
 class dashboard {
 
-    static heartchart({ member_id, type, filterdata, filtertype }) {
+    // TODO::RK
+    static heartchartOld({ member_id, type, filterdata, filtertype }) {
         return new Promise((resolve, reject) => {
             if (type == "weekly" && filtertype != "" && filtertype != null) {
                 console.log("-------------- 1");
@@ -130,6 +131,131 @@ class dashboard {
             );
         });
     }
+    static heartchart({ member_id, type, filterdata, filtertype }) {
+        return new Promise((resolve, reject) => {
+            let query = "";
+            const arr = [filterdata, member_id, filtertype];
+
+            if (type === "weekly" && filtertype) {
+                console.log("-------------- 1");
+
+                query = `
+                            SELECT 
+                            DATE_FORMAT(MAX(b.max_date), '%Y-%m-%d') AS createdate,
+                            DAYNAME(a.createdate) AS DayName,
+                            MAX(a.${filtertype}) AS ${filtertype}
+                            FROM users_hwbmi_details a
+                            INNER JOIN (
+                            SELECT 
+                                DATE_FORMAT(createdate, '%y-%m-%d') AS bdate,
+                                MAX(createdate) AS max_date
+                            FROM users_hwbmi_details
+                            WHERE member_id = '${member_id}'
+                                AND ${filtertype} IS NOT NULL
+                                AND DATE(createdate) > DATE_SUB(NOW(), INTERVAL 1 WEEK)
+                                AND YEAR(createdate) = YEAR(CURDATE())
+                            GROUP BY DATE_FORMAT(createdate, '%y-%m-%d')
+                            ) b 
+                            ON DATE_FORMAT(a.createdate, '%y-%m-%d') = b.bdate 
+                            AND b.max_date = a.createdate
+                            WHERE a.${filtertype} IS NOT NULL
+                            GROUP BY DAYNAME(a.createdate)
+                            ORDER BY MAX(b.max_date) DESC;
+                        `;
+
+            } else if (type === "monthly" && filtertype) {
+                console.log("-------------- 2");
+
+                query = `
+                            SELECT 
+                            DATE_FORMAT(MAX(b.max_date), '%Y-%m-%d') AS createdate,
+                            MONTHNAME(a.createdate) AS MonthName,
+                            MAX(a.${filtertype}) AS ${filtertype}
+                            FROM users_hwbmi_details a
+                            INNER JOIN (
+                            SELECT 
+                                DATE_FORMAT(createdate, '%y-%m-%d') AS bdate,
+                                MAX(createdate) AS max_date
+                            FROM users_hwbmi_details
+                            WHERE member_id = '${member_id}'
+                                AND ${filtertype} IS NOT NULL
+                                AND MONTH(createdate) = MONTH(NOW())
+                            GROUP BY DATE_FORMAT(createdate, '%y-%m-%d')
+                            ) b
+                            ON DATE_FORMAT(a.createdate, '%y-%m-%d') = b.bdate 
+                            AND b.max_date = a.createdate
+                            WHERE a.${filtertype} IS NOT NULL
+                            GROUP BY MONTHNAME(a.createdate)
+                            ORDER BY MAX(b.max_date) DESC;
+                        `;
+
+            } else if (type && (!filterdata || filterdata === undefined)) {
+                console.log("-------------- 3");
+
+                query = `
+                            SELECT 
+                            DATE_FORMAT(MAX(b.max_date), '%Y-%m-%d') AS createdate,
+                            ANY_VALUE(MONTHNAME(a.createdate)) AS MonthName,
+                            MAX(a.${filtertype}) AS ${filtertype}
+                            FROM users_hwbmi_details a
+                            INNER JOIN (
+                            SELECT 
+                                DATE_FORMAT(createdate, '%y-%m-%d') AS bdate,
+                                MAX(createdate) AS max_date
+                            FROM users_hwbmi_details
+                            WHERE member_id = '${member_id}'
+                                AND ${filtertype} IS NOT NULL
+                                AND MONTHNAME(createdate) = '${type}'
+                                AND DATE_FORMAT(createdate, '%y-%m-%d') <= DATE_FORMAT(CURDATE(), '%y-%m-%d')
+                                AND DATE_FORMAT(createdate, '%y-%m-%d') >= DATE_SUB(DATE_FORMAT(CURDATE(), '%y-%m-%d'), INTERVAL 1 YEAR)
+                            GROUP BY DATE_FORMAT(createdate, '%y-%m-%d')
+                            ) b 
+                            ON DATE_FORMAT(a.createdate, '%y-%m-%d') = b.bdate 
+                            AND b.max_date = a.createdate
+                            WHERE YEAR(b.max_date) = YEAR(CURDATE())
+                            GROUP BY DATE_FORMAT(b.max_date, '%y-%m-%d')
+                            ORDER BY MAX(b.max_date) DESC;
+                        `;
+
+            } else {
+                console.log("-------------- 4");
+
+                query = `
+                            SELECT
+                            DATE_FORMAT(MAX(b.max_date), '%Y-%m-%d') AS createdate,
+                            ANY_VALUE(MONTHNAME(a.createdate)) AS MonthName,
+                            MAX(a.${filtertype}) AS ${filtertype}
+                            FROM users_hwbmi_details a
+                            INNER JOIN (
+                            SELECT
+                                MONTH(createdate) AS monthnum,
+                                MAX(createdate) AS max_date
+                            FROM users_hwbmi_details
+                            WHERE member_id = '${member_id}'
+                                AND ${filtertype} IS NOT NULL
+                                AND DATE_FORMAT(createdate, '%y-%m-%d') <= DATE_FORMAT(CURDATE(), '%y-%m-%d')
+                                AND DATE_FORMAT(createdate, '%y-%m-%d') >= DATE_SUB(DATE_FORMAT(CURDATE(), '%y-%m-%d'), INTERVAL 1 YEAR)
+                            GROUP BY MONTH(createdate)
+                            ) b
+                            ON MONTH(a.createdate) = b.monthnum
+                            AND b.max_date = a.createdate
+                            WHERE YEAR(b.max_date) = YEAR(CURDATE())
+                            GROUP BY MONTHNAME(b.max_date)
+                            ORDER BY MAX(b.max_date) DESC;
+                        `;
+            }
+
+            db.query(query, arr, (err, res) => {
+                console.log(query);
+                if (err) {
+                    logger.error(err.message);
+                    return reject(err);
+                }
+                return resolve(res);
+            });
+        });
+    }
+
 
     static cartdDataCount(role_id, cb) {
         if (role_id == 2) {
