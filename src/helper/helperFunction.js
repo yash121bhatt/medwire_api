@@ -140,6 +140,7 @@ class helperFunction {
             console.error("there was an error:", error.message);
         }
     }
+    
     static template(transporter, temp) {
         const handlebarOptions = {
             viewEngine: {

@@ -477,7 +477,7 @@ exports.forgotPassword = async (req, res) => {
                         if (error) {
                             return console.log(error);
                         }
-                        console.log("Message sent: " + info.response + "test" + posswordt);
+                        console.log("Message sent: " + info.response);
                     });
                 }
 
