@@ -26,7 +26,7 @@ app.use("/api/admin", adminRoute);
 app.use("/api/laboratory", laboratoryRoute);
 
 app.get("/", (req, res) => {
-
+    
     // let email_id = 'rk85783@mailinator.com'
 
     // Example with templete
@@ -43,7 +43,7 @@ app.get("/", (req, res) => {
     //     to:email_id,
     //     subject:"This is MedWire Invitation by ",
     //     html: "<b>Hello world?</b>"
-    // }
+    // };
     // helperFunction.sendEmail(emailOption1);
 
     res.status(200).send({

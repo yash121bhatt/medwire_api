@@ -153,6 +153,7 @@ class helperFunction {
             return transporter.use("compile", hbs(handlebarOptions));
         }
     }
+
     static sendEmail(mailPayload, temp = false, from = process.env.MAIL_FROM_ADDRESS) {
         mailPayload.from = from;
         let transporter = nodemailer.createTransport({
@@ -177,15 +178,25 @@ class helperFunction {
         if (temp == true) {
             transporter.use("compile", hbs(handlebarOptions));
         }
-        transporter.sendMail(mailPayload,
-            (error, info) => {
-                if (error) {
-                    console.log(error);
-                } else {
-                    console.log("Mail send successfully! \n", info.response);
-                }
+        // transporter.sendMail(mailPayload,
+        //     (error, info) => {
+        //         if (error) {
+        //             console.log(error);
+        //         } else {
+        //             console.log("Mail send successfully! \n", info.response);
+        //         }
+        //     });
+        try {
+            transporter.sendMail(mailPayload).then(info => {
+                console.log("Mail send successfully! \n", info.response);
+            }).catch(err => {
+                console.log(err);
             });
+        } catch (err) {
+            console.error("❌ Error sending email:", err);
+        }
     }
+
     static customValidater(req, validateP) {
         var vali;
         for (var ky in validateP) {
