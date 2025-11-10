@@ -609,6 +609,33 @@ CREATE TABLE IF NOT EXISTS promo_code (
   );
 `;
 
+const createUserCarts = `
+CREATE TABLE IF NOT EXISTS user_carts (
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    user_id varchar (255) null,
+    cart_id int DEFAULT NULL,
+    appointment_id int DEFAULT NULL,
+    created_by_id varchar (255) null,
+    cart_item varchar (255) null,
+    status varchar (255) null,
+    cart_name varchar (255) null,
+    total_amount varchar (255) null,
+    deleted_at varchar (255) null,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  );
+`;
+
+const createUserDoctors = `
+CREATE TABLE IF NOT EXISTS user_doctors (
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    user_id int not null,
+    created_by_id int not null,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  );
+`;
+
 const createNewUser = `
 INSERT INTO users(first_name,email,mobile,alternate_mobile,password,user_type,forgot_otp,role_id,created_at) VALUES(?,?,?,?,?,?,?,?,NOW())
 `;
@@ -711,6 +738,8 @@ module.exports = {
   createLabTests,
   createPackages,
   createPromoCode,
+  createUserCarts,
+  createUserDoctors,
 
   createNewUser,
   findUserByEmail,

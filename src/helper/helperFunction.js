@@ -16,11 +16,11 @@ const fs = require("fs");
 const { base64encode, base64decode } = require("nodejs-base64");
 const admin = require("firebase-admin");
 const serviceAccount = require("../../public/medwire-8bd32-firebase-adminsdk-pnlgd-39a3686663.json");
-const { transporter:transporter} = require("../helper/helper");
+const { transporter: transporter } = require("../helper/helper");
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  projectId: "medwire-8bd32",
+    credential: admin.credential.cert(serviceAccount),
+    projectId: "medwire-8bd32",
 });
 
 class helperFunction {
@@ -132,7 +132,7 @@ class helperFunction {
     static async sendJapiSMS(mobile_number, message) {
         try {
             var japi_sms_key = process.env.Japi_sms_key;
-            var url = "https://japi.instaalerts.zone/httpapi/QueryStringReceiver?ver=1.0&key=" +japi_sms_key+"&encrpt=0&dest="+mobile_number+"&send=MEDWIR&text="+message;
+            var url = "https://japi.instaalerts.zone/httpapi/QueryStringReceiver?ver=1.0&key=" + japi_sms_key + "&encrpt=0&dest=" + mobile_number + "&send=MEDWIR&text=" + message;
 
             var res = await fetch(url);
             var data = await res.text();
@@ -154,15 +154,15 @@ class helperFunction {
         }
     }
     static sendEmail(mailPayload, temp = false, from = process.env.MAIL_FROM_ADDRESS) {
-        mailPayload.from=from;
+        mailPayload.from = from;
         let transporter = nodemailer.createTransport({
             host: process.env.MAIL_HOST,
             port: process.env.MAIL_PORT,
             secure: process.env.MAIL_SECURE, // true for 465, false for other ports
             service: process.env.MAIL_SERVICE,
             auth: {
-                user: process.env.MAIL_USERNAME, 
-                pass: process.env.MAIL_PASSWORD 
+                user: process.env.MAIL_USERNAME,
+                pass: process.env.MAIL_PASSWORD
             },
         });
         const handlebarOptions = {
@@ -178,13 +178,13 @@ class helperFunction {
             transporter.use("compile", hbs(handlebarOptions));
         }
         transporter.sendMail(mailPayload,
-            (error, info)=>{
+            (error, info) => {
                 if (error) {
                     console.log(error);
                 } else {
-                    console.log("Mail send successfully! \n",info.response);
+                    console.log("Mail send successfully! \n", info.response);
                 }
-        });
+            });
     }
     static customValidater(req, validateP) {
         var vali;
@@ -409,13 +409,13 @@ class helperFunction {
     static dateToDayConvert(date) {
         const d = new Date(date);
         let day_name;
-            if (d.getDay() == 1) { day_name = "Monday";  }
-            else if (d.getDay() == 2) { day_name = "Tuesday"; }
-            else if (d.getDay() == 3) { day_name = "Wednesday"; }
-            else if (d.getDay() == 4) { day_name = "Thursday"; } 
-            else if (d.getDay() == 5) { day_name = "Friday"; }
-            else if (d.getDay() == 6) { day_name = "Saturday"; }
-            else if (d.getDay() == 0) { day_name = "Sunday"; }
+        if (d.getDay() == 1) { day_name = "Monday"; }
+        else if (d.getDay() == 2) { day_name = "Tuesday"; }
+        else if (d.getDay() == 3) { day_name = "Wednesday"; }
+        else if (d.getDay() == 4) { day_name = "Thursday"; }
+        else if (d.getDay() == 5) { day_name = "Friday"; }
+        else if (d.getDay() == 6) { day_name = "Saturday"; }
+        else if (d.getDay() == 0) { day_name = "Sunday"; }
         return day_name;
     }
     static startToEndTimeSlot(slotInterval = 15, opentimes, closetimes, bookedSlot = [], date) {
@@ -435,7 +435,7 @@ class helperFunction {
             var closetime_s = "12:00";
         }
         else {
-           var closetime_s = moment(closetimes, "HH:mm A").format("HH:mm"); 
+            var closetime_s = moment(closetimes, "HH:mm A").format("HH:mm");
         }
 
         var openingMinut = 0;
@@ -452,7 +452,7 @@ class helperFunction {
         checkCurentTimeSlot = parseInt(todayDate.slice(16, 21).replace(/:/g, "")) <
             parseInt(closetime_s.replace(/:/g, ""));
 
-        var today_date_with_time = moment().format("DD-MM-YYYY")+"T00:00:00.000Z";
+        var today_date_with_time = moment().format("DD-MM-YYYY") + "T00:00:00.000Z";
 
         if (today_date_with_time == date) {
             if (checkCurentTimeSlot) {
@@ -469,11 +469,11 @@ class helperFunction {
             else {
                 console.log("imeldhjdfhk");
             }
-            if (openingMinut == "60")   {
-                var opentime =  (opentime != undefined) ? (parseInt(opentime.split(":")[0])+1)+":00" : "";
+            if (openingMinut == "60") {
+                var opentime = (opentime != undefined) ? (parseInt(opentime.split(":")[0]) + 1) + ":00" : "";
             }
             else {
-                var opentime = (opentime != undefined) ? opentime.split(":")[0]+ ":" + openingMinut : "";
+                var opentime = (opentime != undefined) ? opentime.split(":")[0] + ":" + openingMinut : "";
             }
         } else {
             var opentime = opentime_s;
@@ -759,7 +759,7 @@ class helperFunction {
         if (path.extname(fileName) == ".pdf") {
             return 1;
         }
-        else if (path.extname(fileName) == ".DCM" || path.extname(fileName) == ".dcm" ||  path.extname(fileName) == ".zip" ) {
+        else if (path.extname(fileName) == ".DCM" || path.extname(fileName) == ".dcm" || path.extname(fileName) == ".zip") {
             return 2;
         }
         else {

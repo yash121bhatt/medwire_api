@@ -194,7 +194,7 @@ exports.appointmentList = (req, res) => {
                                 let radio_document_dcm = "";
                                 let radio_document_dcm_url = "";
                                 const labradio = await bookApointment.getLabRadioDoctument(appointment_id);
-                                
+
                                 if (labradio.length > 0) {
                                     for (const iterator of labradio) {
                                         if (iterator.type == 1) {
@@ -204,8 +204,8 @@ exports.appointmentList = (req, res) => {
                                         if (iterator.type == 2) {
                                             radio_document = iterator.report_document;
                                             radio_document_url = iterator.report_document != null ? process.env.APP_URL + "laboratory/" + iterator.report_document : "";
-                                            radio_document_dcm = iterator.dcm_document??null;
-                                            radio_document_dcm_url = iterator.dcm_document!=null ? process.env.APP_URL_DCM + "/" +iterator.dcm_document:"";
+                                            radio_document_dcm = iterator.dcm_document ?? null;
+                                            radio_document_dcm_url = iterator.dcm_document != null ? process.env.APP_URL_DCM + "/" + iterator.dcm_document : "";
                                         }
                                     }
                                 }
@@ -677,32 +677,28 @@ exports.addDignostic = (req, res) => {
                                     message: "Failed ! Please try again later"
                                 });
                                 return;
-                            }else if(err.kind === "appointment")
-                            {
+                            } else if (err.kind === "appointment") {
                                 return res.status(500).send({
                                     status_code: 500,
                                     status: "error",
                                     message: err.message
                                 });
                             }
-                            else if(err.kind === "l_appointment")
-                            {
+                            else if (err.kind === "l_appointment") {
                                 return res.status(500).send({
                                     status_code: 500,
                                     status: "error",
                                     message: err.message
                                 });
                             }
-                            else if(err.kind === "appointment_slot")
-                            {
+                            else if (err.kind === "appointment_slot") {
                                 return res.status(500).send({
                                     status_code: 500,
                                     status: "error",
                                     message: err.message
                                 });
                             }
-                            else if(err.kind === "appointment_slot")
-                            {
+                            else if (err.kind === "appointment_slot") {
                                 return res.status(500).send({
                                     status_code: 500,
                                     status: "error",
@@ -720,7 +716,7 @@ exports.addDignostic = (req, res) => {
                         if (data == 1) {
                             const doctorData = await helperQuery.All(`SELECT id, first_name FROM users WHERE id ='${doctor_id}'`);
                             const message = `Dr. ${doctorData[0]?.first_name ?? null} has booked an appointment for`;
-                            var p_detail = await helperQuery.Get({table:"users",where:" id="+patient_id});
+                            var p_detail = await helperQuery.Get({ table: "users", where: " id=" + patient_id });
                             let costLabRadioMSG = `Hey ${p_detail[0].first_name} <br>Your Appointment is booked by Dr. ${doctorData[0]?.first_name ?? null} with`;
                             if (is_booK_radio_test == 1) {
                                 if (is_radio_appointment == 1) {
@@ -740,7 +736,7 @@ exports.addDignostic = (req, res) => {
                                         appointments_user_type: "doctor"
                                     };
                                     bydoctorAppoinment(res, radioJson);
-                                   
+
                                     const patient_noticData = {
                                         message: costLabRadioMSG,
                                         by: "doctor_lab_radio_patient",
@@ -752,21 +748,21 @@ exports.addDignostic = (req, res) => {
                                         time_slot: radio_time_slot,
                                     };
                                     Notification.AddNotification(patient_noticData);
-                                  
-                                    
+
+
 
                                     if (p_detail) {
                                         var payload = {
                                             notification: {
                                                 title: "Appointment Booked",
-                                                body: "Hey "+p_detail[0].first_name+"your appointment with "+message+helperFunction.dateFormat(radio_appointment_date,"yyyy/mm/dd")+" & "+radio_time_slot,
+                                                body: "Hey " + p_detail[0].first_name + "your appointment with " + message + helperFunction.dateFormat(radio_appointment_date, "yyyy/mm/dd") + " & " + radio_time_slot,
                                             }
                                         };
-                                        if ((p_detail[0].device_type == "Android")||(p_detail[0].device_type == "IOS")) {
+                                        if ((p_detail[0].device_type == "Android") || (p_detail[0].device_type == "IOS")) {
                                             await helperFunction.pushNotification(p_detail[0].device_token, payload);
                                         }
                                     }
-                                  
+
                                     const noticData = {
                                         message: message,
                                         by: "doctor",
@@ -778,7 +774,7 @@ exports.addDignostic = (req, res) => {
                                         time_slot: radio_time_slot,
                                     };
                                     Notification.AddNotification(noticData);
-                                    var r_detail = await helperQuery.Get({table:"users",where:" id="+radio_id});
+                                    var r_detail = await helperQuery.Get({ table: "users", where: " id=" + radio_id });
 
                                     if (r_detail) {
                                         var payload = {
@@ -834,16 +830,16 @@ exports.addDignostic = (req, res) => {
                                         time_slot: lab_time_slot,
                                     };
                                     Notification.AddNotification(noticData);
-                                    var p_detail = await helperQuery.Get({table:"users",where:" id="+patient_id});
+                                    var p_detail = await helperQuery.Get({ table: "users", where: " id=" + patient_id });
 
                                     if (p_detail) {
                                         var payload = {
                                             notification: {
                                                 title: "Appointment Booked",
-                                                body: "Hey "+p_detail[0].first_name+" your appointment with "+message+helperFunction.dateFormat(lab_appointment_date,"yyyy/mm/dd")+" & "+lab_time_slot,
+                                                body: "Hey " + p_detail[0].first_name + " your appointment with " + message + helperFunction.dateFormat(lab_appointment_date, "yyyy/mm/dd") + " & " + lab_time_slot,
                                             }
                                         };
-                                        if ((p_detail[0].device_type == "Android")||(p_detail[0].device_type == "IOS")) {
+                                        if ((p_detail[0].device_type == "Android") || (p_detail[0].device_type == "IOS")) {
                                             await helperFunction.pushNotification(p_detail[0].device_token, payload);
                                         }
                                     }
@@ -993,7 +989,7 @@ exports.addDrug = (req, res) => {
     }
 
     // var all_data = [];
-    const { 
+    const {
         doctor_id,
         appointment_id,
         drugs,
@@ -1001,7 +997,7 @@ exports.addDrug = (req, res) => {
         drug_type,
         drug_frequency,
         drug_timing
-    }=req.body;
+    } = req.body;
 
     // const sweeterArray = req.body.map(item => {
     //     var doctor_id = item.doctor_id;
@@ -1016,7 +1012,7 @@ exports.addDrug = (req, res) => {
     // });
 
     const all_data = { "drug_names": drugs, "doctor_id": doctor_id, "appointment_id": appointment_id, "drug_duration": drug_duration, "drug_type": drug_type, "drug_frequency": drug_frequency, "drug_timing": drug_timing };
-    
+
     Appointment.addDrug(all_data, (err, data) => {
         if (err) {
             if (err.kind === "not_inserted") {
@@ -1255,7 +1251,7 @@ exports.generatePDF = async (req, res) => {
                 }
                 const dataDoctor = await User.findDoctorByIdAndRoleAsynca(doctor_id);
                 if (dataDoctor) {
-                  
+
                     if (dataDoctor.kind === "not_found") {
                         res.status(404).send({
                             status_code: 404,
@@ -1375,10 +1371,10 @@ exports.generatePDF = async (req, res) => {
 
                             myDoc.font("Times-Roman").fontSize(12);
                             myDoc1.font("Times-Roman").fontSize(12);
-                            if ((clinic_logo != null)&&(clinic_logo !="")&&(clinic_logo != undefined)) {
+                            if ((clinic_logo != null) && (clinic_logo != "") && (clinic_logo != undefined)) {
 
                                 myDoc.image(process.env.PDF_IMG_PATH + "member/" + clinic_logo, 75, 20, { width: 50, height: 50 });
-                            } 
+                            }
 
                             if (degrees.split(",").length > 1) {
                                 var degree_heading = "Degrees";
@@ -1451,17 +1447,17 @@ exports.generatePDF = async (req, res) => {
                             myDoc1.text("Doctor Name : " + doctor_name, 248, 100, {
                                 align: "right"
                             })
-                            .text(speciality_heading + " : " + specialities, 348, 110, {
+                                .text(speciality_heading + " : " + specialities, 348, 110, {
                                     align: "right",
                                     lineBreak: true
                                 })
-                            .text(degree_heading + " : " + degrees, {
+                                .text(degree_heading + " : " + degrees, {
                                     align: "right"
-                            })
-                            .moveDown(1.5)
-                            .text(current_date, {
+                                })
+                                .moveDown(1.5)
+                                .text(current_date, {
                                     align: "right"
-                            });
+                                });
 
 
 
@@ -1668,8 +1664,8 @@ exports.generatePDF = async (req, res) => {
                                     health_status_list_data = all_data.health_status_list;
                                 }
                             }
-                            
-                         
+
+
                             myDoc.moveDown(3);
                             myDoc1.moveDown(3);
                             var health_status_rows = [];
@@ -1717,7 +1713,7 @@ exports.generatePDF = async (req, res) => {
                                     myDoc1.table(table7, {});
                                 }
                             }
-                            
+
                             myDoc.fontSize(8);
 
                             myDoc.text("Clinic Address : " + clinic_address, 10, myDoc.page.height - 50, {
@@ -1730,40 +1726,40 @@ exports.generatePDF = async (req, res) => {
                             myDoc.font("Times-Roman").fontSize(12);
                             myDoc1.font("Times-Roman").fontSize(12);
 
-                            if ((clinic_logo != null)&&(clinic_logo !="")&&(clinic_logo != undefined)) {
+                            if ((clinic_logo != null) && (clinic_logo != "") && (clinic_logo != undefined)) {
                                 myDoc.image(process.env.PDF_IMG_PATH + "member/" + clinic_logo, 75, 20, { width: 50, height: 50 });
-                            } 
+                            }
 
                             myDoc.font("Helvetica-Bold").text(clinic_name, {
                                 align: "left"
                             })
-                            .moveDown(0.5)
-                            .text("Email : " + email_id, {
-                                align: "left"
-                            })
-                            .text("Mobile No. : " + (alternate_mobile_number == "" ? "N/A" : alternate_mobile_number), {
-                                align: "left"
+                                .moveDown(0.5)
+                                .text("Email : " + email_id, {
+                                    align: "left"
                                 })
-                            .text("Clinic Timing : " + clinic_timing, {
-                                align: "left"
-                            })
-                            .text("Doctor Name : " + doctor_name, 248, 100, {
-                                align: "right"
+                                .text("Mobile No. : " + (alternate_mobile_number == "" ? "N/A" : alternate_mobile_number), {
+                                    align: "left"
+                                })
+                                .text("Clinic Timing : " + clinic_timing, {
+                                    align: "left"
+                                })
+                                .text("Doctor Name : " + doctor_name, 248, 100, {
+                                    align: "right"
                                 })
                                 .text(speciality_heading + " : " + specialities, 348, 110, {
-                                align: "right",
-                                lineBreak: true
+                                    align: "right",
+                                    lineBreak: true
                                 })
                                 .text(degree_heading + " : " + degrees, {
-                                align: "right"
+                                    align: "right"
                                 })
                                 .font("Courier-Bold").text("", 70, 190, {
-                            });
+                                });
 
-                            
-   
-                               
-                                
+
+
+
+
 
                             // pdf 2nd page content
 
@@ -1809,7 +1805,7 @@ exports.generatePDF = async (req, res) => {
                                     myDoc1.table(table9, {});
                                 }
                             }
-                      
+
                             myDoc.moveDown(3);
                             myDoc1.moveDown(3);
                             var examination_finding_list_data = [];
@@ -1848,45 +1844,45 @@ exports.generatePDF = async (req, res) => {
                                 lineBreak: false,
                                 align: "left"
                             });
-                                
+
 
                             myDoc.addPage();
                             myDoc1.addPage();
 
-                           
+
                             myDoc.font("Times-Roman").fontSize(12);
                             myDoc1.font("Times-Roman").fontSize(12);
-                            
-                            if ((clinic_logo != null)&&(clinic_logo !="")&&(clinic_logo != undefined)) {
+
+                            if ((clinic_logo != null) && (clinic_logo != "") && (clinic_logo != undefined)) {
                                 myDoc.image(process.env.PDF_IMG_PATH + "member/" + clinic_logo, 75, 20, { width: 50, height: 50 });
-                            } 
+                            }
 
 
                             myDoc.font("Helvetica-Bold").text(clinic_name, {
                                 align: "left"
                             })
-                            .moveDown(0.5)
-                            .text("Email : " + email_id, {
-                                align: "left"
-                            })
-                            .text("Mobile No. : " + (alternate_mobile_number == "" ? "N/A" : alternate_mobile_number), {
-                                align: "left"
+                                .moveDown(0.5)
+                                .text("Email : " + email_id, {
+                                    align: "left"
                                 })
-                            .text("Clinic Timing : " + clinic_timing, {
-                                align: "left"
-                            })
-                            .text("Doctor Name : " + doctor_name, 248, 100, {
-                                align: "right"
+                                .text("Mobile No. : " + (alternate_mobile_number == "" ? "N/A" : alternate_mobile_number), {
+                                    align: "left"
+                                })
+                                .text("Clinic Timing : " + clinic_timing, {
+                                    align: "left"
+                                })
+                                .text("Doctor Name : " + doctor_name, 248, 100, {
+                                    align: "right"
                                 })
                                 .text(speciality_heading + " : " + specialities, 348, 110, {
-                                align: "right",
-                                lineBreak: true
+                                    align: "right",
+                                    lineBreak: true
                                 })
                                 .text(degree_heading + " : " + degrees, {
-                                align: "right"
+                                    align: "right"
                                 })
                                 .font("Courier-Bold").text("", 70, 190, {
-                            });
+                                });
 
 
                             // pdf 3rd page content
@@ -1988,8 +1984,8 @@ exports.generatePDF = async (req, res) => {
 
 
                             // pdf 3rd page  content
-                               
-                            if ((signature != null)&&(signature !="")&&(signature != undefined)) {
+
+                            if ((signature != null) && (signature != "") && (signature != undefined)) {
 
                                 myDoc.image(process.env.PDF_IMG_PATH + "signature/" + signature, 480, 650, {
                                     width: 100,
@@ -2048,12 +2044,12 @@ exports.generatePDF = async (req, res) => {
                                 });
 
                             });
-                        }else{
+                        } else {
                             return res.status(500).send({
-                                    status_code: 500,
-                                    status: "error",
-                                    message: "Clinic Header and Footer must be required."
-                                });
+                                status_code: 500,
+                                status: "error",
+                                message: "Clinic Header and Footer must be required."
+                            });
                         }
 
                     }

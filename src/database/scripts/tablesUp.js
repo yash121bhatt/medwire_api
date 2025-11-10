@@ -35,6 +35,8 @@ const {
     createLabTests,
     createPackages,
     createPromoCode,
+    createUserCarts,
+    createUserDoctors,
 } = require("../queries");
 
 const tableCreationQueries = [
@@ -71,6 +73,8 @@ const tableCreationQueries = [
     { name: "lab_tests", query: createLabTests },
     { name: "packages", query: createPackages },
     { name: "promo_code", query: createPromoCode },
+    { name: "user_carts", query: createUserCarts },
+    { name: "user_doctors", query: createUserDoctors },
 ];
 
 (async () => {

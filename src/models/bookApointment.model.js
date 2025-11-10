@@ -225,34 +225,60 @@ class bookApointment {
 
     static LabRadioAppointmentList(user_id) {
         return new Promise((resolve, reject) => {
+            var query = `SELECT
+                            ap.id,
+                            ap.user_id,
+                            ap.member_id,
+                            ap.created_by_id,
+                            ap.promo_code_id,
+                            ap.appointments_user_type,
+                            ap.payment_status,
+                            p.first_name,
+                            p.pin_code,
+                            p.address,
+                            ap.appointment_date,
+                            ap.from_time,
+                            ap.status,
+                            ap.total_amount,
+                            ap.grand_total,
+                            d.first_name as doctor,
+                            ap.status,
+                            ap.reason_of_reschedule,
+                            l.first_name as lab_name,
+                            p.first_name as patient,
+                            p.permanent_id as medwire_id,
+                            p.pin_code,
+                            pm.pin_code as mpin_code,
+                            uc.cart_id,
+                            uc.user_id,
+                            uc.cart_item,
+                            uc.created_at,
+                            nv.id as visit_id,
+                            nv.report_document,
+                            nv.dcm_document 
+                            FROM
+                            appointments ap
+                            INNER JOIN user_carts uc on ap.id = uc.appointment_id
+                            LEFT JOIN users l on uc.user_id = l.id
+                            LEFT JOIN user_doctors u on ap.refer_by_id = u.id
+                            LEFT JOIN doctors_clinic dc ON dc.id = u.user_id
+                            LEFT JOIN users d on d.id = ap.refer_by_id
+                            LEFT JOIN users p on p.id = ap.created_by_id
+                            LEFT JOIN users pm on pm.id = p.created_by_id
+                            LEFT JOIN new_visit nv on nv.appointment_id = ap.id 
+                            AND nv.online_ofline_status = '1' 
+                            WHERE
+                            l.id = '${user_id}' 
+                            AND ap.payment_status = 'Success' 
+                            ORDER BY
+                            ap.id DESC`;
 
-            var query = `SELECT ap.id,ap.user_id,ap.member_id,ap.created_by_id,ap.promo_code_id,
-            ap.appointments_user_type,ap.payment_status,
-            p.first_name,p.pin_code,p.address,
-            ap.appointment_date,ap.from_time,ap.status,ap.total_amount,ap.grand_total,
-            d.first_name as doctor,ap.status,ap.reason_of_reschedule,
-            l.first_name as lab_name, 
-            p.first_name as patient,p.permanent_id as medwire_id,p.pin_code ,pm.pin_code as mpin_code,
-            uc.cart_id,uc.user_id,uc.cart_item,uc.created_at,
-            nv.id as visit_id,nv.report_document,nv.dcm_document
-                        FROM appointments ap 
-                        INNER JOIN user_carts uc on ap.id=uc.appointment_id
-                        LEFT JOIN users l on uc.user_id=l.id 
-                        LEFT JOIN user_doctors u on ap.refer_by_id=u.id 
-                        LEFT JOIN doctors_clinic dc ON dc.id=u.user_id
-                        LEFT JOIN users d on d.id=ap.refer_by_id
-                        LEFT JOIN users p on p.id=ap.created_by_id
-                        LEFT JOIN users pm on pm.id=p.created_by_id
-                        LEFT JOIN new_visit nv on nv.appointment_id=ap.id AND nv.online_ofline_status='1'
-                        WHERE l.id='${user_id}' AND ap.payment_status='Success' ORDER BY ap.id DESC`;
-
-            db.query(query,
-                (err, res) => {
-                    if (err) {
-                        return reject(err);
-                    }
-                    return resolve(res);
-                });
+            db.query(query, (err, res) => {
+                if (err) {
+                    return reject(err);
+                }
+                return resolve(res);
+            });
         });
     }
 

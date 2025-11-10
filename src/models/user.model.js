@@ -21,7 +21,8 @@ class User {
         this.role_id = role_id;
     }
 
-    static findAllInsightAppointments(from_date, to_date, user_id, role_id, age_group, gender, pin_code, filter_by, appointment_date, month, year, cb) {
+    // TODO::RK
+    static findAllInsightAppointmentsOld(from_date, to_date, user_id, role_id, age_group, gender, pin_code, filter_by, appointment_date, month, year, cb) {
         var filter_condition = "";
         if (filter_by == "day") {
             if (appointment_date != "") {
@@ -87,6 +88,94 @@ class User {
             }
         });
     }
+    static findAllInsightAppointments(from_date, to_date, user_id, role_id, age_group, gender, pin_code, filter_by, appointment_date, month, year, cb) {
+        var filter_condition = "";
+        if (filter_by == "day") {
+            if (appointment_date != "") {
+                filter_condition = " where ap.appointment_date =" + "'" + appointment_date + "'";
+            }
+        }
+        if (filter_by == "month") {
+            if (month != "") {
+                filter_condition = " where MONTH(ap.appointment_date) =" + "'" + month + "'";
+            }
+        }
+        if (filter_by == "year") {
+            if (year != "") {
+                filter_condition = " where YEAR(ap.appointment_date) =" + "'" + year + "'";
+            }
+        }
+        if (from_date != "" && from_date != undefined && to_date != "" && to_date != undefined) {
+            filter_condition = " where ap.appointment_date BETWEEN " + "'" + from_date + "' AND " + "'" + to_date + "'";
+        }
+        if (gender != "" && gender != undefined) {
+            filter_condition += " and u.gender=" + "'" + gender + "'";
+        }
+        if (user_id != "" && user_id != undefined) {
+            filter_condition += " and ap.user_id=" + "'" + user_id + "'";
+        }
+        if (pin_code != "" && pin_code != undefined) {
+            filter_condition += " and u2.pin_code=" + "'" + pin_code + "'";
+        }
+        if (age_group != "" && age_group != undefined) {
+            if (age_group == "below_5") {
+                filter_condition += " and TIMESTAMPDIFF(YEAR,DATE_FORMAT(STR_TO_DATE(u.date_of_birth,'%a %M %D %Y'), '%Y-%m-%d'),CURDATE()) < 5";
+            }
+            if (age_group == "between_5_and_18") {
+                filter_condition += " and TIMESTAMPDIFF(YEAR,DATE_FORMAT(STR_TO_DATE(u.date_of_birth,'%a %M %D %Y'), '%Y-%m-%d'),CURDATE()) BETWEEN 5 AND 18";
+            }
+            if (age_group == "above_18") {
+                filter_condition += " and TIMESTAMPDIFF(YEAR,DATE_FORMAT(STR_TO_DATE(u.date_of_birth,'%a %M %D %Y'), '%Y-%m-%d'),CURDATE()) > 18";
+            }
+        }
+
+        // ✅ Fix: ORDER BY MAX(ap.id) instead of ap.id (to avoid ONLY_FULL_GROUP_BY error)
+        if (role_id == 3) {
+            var query = "SELECT COUNT(CASE WHEN u.gender = 'Male' THEN u.id END) AS total_males, " +
+                "COUNT(CASE WHEN u.gender = 'Female' THEN u.id END) AS total_females, " +
+                "COUNT(ap.id) as total_booking, u2.id as lab_id, u2.first_name as lab_name, u2.pin_code as pin_code " +
+                "FROM appointments as ap inner join users as u on ap.created_by_id = u.id " +
+                "inner join users u2 on ap.user_id = u2.id " +
+                filter_condition +
+                " and u2.role_id = 3 and ap.payment_status = 'Success' GROUP BY ap.user_id ORDER BY MAX(ap.id) DESC";
+        }
+        if (role_id == 4) {
+            var query = "SELECT COUNT(CASE WHEN u.gender = 'Male' THEN u.id END) AS total_males, " +
+                "COUNT(CASE WHEN u.gender = 'Female' THEN u.id END) AS total_females, " +
+                "COUNT(ap.id) as total_booking, COUNT(u.id) as total_patients, u2.id as radiology_id, u2.first_name as radiology_name, u2.pin_code as pin_code " +
+                "FROM appointments as ap inner join users as u on ap.created_by_id = u.id " +
+                "inner join users u2 on ap.user_id = u2.id " +
+                filter_condition +
+                " and u2.role_id = 4 and ap.payment_status = 'Success' GROUP BY ap.user_id ORDER BY MAX(ap.id) DESC";
+        }
+        if (role_id == 8) {
+            var query = "SELECT COUNT(CASE WHEN u.gender = 'Male' THEN u.id END) AS total_males, " +
+                "COUNT(CASE WHEN u.gender = 'Female' THEN u.id END) AS total_females, " +
+                "COUNT(ap.id) as total_booking, COUNT(u.id) as total_patients, u2.id as clinic_id, u2.first_name as clinic_name, u2.pin_code as pin_code " +
+                "FROM appointments as ap inner join users as u on ap.created_by_id = u.id " +
+                "inner join users u2 on ap.clinic_id = u2.id " +
+                filter_condition +
+                " and u2.role_id = 8 and ap.payment_status = 'Success' GROUP BY ap.user_id ORDER BY MAX(ap.id) DESC";
+        }
+
+        console.log(query);
+
+        db.query(query, (err, res) => {
+            if (err) {
+                logger.error(err.message);
+                cb(err, null);
+                return;
+            }
+
+            if (res) {
+                cb(null, res);
+            } else {
+                cb({ kind: "not_found" }, null);
+            }
+        });
+    }
+
+
     static radiocreate(username, email, mobile, password, user_type, role_id, adhar_card, approve_document, forgot_otp, cb) {
         db.query(createNewradioUserQuery,
             [
