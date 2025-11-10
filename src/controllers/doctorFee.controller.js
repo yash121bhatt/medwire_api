@@ -71,7 +71,17 @@ exports.getFeeSpecificDoctorList = (req, res) => {
 
         if (data) {
             DoctorFee.findFeeSpecificDoctor(clinic_id, (err, data) => {
+                console.log("err", err);
+                console.log("data", data);
                 if (err) {
+                    if (err.kind === "not_found") {
+                        res.status(404).send({
+                            status_code: 404,
+                            status: "error",
+                            message: "No Fee Specific Doctor found"
+                        });
+                        return;
+                    }
                     res.status(500).send({
                         status_code: 500,
                         status: "error",
