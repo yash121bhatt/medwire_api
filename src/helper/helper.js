@@ -6,11 +6,9 @@ const path = require("path");
 // initialize nodemailer SMTP transport
 let transporter = nodemailer.createTransport({
     host: process.env.MAIL_HOST,
-    // port: process.env.MAIL_PORT,
-    // secure: process.env.MAIL_SECURE, // true for 465, false for other ports
+    port: Number(process.env.MAIL_PORT),
+    secure: process.env.MAIL_SECURE === "true", // true for 465, false for other ports
     // service: process.env.MAIL_SERVICE,
-    port: 2525,
-    secure: false,
     auth: {
         user: process.env.MAIL_USERNAME, // generated ethereal user
         pass: process.env.MAIL_PASSWORD // generated ethereal password
