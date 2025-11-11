@@ -30,7 +30,29 @@ class LabTest {
             });
     }
     static show(lab_id, cb) {
-        db.query(`SELECT l.test_id,l.lab_id,l.test_category_id,t.category_name,l.test_name,l.test_report,l.fast_time,l.test_recommended,l.image,l.description,l.amount,l.created_at,l.updated_at FROM lab_tests l LEFT JOIN test_categories t ON l.test_category_id=t.cat_id WHERE l.lab_id='${lab_id}' order by l.test_id desc`,
+        const oldQuery = `SELECT l.test_id,l.lab_id,l.test_category_id,t.category_name,l.test_name,l.test_report,l.fast_time,l.test_recommended,l.image,l.description,l.amount,l.created_at,l.updated_at FROM lab_tests l LEFT JOIN test_categories t ON l.test_category_id=t.cat_id WHERE l.lab_id='${lab_id}' order by l.test_id desc`;
+        const newQeury = `SELECT
+                    l.test_id,
+                    l.lab_id,
+                    l.test_category_id,
+                    t.category_name,
+                    l.test_name,
+                    l.test_report,
+                    l.fast_time,
+                    l.test_recommended,
+                    l.image,
+                    l.description,
+                    l.amount,
+                    l.created_at,
+                    l.updated_at 
+                    FROM
+                    lab_tests l
+                    LEFT JOIN test_categories t ON l.test_category_id = t.id
+                    WHERE
+                    l.lab_id = '${lab_id}' 
+                    order by
+                    l.test_id desc`;
+        db.query(oldQuery,
             (err, res) => {
                 if (err) {
                     logger.error(err.message);

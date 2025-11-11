@@ -636,6 +636,46 @@ CREATE TABLE IF NOT EXISTS user_doctors (
   );
 `;
 
+const createPregnantWomen = `
+CREATE TABLE IF NOT EXISTS pregnant_women (
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    user_id int not null,
+    name varchar (255) null,
+    date_of_pregnancy varchar (255) null,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  );
+`;
+
+const createUserBaby = `
+CREATE TABLE IF NOT EXISTS user_baby (
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    user_id int not null,
+    baby_id int null,
+    baby_name varchar (255) null,
+    date_of_birth varchar (255) null,
+    baby_gender varchar (255) null,
+    father_height varchar (255) null,
+    mother_height varchar (255) null, 
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  );
+`;
+
+const createUserBabyVaccination = `
+CREATE TABLE IF NOT EXISTS user_baby_vaccination (
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    baby_id int not null,
+    vaccination_name varchar (255) null,
+    duration varchar (255) null, 
+    due_date varchar (255) null, 
+    dose_date varchar (255) null, 
+    status varchar (255) null,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  );
+`;
+
 const createNewUser = `
 INSERT INTO users(first_name,email,mobile,alternate_mobile,password,user_type,forgot_otp,role_id,created_at) VALUES(?,?,?,?,?,?,?,?,NOW())
 `;
@@ -740,6 +780,9 @@ module.exports = {
   createPromoCode,
   createUserCarts,
   createUserDoctors,
+  createPregnantWomen,
+  createUserBaby,
+  createUserBabyVaccination,
 
   createNewUser,
   findUserByEmail,

@@ -2,7 +2,7 @@ const db = require("../config/db.config");
 const { logger } = require("../utils/logger");
 class testCategory {
     static create(lab_id, category_name, cb) {
-        db.query("INSERT INTO test_categories(lab_id,category_name,created_at) VALUES(?,?,NOW())",
+        db.query("INSERT INTO test_categories(lab_id, category_name, created_at) VALUES(?,?,NOW())",
             [lab_id, category_name],
             (err, res) => {
                 if (err) {
