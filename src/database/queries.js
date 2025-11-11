@@ -79,14 +79,14 @@ CREATE TABLE
 IF
   NOT EXISTS users_documents (
     id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    member_id INT NOT NULL,
+    user_id INT NULL,
+    member_id INT NULL,
+    appointment_id INT NULL,
     document_title VARCHAR (255) NULL,
     document_file VARCHAR (255) NULL,
     document_date VARCHAR (255) NULL,
     scan_doc_text VARCHAR (255) NULL,
     type VARCHAR (255) NULL,
-    appointment_id VARCHAR (255) NULL,
     document_description VARCHAR (255) NULL,
     dcm_document_file VARCHAR (255) NULL,
     lab_radio_type VARCHAR (255) NULL,
@@ -146,10 +146,10 @@ CREATE TABLE
 IF
   NOT EXISTS new_visit (
     id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    member_id INT NOT NULL,
-    appointment_id INT NOT NULL,
-    lab_id INT NOT NULL,
+    user_id INT NULL,
+    member_id INT NULL,
+    lab_id INT NULL,
+    appointment_id INT NULL,
     mobile VARCHAR (255) NULL,
     online_ofline_status VARCHAR (255) NULL,
     category VARCHAR (255) NULL,

@@ -1,5 +1,6 @@
 # Ignore files related to API keys
 .env
+.env.prod
 # Ignore node_modules folder
 node_modules
 public/dicom
