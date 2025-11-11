@@ -639,7 +639,9 @@ class bookApointment {
                 });
         });
     }
-    static doctorDetail({ id }) {
+
+    // TODO::RK
+    static doctorDetailOld({ id }) {
         var qu = `SELECT dc.id,dc.clinic_id,
         u.first_name as doctor,u.id as doctor_id,u.profile_image,u.pin_code,
         c.first_name as clinic,c.address as clinic_address,c.pin_code as clinic_pincode,
@@ -666,6 +668,57 @@ class bookApointment {
                 });
         });
     }
+    static doctorDetail({ id }) {
+        var qu = `SELECT
+                    dc.id,
+                    dc.clinic_id,
+                    u.first_name as doctor,
+                    u.id as doctor_id,
+                    u.profile_image,
+                    u.pin_code,
+                    c.first_name as clinic,
+                    c.address as clinic_address,
+                    c.pin_code as clinic_pincode,
+                    u.experience_in_year,
+                    df.online_consulting_fee as online_fee,
+                    df.clinic_visit_consulting_fee as ofline_fee,
+                    GROUP_CONCAT(DISTINCT ds.speciality_name SEPARATOR ', ') as speciality_name,
+                    GROUP_CONCAT(DISTINCT dd.degree_name SEPARATOR ',') as degrees 
+                    FROM
+                    doctors_clinic dc
+                    INNER JOIN users u on dc.doctor_id = u.id
+                    INNER JOIN users c on dc.clinic_id = c.id
+                    LEFT JOIN doctor_specialities ds on u.id = ds.doctor_id
+                    LEFT JOIN doctor_degrees dd on u.id = dd.doctor_id
+                    LEFT JOIN doctor_fees df on df.doctor_id = u.id 
+                    WHERE
+                    dc.id = '${id}' 
+                    GROUP BY
+                    dc.id,
+                    dc.clinic_id,
+                    u.first_name,
+                    u.id,
+                    u.profile_image,
+                    u.pin_code,
+                    c.first_name,
+                    c.address,
+                    c.pin_code,
+                    u.experience_in_year,
+                    df.online_consulting_fee,
+                    df.clinic_visit_consulting_fee`;
+
+        return new Promise((resolve, reject) => {
+            db.query(qu,
+                (err, res) => {
+                    if (err) {
+                        logger.error(err.message);
+                        return reject(err);
+                    }
+                    return resolve(res);
+                });
+        });
+    }
+
     static patientBillingHistoryLabRadio({ role_id, user_id }) {
         return new Promise((resolve, reject) => {
 

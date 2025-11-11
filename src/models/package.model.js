@@ -11,9 +11,24 @@ class Package {
                     cb(err, null);
                     return;
                 }
-                cb(null, res);
+
+                // TODO:: RK
+                db.query("UPDATE packages SET package_id = ? WHERE id = ?",
+                    [res.insertId, res.insertId],
+                    (err, res) => {
+                        if (err) {
+                            logger.error(err.message);
+                            cb(err, null);
+                            return;
+                        }
+                        cb(null, res);
+                    });
+                // TODO:: RK
+
+                // cb(null, res);
             });
     }
+
     static update(test_category_id, test_id, test_name, package_name, test_report_time, tasting_time, test_recommended, description, image, amount, lab_id, package_id, cb) {
         const query = image != undefined && image != "undefined" && image != null ?
             `UPDATE packages SET test_category_id='${test_category_id}', test_id='${test_id}', test_name='${test_name}', package_name='${package_name}', test_report_time='${test_report_time}', tasting_time='${tasting_time}', test_recommended='${test_recommended}', description='${description}', image='${image}', amount='${amount}', updated_at=NOW() WHERE lab_id='${lab_id}' AND package_id='${package_id}'` :

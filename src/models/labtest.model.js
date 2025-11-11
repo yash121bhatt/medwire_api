@@ -1,6 +1,7 @@
 const db = require("../config/db.config");
 const { logger } = require("../utils/logger");
 class LabTest {
+
     static create(test_category_id, lab_id, user_id, member_id, test_name, test_report, fast_time, test_recommended, image, description, amount, cb) {
         db.query("INSERT INTO lab_tests(test_category_id,lab_id,user_id,member_id,test_name,test_report,fast_time,test_recommended,image,description,amount,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,NOW())",
             [test_category_id, lab_id, user_id, member_id, test_name, test_report, fast_time, test_recommended, image, description, amount],
@@ -8,10 +9,27 @@ class LabTest {
                 if (err) {
                     logger.error(err.message);
                     cb(err, null);
+                    return;
                 }
-                cb(null, res);
+
+                // TODO:: RK
+                const newId = res.insertId;
+                db.query("UPDATE lab_tests SET test_id = ? WHERE id = ?",
+                    [newId, newId],
+                    (err, res) => {
+                        if (err) {
+                            logger.error(err.message);
+                            cb(err, null);
+                            return;
+                        }
+                        cb(null, res);
+                    });
+                // TODO:: RK
+
+                // cb(null, res);
             });
     }
+
     static update(test_category_id, test_name, test_report, fast_time, test_recommended, image, description, amount, test_id, lab_id, cb) {
         if (image == null || image == undefined || image == "") {
             var qu = "UPDATE lab_tests SET test_category_id=?,test_name=?,test_report=?,fast_time=?,test_recommended=?,description=?,amount=?,updated_at=NOW() WHERE test_id =? AND lab_id=?";
