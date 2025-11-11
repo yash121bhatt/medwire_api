@@ -9,9 +9,7 @@ const createAdmin = `insert into super_admin (name, email, gender, image_name, m
 values ('${process.env.ADMIN_NAME}', '${process.env.ADMIN_EMAIL}', NULL, NULL, NULL, '${hash(process.env.ADMIN_PASSWORD)}', 'admin');`;
 
 const createTableUsers = `
-CREATE TABLE
-IF
-  NOT EXISTS users (
+CREATE TABLE IF NOT EXISTS users (
     id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
     first_name VARCHAR (100) NOT NULL,
     last_name VARCHAR (100) NULL,
@@ -57,9 +55,7 @@ IF
 `;
 
 const createSuperAdmin = `
-CREATE TABLE
-IF
-  NOT EXISTS super_admin (
+CREATE TABLE IF NOT EXISTS super_admin (
     id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
     name varchar(100) NOT NULL,
     email varchar(255) DEFAULT NULL,
@@ -75,9 +71,7 @@ IF
 `;
 
 const createUsersDocuments = `
-CREATE TABLE
-IF
-  NOT EXISTS users_documents (
+CREATE TABLE IF NOT EXISTS users_documents (
     id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
     user_id INT NULL,
     member_id INT NULL,
@@ -96,9 +90,7 @@ IF
 `;
 
 const createNotificationPreMedicine = `
-CREATE TABLE
-IF
-  NOT EXISTS notification_pre_medicine (
+CREATE TABLE IF NOT EXISTS notification_pre_medicine (
     id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
     user_id INT NOT NULL,
     member_id INT NOT NULL,
@@ -121,9 +113,7 @@ IF
 `;
 
 const createUsersHWBMIDetails = `
-CREATE TABLE
-IF
-  NOT EXISTS users_hwbmi_details (
+CREATE TABLE IF NOT EXISTS users_hwbmi_details (
     id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
     user_id INT NOT NULL,
     member_id INT NOT NULL,
@@ -142,9 +132,7 @@ IF
 `;
 
 const createNewVisit = `
-CREATE TABLE
-IF
-  NOT EXISTS new_visit (
+CREATE TABLE IF NOT EXISTS new_visit (
     id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
     user_id INT NULL,
     member_id INT NULL,
@@ -163,9 +151,7 @@ IF
 `;
 
 const createDoctorsClinic = `
-CREATE TABLE
-IF
-  NOT EXISTS doctors_clinic (
+CREATE TABLE IF NOT EXISTS doctors_clinic (
     id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
     doctor_id INT NOT NULL,
     clinic_id INT NOT NULL,
@@ -175,9 +161,7 @@ IF
 `;
 
 const createOperatorPermission = `
-CREATE TABLE
-IF
-  NOT EXISTS operator_permission (
+CREATE TABLE IF NOT EXISTS operator_permission (
     id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
     operator_id INT NOT NULL,
     permissions VARCHAR (255) NOT NULL,
@@ -187,9 +171,7 @@ IF
 `;
 
 const createPlans = `
-CREATE TABLE
-IF
-  NOT EXISTS plans (
+CREATE TABLE IF NOT EXISTS plans (
     id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
     created_by_id int NOT NULL,
     plan_for varchar(255) NOT NULL,
@@ -219,9 +201,7 @@ CREATE TABLE IF NOT EXISTS commissions (
 `;
 
 const createAppointments = `
-CREATE TABLE
-IF
-  NOT EXISTS appointments (
+CREATE TABLE IF NOT EXISTS appointments (
     id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
     payment_order_id varchar (255) null,
     user_id int null,
@@ -269,9 +249,7 @@ CREATE TABLE IF NOT EXISTS system_notifications (
 `;
 
 const createProfileAccess = `
-CREATE TABLE
-IF
-  NOT EXISTS profile_access (
+CREATE TABLE IF NOT EXISTS profile_access (
     id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
     patient_id int not null,
     member_id int not null,
@@ -288,9 +266,7 @@ IF
 `;
 
 const createPreNotification = `
-CREATE TABLE
-IF
-  NOT EXISTS pre_notification (
+CREATE TABLE IF NOT EXISTS pre_notification (
     id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
     user_id int not null,
     member_id int not null,
@@ -305,9 +281,7 @@ IF
 `;
 
 const createPlanPurchaseHistory = `
-CREATE TABLE
-IF
-  NOT EXISTS plan_purchase_history (
+CREATE TABLE IF NOT EXISTS plan_purchase_history (
     id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
     plan_id int not null,
     user_id int not null,
@@ -326,9 +300,7 @@ IF
 `;
 
 const createDoctorSpecialities = `
-CREATE TABLE
-IF
-  NOT EXISTS doctor_specialities (
+CREATE TABLE IF NOT EXISTS doctor_specialities (
     id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
     doctor_id int not null,
     created_by_id int not null,
@@ -340,9 +312,7 @@ IF
 `;
 
 const createDoctorDegrees = `
-CREATE TABLE
-IF
-  NOT EXISTS doctor_degrees (
+CREATE TABLE IF NOT EXISTS doctor_degrees (
     id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
     doctor_id int not null,
     created_by_id int not null,
@@ -354,9 +324,7 @@ IF
 `;
 
 const createSpecialityMaster = `
-CREATE TABLE
-IF
-  NOT EXISTS doctor_speciality_master (
+CREATE TABLE IF NOT EXISTS doctor_speciality_master (
     id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
     name varchar (255) null,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -365,9 +333,7 @@ IF
 `;
 
 const createDoctorFees = `
-CREATE TABLE
-IF
-  NOT EXISTS doctor_fees (
+CREATE TABLE IF NOT EXISTS doctor_fees (
     id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
     doctor_id int not null,
     created_by_id int not null,
@@ -383,9 +349,7 @@ IF
 `;
 
 const createUsersPatient = `
-CREATE TABLE
-IF
-  NOT EXISTS users_patient (
+CREATE TABLE IF NOT EXISTS users_patient (
     id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
     patient_id int null,
     user_id int null,
