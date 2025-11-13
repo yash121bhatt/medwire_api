@@ -1,7 +1,7 @@
 const Admin = require("../models/admin.model");
 const { hash: hashPassword, compare: comparePassword } = require("../utils/password");
 const { generate: generateToken } = require("../utils/token");
-const { transporter: transporter } = require("../helper/helper");
+const { transporter: transporter, getCopyrightYear } = require("../helper/helper");
 const helperFunction = require("../helper/helperFunction");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET_KEY } = require("../utils/secrets");
@@ -809,6 +809,7 @@ exports.userListApprove = (req, res) => {
             let email = userData.email;
             let logo = process.env.APP_LOGO;
             let app_name = process.env.APP_NAME;
+            const copyright_year = getCopyrightYear(process.env.APP_START_YEAR);
 
             helperFunction.template(transporter, true);
             transporter.sendMail({
@@ -816,7 +817,7 @@ exports.userListApprove = (req, res) => {
                 to: email,
                 subject: `Your Profile has been ${msg} Successfully`,
                 template: "ApproveDisapprove",
-                context: { name, email, logo, app_name, message, status, deactive: deactive }
+                context: { name, email, logo, app_name, message, status, deactive: deactive, copyright_year }
             }, function (error, info) {
                 if (error) {
                     console.log(error.message);
