@@ -3,9 +3,10 @@ const ClinicOrHospital = require("../models/clinicorhospital.model");
 const { hash: hashPassword, compare: comparePassword } = require("../utils/password");
 const { generate: generateToken } = require("../utils/token");
 const { generateOTP } = require("../utils/generateOTP.js");
-const { uniqueEmailAndMobile: uniqueEmailAndMobile } = require("../helper/helper");
+const { uniqueEmailAndMobile: uniqueEmailAndMobile, getCopyrightYear } = require("../helper/helper");
 const helperQuery = require("../helper/helperQuery");
 const { async } = require("q");
+const moment = require("moment");
 
 const { transporter: transporter } = require("../helper/helper");
 const helperFunction = require("../helper/helperFunction");
@@ -148,6 +149,7 @@ exports.signup = async (req, res) => {
             const name = username;
             const logo = process.env.APP_LOGO;
             const app_name = process.env.APP_NAME;
+            const copyright_year = getCopyrightYear(process.env.APP_START_YEAR);
 
             const token = generateToken(data.id);
             
@@ -157,7 +159,7 @@ exports.signup = async (req, res) => {
                 to: email,
                 subject: "MedWire Confirmation Mail",
                 template: "signUpVarification",
-                context: { name, email, forgot_otp, logo, app_name }
+                context: { name, email, forgot_otp, logo, app_name, copyright_year }
             }, function (error, info) {
                 if (error) {
                     console.log(error);
@@ -453,10 +455,12 @@ exports.forgotPassword = async (req, res) => {
                         message: "User not exist"
                     });
                 }
-                
+
                 const name = userData[0].first_name;
                 const logo = process.env.APP_LOGO;
                 const app_name = process.env.APP_NAME;
+                const copyright_year = getCopyrightYear(process.env.APP_START_YEAR);
+
                 const token = generateToken(userData[0].id);
 
                 if (userData[0].mobile) {
@@ -473,7 +477,7 @@ exports.forgotPassword = async (req, res) => {
                         to: email_id,
                         subject: "Forgot Password",
                         template: "forgotTemplate",
-                        context: { name, email_id, forgot_otp, logo, app_name }
+                        context: { name, email_id, forgot_otp, logo, app_name, copyright_year }
                     }, function (error, info) {
                         if (error) {
                             return console.log(error);
@@ -1335,6 +1339,7 @@ exports.resendOtp = async (req, res) => {
                 const name = userData.first_name;
                 const logo = process.env.APP_LOGO;
                 const app_name = process.env.APP_NAME;
+                const copyright_year = getCopyrightYear(process.env.APP_START_YEAR);
 
                 if (userData.mobile) {
                     var message = forgot_otp + " is your OTP for Verification of your account at MedWire. Thank you.";
@@ -1353,7 +1358,7 @@ exports.resendOtp = async (req, res) => {
                         to: email,
                         subject: "MedWire Confirmation Mail",
                         template: "signInRoleVarification",
-                        context: { name, email, forgot_otp, logo, app_name, messageMT, messageMTC: true },
+                        context: { name, email, forgot_otp, logo, app_name, messageMT, messageMTC: true, copyright_year },
                     },
                     function (error) {
                         if (error) {

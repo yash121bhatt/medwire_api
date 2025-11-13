@@ -133,6 +133,13 @@ const removeFileFromFolder = async (fileName, folderPath = "member", baseFolder 
     }
 };
 
+function getCopyrightYear(startYear) {
+  const currentYear = new Date().getFullYear();
+  return startYear === currentYear
+    ? `${startYear}`
+    : `${startYear}–${currentYear}`;
+}
+
 module.exports = {
     transporter,
     template,
@@ -141,5 +148,6 @@ module.exports = {
     convertStringToArray,
     dateFormat,
     uniqueEmailAndMobile,
-    removeFileFromFolder
+    removeFileFromFolder,
+    getCopyrightYear
 };
