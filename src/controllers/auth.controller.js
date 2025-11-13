@@ -133,7 +133,6 @@ exports.signup = async (req, res) => {
     const { username, email, mobile, password, user_type, role_id } = req.body;
     const alternate_mobile = req.body.alternate_mobile != undefined ? req.body.alternate_mobile : null;
     const passwordt = hashPassword(password.trim());
-    //const user = new User(username, email.trim(), mobile.trim(),passwordt, user_type, role_id)
     const forgot_otp = helperFunction.generateOTP(6);
     User.create(username, email.trim(), mobile.trim(), alternate_mobile, passwordt, user_type, forgot_otp, role_id, async (err, data) => {
         if (err) {
@@ -148,9 +147,10 @@ exports.signup = async (req, res) => {
 
             const name = username;
             const logo = process.env.APP_LOGO;
-            const admin_login = process.env.ADMIN_LOGIN_URL;
             const app_name = process.env.APP_NAME;
+
             const token = generateToken(data.id);
+            
             helperFunction.template(transporter, true);
             transporter.sendMail({
                 from: process.env.MAIL_FROM_ADDRESS,
@@ -162,13 +162,15 @@ exports.signup = async (req, res) => {
                 if (error) {
                     console.log(error);
                 }
-                // console.log('Message sent: ' + info.response +'test'+posswordt);
+                console.log("Message sent: " + info.response);
             });
+            
             if (mobile) {
                 var message = forgot_otp + " is your OTP for Verification of your account at MedWire. Thank you.";
                 var mobile_number = mobile;
                 await helperFunction.sendJapiSMS(mobile_number, message); // rohit
             }
+            
             res.status(200).send({
                 status_code: "200",
                 status: "success",

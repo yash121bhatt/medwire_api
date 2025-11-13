@@ -30,23 +30,6 @@ const upload = multer({
     limits: {
         fileSize: 1024 * 1024 * 1000 // 1gb
     }
-    //fileFilter:fileFilter
-});
-const storageMember = multer.diskStorage({
-    destination: function (req, file, cb) {
-
-        cb(null, "./public/member/");
-    },
-    filename: function (req, file, cb) {
-        cb(null, new Date().toISOString().replace(/:/g, "-") + file.originalname);
-    }
-});
-
-const memberUpload = multer({
-    storage: storageMember,
-    limits: {
-        fileSize: 1024 * 1024 * 1000
-    }
 });
 
 router.route("/memberSearch").post(asyncHandler(jwtAuth), memberSearch, asyncHandler(laboratoryController.memberSearch));

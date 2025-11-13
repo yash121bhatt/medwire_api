@@ -1,14 +1,12 @@
-const { date } = require("joi");
-const db = require("../config/db.config");
-const { createNewUser: createNewUserQuery, findUserByEmail: findUserByEmailQuery, createNewradioUserQuery: createNewradioUserQuery, findUserByIdQuery: findUserByIdQuery, verifyOtp: verifyOtp, findMemberByIdQuery: findMemberByIdQuery, resetPassword: resetPassword, createMember: createMember, updateUser: updateUser, updatePassword: updatePassword, oldPassword: oldPassword, updateMember: updateMember, createDoctor: createDoctor, addDoctorFeeQuery: addDoctorFeeQuery, addDoctorSpeciality: addDoctorSpeciality, addDoctorDegree: addDoctorDegree, updateDoctorSpeciality: updateDoctorSpeciality, updateDoctorDegree: updateDoctorDegree, addDoctorSchedule: addDoctorSchedule, updateDoctorSchedule: updateDoctorSchedule, addDoctorAvailability: addDoctorAvailability, updateDoctorAvailability: updateDoctorAvailability } = require("../database/queries");
-const { logger } = require("../utils/logger");
-const helperFunction = require("../helper/helperFunction");
-const { transporter: transporter, mailOptions: mailOptions, autoGenPassword: autoGenPassword } = require("../helper/helper");
+const moment = require("moment");
 const requestPromise = require("request-promise");
 const jwt = require("jsonwebtoken");
+const db = require("../config/db.config");
+const { logger } = require("../utils/logger");
+const { transporter } = require("../helper/helper");
+const helperFunction = require("../helper/helperFunction");
 const helperQuery = require("../helper/helperQuery");
-const { async } = require("q");
-const moment = require("moment");
+const { createNewUser: createNewUserQuery, createNewradioUserQuery: createNewradioUserQuery, findUserByIdQuery: findUserByIdQuery, verifyOtp: verifyOtp, findMemberByIdQuery: findMemberByIdQuery, resetPassword: resetPassword, createMember: createMember, updateUser: updateUser, updatePassword: updatePassword, oldPassword: oldPassword, updateMember: updateMember, createDoctor: createDoctor, addDoctorFeeQuery: addDoctorFeeQuery, addDoctorSpeciality: addDoctorSpeciality, addDoctorDegree: addDoctorDegree, updateDoctorSpeciality: updateDoctorSpeciality, updateDoctorDegree: updateDoctorDegree, addDoctorSchedule: addDoctorSchedule, updateDoctorSchedule: updateDoctorSchedule, addDoctorAvailability: addDoctorAvailability, updateDoctorAvailability: updateDoctorAvailability } = require("../database/queries");
 
 
 class User {
@@ -509,10 +507,10 @@ class User {
 
         });
     }
+
     static updateMember(first_name, mobile, date_of_birth, gender, profile_image, blood_group, id, cb) {
         if (profile_image != "") {
-            db.query(`UPDATE users SET first_name = ?, date_of_birth = ?, gender = ?, profile_image=?, blood_group=? WHERE id = ?
-            `, [first_name, date_of_birth, gender, profile_image, blood_group, id], (err, res) => {
+            db.query("UPDATE users SET first_name = ?, date_of_birth = ?, gender = ?, profile_image = ?, blood_group = ? WHERE id = ?", [first_name, date_of_birth, gender, profile_image, blood_group, id], (err) => {
                 if (err) {
                     logger.error(err.message);
                     cb(err, null);
@@ -523,8 +521,7 @@ class User {
                 });
             });
         } else {
-            db.query(`UPDATE users SET first_name = ?, date_of_birth = ?, gender = ?, blood_group=? WHERE id = ?
-                `, [first_name, date_of_birth, gender, blood_group, id], (err, res) => {
+            db.query("UPDATE users SET first_name = ?, date_of_birth = ?, gender = ?, blood_group = ? WHERE id = ?", [first_name, date_of_birth, gender, blood_group, id], (err) => {
                 if (err) {
                     logger.error(err.message);
                     cb(err, null);
@@ -536,9 +533,10 @@ class User {
             });
         }
     }
+
     static deleteMember(id, created_by_id, cb) {
         console.log(id, created_by_id);
-        db.query("DELETE FROM users WHERE id= ? AND created_by_id = ?", [id, created_by_id], (err, res) => {
+        db.query("DELETE FROM users WHERE id= ? AND created_by_id = ?", [id, created_by_id], (err) => {
             if (err) {
                 logger.error(err.message);
                 cb(err, null);
@@ -551,7 +549,7 @@ class User {
 
     }
     static oldPasswordCheck(password, id, cb) {
-        db.query(oldPassword, [password, id], (err, res) => {
+        db.query(oldPassword, [password, id], (err) => {
             if (err) {
                 logger.error(err.message);
                 cb(err, null);
@@ -563,7 +561,7 @@ class User {
         });
     }
     static updatePassword(password, id, cb) {
-        db.query(updatePassword, [password, id], (err, res) => {
+        db.query(updatePassword, [password, id], (err) => {
             if (err) {
                 logger.error(err.message);
                 cb(err, null);
@@ -575,7 +573,8 @@ class User {
         });
     }
 
-    static updateUser(username, mobile, profile_image, gender, date_of_birth, first_name, last_name, address, pin_code, opening_time, closing_time, alternate_mobile, blood_group, latitude, longitude, id, cb) {
+    // TODO::RK
+    static updateUserOld(username, mobile, profile_image, gender, date_of_birth, first_name, last_name, address, pin_code, opening_time, closing_time, alternate_mobile, blood_group, latitude, longitude, id, cb) {
         if (profile_image != "") {
             db.query(`UPDATE users SET 
                 first_name='${first_name}',
@@ -620,6 +619,89 @@ class User {
                 });
         }
     }
+    static updateUser(username, mobile, profile_image, gender, date_of_birth, first_name, last_name, address, pin_code, opening_time, closing_time, alternate_mobile, blood_group, latitude, longitude, id, cb) {
+        let sql, params;
+
+        if (profile_image && profile_image.trim() !== "") {
+            sql = `UPDATE users SET 
+            first_name = ?, 
+            last_name = ?, 
+            username = ?, 
+            profile_image = ?, 
+            gender = ?, 
+            date_of_birth = ?, 
+            address = ?, 
+            pin_code = ?, 
+            opening_time = ?, 
+            closing_time = ?, 
+            alternate_mobile = ?, 
+            blood_group = ?, 
+            latitude = ?, 
+            longitude = ?
+            WHERE id = ?`;
+
+            params = [
+                first_name,
+                last_name,
+                username,
+                profile_image,
+                gender,
+                date_of_birth,
+                address,
+                pin_code,
+                opening_time,
+                closing_time,
+                alternate_mobile,
+                blood_group,
+                latitude,
+                longitude,
+                id
+            ];
+        } else {
+            sql = `UPDATE users SET 
+            first_name = ?, 
+            last_name = ?, 
+            username = ?, 
+            gender = ?, 
+            date_of_birth = ?, 
+            address = ?, 
+            pin_code = ?, 
+            opening_time = ?, 
+            closing_time = ?, 
+            alternate_mobile = ?, 
+            blood_group = ?, 
+            latitude = ?, 
+            longitude = ?
+            WHERE id = ?`;
+
+            params = [
+                first_name,
+                last_name,
+                username,
+                gender,
+                date_of_birth,
+                address,
+                pin_code,
+                opening_time,
+                closing_time,
+                alternate_mobile,
+                blood_group,
+                latitude,
+                longitude,
+                id
+            ];
+        }
+
+        db.query(sql, params, (err) => {
+            if (err) {
+                logger.error(err.message);
+                cb(err, null);
+                return;
+            }
+            cb(null, { id });
+        });
+    }
+
 
     static dashboardChart(user_id, type, days, cb) {
         if (days == 7) {
@@ -660,6 +742,7 @@ class User {
             });
         }
     }
+
     static checkOtpVerify(email, forgot_otp, cb) {
         const userData = { email, forgot_otp };
         db.query("SELECT first_name,email,mobile,gender,user_type FROM users WHERE email= ? AND forgot_otp=?",
@@ -675,8 +758,6 @@ class User {
                 cb(null, res);
             });
     }
-
-    // vineet
 
     static addDoctorsold(clinic_id, full_name, email_id, date_of_birth, mobile_number, alternate_mobile_number, gender, experience_in_year, specialities, degress, role_id, profile_image, password, decrypted_password, cb) {
         // var user_type = 'doctor';
