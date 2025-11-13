@@ -76,8 +76,8 @@ exports.dashboard_count = (req, res) => {
             return;
         }
     });
-
 };
+
 exports.paitentList = (req, res) => {
     Admin.paitentList((err, data) => {
         if (err) {

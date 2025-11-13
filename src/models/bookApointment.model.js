@@ -453,22 +453,22 @@ class bookApointment {
         const params = [];
 
         if (doctor_name) {
-            filters.push(`u.first_name LIKE ?`);
+            filters.push("u.first_name LIKE ?");
             params.push(`%${doctor_name}%`);
         }
 
         if (clinic_name) {
-            filters.push(`c.first_name LIKE ?`);
+            filters.push("c.first_name LIKE ?");
             params.push(`%${clinic_name}%`);
         }
 
         if (speciality) {
-            filters.push(`ds.speciality_name LIKE ?`);
+            filters.push("ds.speciality_name LIKE ?");
             params.push(`%${speciality}%`);
         }
 
         if (pin_code) {
-            filters.push(`c.pin_code LIKE ?`);
+            filters.push("c.pin_code LIKE ?");
             params.push(`%${pin_code}%`);
         }
 
