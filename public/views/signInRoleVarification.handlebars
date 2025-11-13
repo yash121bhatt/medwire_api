@@ -48,7 +48,7 @@
                                                                <!--table row with logo image-->
                                                                <td><a target="_blank"
                                                                      href="#"><img
-                                                                       src="https://app.medwire.in/assets/images/medwire-logo.png"
+                                                                       src={{logo}}
                                                                         alt="logo header"
                                                                         style="margin: 0px; padding: 0px; display: block; width: 200px;"
                                                                         width="200px" border="no"></a></td>
@@ -86,7 +86,7 @@
                                                                <td style="font-family: Arial,Helvetica,sans-serif; font-size: 16px; line-height: 24px; color: black; padding-top: 30px; padding-right: 0px;"
                                                                   valign="middle" align="center">
                                                                   <!--here goes section header text --><span
-                                                                     style="font-size: 18px;">{{#if messageMTC}}{{messageMT}}{{else}}Thank you for choosing MedWire. Use this OTP to complete your Sign Up process and verify your account on MedWire.{{/if}}</span>
+                                                                     style="font-size: 18px;">{{#if messageMTC}}{{messageMT}}{{else}}Thank you for choosing {{app_name}}. Use this OTP to complete your Sign Up process and verify your account on {{app_name}}.{{/if}}</span>
                                                                </td>
                                                             </tr>
                                                             <tr>
@@ -171,7 +171,7 @@
                                                                   <!--text goes here--><span
                                                                      style="color: #222222; font-weight:bold;">Regards,
                                                                      </br>
-                                                                    Team MedWire</span>
+                                                                    Team {{app_name}}</span>
                                                                </td>
                                                             </tr>
                                                          </tbody>
@@ -197,7 +197,7 @@
                                                                <td
                                                                   style="font-family: Arial,Helvetica,sans-serif; font-size: 12px; line-height: 18px; color: black; padding-right: 24px; padding-bottom: 20px; padding-left: 24px; max-width:320px; text-align:center;">
                                                                   <!--text goes here--><span style="color: gray;">©2023
-                                                                     MedWire. All Right Reserved.</span>
+                                                                     {{app_name}}. All Right Reserved.</span>
                                                                </td>
                                                             </tr>
                                                          </tbody>

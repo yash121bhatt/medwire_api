@@ -430,9 +430,9 @@ exports.myprofiles = (req, res) => {
     });
 
 };
+
 exports.forgotPassword = async (req, res) => {
     const { email, role_id } = req.body;
-    //const forgot_otp  = Math.floor(1000 + Math.random() * 9000);
     const forgot_otp = helperFunction.generateOTP(6);
     User.otpVerify(email, forgot_otp, role_id, async (err, data) => {
         if (err) {
@@ -450,13 +450,12 @@ exports.forgotPassword = async (req, res) => {
                     return res.status(500).send({
                         status_code: "500",
                         status: "error",
-                        //message: `A user with email address '${email}' not exist`
                         message: "User not exist"
                     });
                 }
+                
                 const name = userData[0].first_name;
                 const logo = process.env.APP_LOGO;
-                const admin_login = process.env.ADMIN_LOGIN_URL;
                 const app_name = process.env.APP_NAME;
                 const token = generateToken(userData[0].id);
 
@@ -482,26 +481,22 @@ exports.forgotPassword = async (req, res) => {
                         console.log("Message sent: " + info.response);
                     });
                 }
-
-
                 return res.status(200).send({
                     status_code: "200",
                     status: "success",
                     token: token
                 });
-
             } catch (error) {
-
                 return res.status(500).send({
                     status_code: "500",
                     status: "error",
                     message: error.message
                 });
             }
-
         }
     });
 };
+
 exports.resetPassword = async (req, res) => {
     try {
         const { verify_token, otp, password } = req.body;
@@ -1322,9 +1317,7 @@ exports.resendOtp = async (req, res) => {
         const { verify_token } = req.body;
         const decoded = jwt.verify(verify_token, JWT_SECRET_KEY);
         if (decoded) {
-
             const userData = await helperQuery.First({ table: "users", where: "id=" + decoded.id });
-            const emailTemplate = userData.account_verify == "1" ? "signInRoleVarification" : "signUpVarification";
             if (helperFunction.isEmptyObject(userData)) {
                 console.log(userData);
                 return res.status(500).json({
@@ -1341,7 +1334,6 @@ exports.resendOtp = async (req, res) => {
             if (data) {
                 const name = userData.first_name;
                 const logo = process.env.APP_LOGO;
-                const admin_login = process.env.ADMIN_LOGIN_URL;
                 const app_name = process.env.APP_NAME;
 
                 if (userData.mobile) {
@@ -1363,7 +1355,7 @@ exports.resendOtp = async (req, res) => {
                         template: "signInRoleVarification",
                         context: { name, email, forgot_otp, logo, app_name, messageMT, messageMTC: true },
                     },
-                    function (error, info) {
+                    function (error) {
                         if (error) {
                             console.log("email", error);
                         }
