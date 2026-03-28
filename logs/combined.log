@@ -1,3 +1,27 @@
 {"level":"info","message":"Running on PORT 3000"}
 {"level":"info","message":"Running on PORT 3000"}
 {"level":"info","message":"Database connected"}
+{"level":"info","message":"DB Dropped!"}
+{"level":"info","message":"DB created!"}
+{"level":"info","message":"Database connected"}
+{"level":"info","message":"Table users created successfully! (New Table)"}
+{"level":"info","message":"Table super_admin created successfully! (New Table)"}
+{"level":"info","message":"Table users_documents created successfully! (New Table)"}
+{"level":"info","message":"Table notification_pre_medicine created successfully! (New Table)"}
+{"level":"info","message":"Table users_hwbmi_details created successfully! (New Table)"}
+{"level":"info","message":"Table new_visit created successfully! (New Table)"}
+{"level":"info","message":"Table doctors_clinic created successfully! (New Table)"}
+{"level":"info","message":"Table operator_permission created successfully! (New Table)"}
+{"level":"info","message":"Table plans created successfully! (New Table)"}
+{"level":"info","message":"Table commissions already existed (Skipped)."}
+{"level":"info","message":"Table appointments created successfully! (New Table)"}
+{"level":"info","message":"Table system_notifications created successfully! (New Table)"}
+{"level":"info","message":"Admin created!"}
+{"level":"info","message":"Running on PORT 3000"}
+{"level":"info","message":"Database connected"}
+{"level":"info","message":"Running on PORT 3000"}
+{"level":"info","message":"Database connected"}
+{"level":"info","message":"Running on PORT 3000"}
+{"level":"info","message":"Database connected"}
+{"level":"info","message":"Running on PORT 3000"}
+{"level":"info","message":"Database connected"}
