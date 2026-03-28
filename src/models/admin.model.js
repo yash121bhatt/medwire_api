@@ -29,6 +29,8 @@ class Admin {
                 });
         });
     }
+
+    // TODO::RK
     static dashboard_count(cb) {
         db.query(`SELECT
         (SELECT COUNT(*) FROM users 
@@ -78,6 +80,51 @@ class Admin {
             cb(null, res[0]);
         });
     }
+    static dashboard_countNew(cb) {
+        db.query(`
+    SELECT
+      -- Patients
+      (SELECT COUNT(*) FROM users WHERE role_id=2 AND status='Active' AND created_at >= DATE_SUB(CURDATE(), INTERVAL 7 WEEK)) AS new_patients,
+      (SELECT COUNT(*) FROM users WHERE role_id=2 AND status='Active') AS old_patients,
+
+      -- Labs
+      (SELECT COUNT(*) FROM users WHERE role_id=3 AND status='Active' AND approve_status='Approve' AND created_at >= DATE_SUB(CURDATE(), INTERVAL 7 WEEK)) AS new_lab,
+      (SELECT COUNT(*) FROM users WHERE role_id=3 AND status='Active' AND approve_status='Approve') AS old_lab,
+
+      -- Radiology
+      (SELECT COUNT(*) FROM users WHERE role_id=4 AND status='Active' AND created_at >= DATE_SUB(CURDATE(), INTERVAL 7 WEEK)) AS new_radio,
+      (SELECT COUNT(*) FROM users WHERE role_id=4 AND status='Active' AND approve_status='Approve') AS old_radio,
+
+      -- Doctors
+      (SELECT COUNT(*) FROM users WHERE role_id=5 AND status='Active' AND created_at >= DATE_SUB(CURDATE(), INTERVAL 7 WEEK)) AS new_doctor,
+      (SELECT COUNT(*) FROM users WHERE role_id=5 AND status='Active' AND approve_status='Approve') AS old_doctor,
+
+      -- Clinics
+      (SELECT COUNT(*) FROM users WHERE role_id=8 AND status='Active' AND created_at >= DATE_SUB(CURDATE(), INTERVAL 7 WEEK)) AS new_clinic,
+      (SELECT COUNT(*) FROM users WHERE role_id=8 AND status='Active' AND approve_status='Approve') AS old_clinic,
+
+      -- Appointments
+      (SELECT COUNT(*) FROM appointments WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)) AS new_appointment,
+      (SELECT COUNT(*) FROM appointments) AS old_appointment,
+      (SELECT COUNT(*) FROM appointments WHERE clinic_id IS NOT NULL) AS clinicTotalAppointment,
+      (SELECT COUNT(*) FROM appointments WHERE clinic_id IS NOT NULL AND DATE(created_at) = CURDATE()) AS clinicTodayAppointment,
+
+      -- Reports
+      (SELECT COUNT(*) FROM new_visit LEFT JOIN users ON new_visit.lab_id = users.id WHERE users.role_id = 3) AS labTotalReport,
+      (SELECT COUNT(*) FROM new_visit LEFT JOIN users ON new_visit.lab_id = users.id WHERE users.role_id = 3 AND DATE(new_visit.created_at) = CURDATE()) AS labTodayReport,
+      (SELECT COUNT(*) FROM new_visit LEFT JOIN users ON new_visit.lab_id = users.id WHERE users.role_id = 4) AS radioTotalReport,
+      (SELECT COUNT(*) FROM new_visit LEFT JOIN users ON new_visit.lab_id = users.id WHERE users.role_id = 4 AND DATE(new_visit.created_at) = CURDATE()) AS radioTodayReport
+  `, (err, res) => {
+            if (err) {
+                logger.error(err.message);
+                cb(err, null);
+                return;
+            }
+            cb(null, res[0]);
+        });
+    }
+
+
     static paitentList(cb) {
         db.query("SELECT * FROM users WHERE role_id = 2  ORDER BY id DESC", (err, res) => {
             if (err) {

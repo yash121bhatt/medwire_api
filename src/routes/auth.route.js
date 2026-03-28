@@ -1,59 +1,43 @@
 const router = require("express").Router();
 const path = require("path");
-const { asyncHandler } = require("../middlewares/asyncHandler");
-const checkEmail = require("../middlewares/checkEmail");
-const { signup: signupValidator, signin: signinValidator, signinRole: signinValidatorRole, addMember: addMemberValidator, updatePassword: updatePasswordValidator, signupradioValidator: signupradioValidator, forgotPassword: forgotPasswordValidator, profileValidator: profileValidator } = require("../validators/auth");
-
-const { addBmi: addBmiValidator, oxygen: oxygenValidator, temperature: temperatureValidator, respiratory: respiratoryValidator, bloodPressure: bloodPressureValidator, heartRate: heartRateValidator, listdata: listdata, historyNotepadValidator: historyNotepadValidator, historyNotepadData: historyNotepadData, historyNotepadsingleData: historyNotepadsingleData, historyNotepadUpdateData: historyNotepadUpdateData } = require("../validators/healthResult");
-const { edit_notification_pre_medicine: edit_notification_pre_medicine, notification_pre_medicine: notification_pre_medicine, list_notification_pre_medicine: list_notification_pre_medicine, pre_notification: pre_notification, list_pre_notification: list_pre_notification } = require("../validators/notification");
-
-const { add_baby: add_baby, list_baby: list_baby, update_baby: update_baby, delete_baby: delete_baby } = require("../validators/baby");
-
-const authController = require("../controllers/auth.controller");
-const checkForgotEmail = require("../middlewares/checkForgotEmail");
-const jwtAuth = require("../middlewares/jwtAuth");
 const multer = require("multer");
 
+const { signup: signupValidator, signin: signinValidator, signinRole: signinValidatorRole, updatePassword: updatePasswordValidator, forgotPassword: forgotPasswordValidator, profileValidator: profileValidator } = require("../validators/auth");
+const { addBmi: addBmiValidator, oxygen: oxygenValidator, temperature: temperatureValidator, respiratory: respiratoryValidator, bloodPressure: bloodPressureValidator, heartRate: heartRateValidator, listdata: listdata, historyNotepadValidator: historyNotepadValidator, historyNotepadData: historyNotepadData, historyNotepadsingleData: historyNotepadsingleData, historyNotepadUpdateData: historyNotepadUpdateData } = require("../validators/healthResult");
+const { edit_notification_pre_medicine: edit_notification_pre_medicine, notification_pre_medicine: notification_pre_medicine, list_notification_pre_medicine: list_notification_pre_medicine, pre_notification: pre_notification, list_pre_notification: list_pre_notification } = require("../validators/notification");
+const { add_baby: add_baby, list_baby: list_baby, update_baby: update_baby, delete_baby: delete_baby } = require("../validators/baby");
+const { bankDetailValidator: bankDetailValidator, addUpdateBankDetailValidator: addUpdateBankDetailValidator } = require("../validators/bankDetail");
+const { updateDoctorFeeValidation: updateDoctorFeeValidation, deleteDoctorFeeValidation: deleteDoctorFeeValidation, getDoctorListValidation: getDoctorListValidation, getDoctorDetailsValidation: getDoctorDetailsValidation, listDoctorValidation: listDoctorValidation, deleteDoctorValidation: deleteDoctorValidation, addDoctorFeeValidation: addDoctorFeeValidation } = require("../validators/doctor");
+const { listStaffValidation: listStaffValidation, deleteStaffValidation: deleteStaffValidation, getStaffDetailValidation: getStaffDetailValidation } = require("../validators/staff");
+const { getDoctorsClinicValidation: getDoctorsClinicValidation, getClinicAppointmentValidation: getClinicAppointmentValidation } = require("../validators/appointment");
+const { prescriptionFooterValidation: prescriptionFooterValidation } = require("../validators/prescription");
+const { symtomesAdd: symtomesAdd, symtomesList: symtomesList, addpregnantWomen: addpregnantWomen } = require("../validators/symtomes");
+const { latestTestReportValidate: latestTestReportValidate } = require("../validators/dashboard");
+
+const { asyncHandler } = require("../middlewares/asyncHandler");
+const jwtAuth = require("../middlewares/jwtAuth");
+const checkEmail = require("../middlewares/checkEmail");
+const checkForgotEmail = require("../middlewares/checkForgotEmail");
+const checkMemberLimit = require("../middlewares/checkMemberLimit");
+const checkEmailVerify = require("../middlewares/checkEmailVerify");
+const checkEmailVerifyRoleSignIn = require("../middlewares/checkEmailVerifyRoleSignIn");
+const checkProfileAccessPermision = require("../middlewares/checkProfileAccessPermision");
+const checkClinicEmail = require("../middlewares/checkClinicEmail");
+const checkClinicMobileNumber = require("../middlewares/checkClinicMobileNumber");
+const checkClinicHospitalForgotEmail = require("../middlewares/checkClinicHospitalForgotEmail");
+const checkPatientExistence = require("../middlewares/checkPatientExistence");
+const checkUserExistenceForUpdate = require("../middlewares/checkUserExistenceForUpdate");
+const checkPromoCodeExistence = require("../middlewares/checkPromoCodeExistence");
+const checkPromoCodeExistenceForUpdate = require("../middlewares/checkPromoCodeExistenceForUpdate");
+const checkExistence = require("../middlewares/checkExistence");
+
+const authController = require("../controllers/auth.controller");
 const healthController = require("../controllers/health.controller");
 const notificationController = require("../controllers/notification.controller");
 const babyController = require("../controllers/baby.controller");
 const documentController = require("../controllers/document.controller");
 const dashboard = require("../controllers/dashboard.controller");
 const ccavenuePayment = require("../controllers/ccavenuePayment.controller");
-
-const checkMemberLimit = require("../middlewares/checkMemberLimit");
-const checkEmailVerify = require("../middlewares/checkEmailVerify");
-const checkEmailVerifyRoleSignIn = require("../middlewares/checkEmailVerifyRoleSignIn");
-const checkProfileAccessPermision = require("../middlewares/checkProfileAccessPermision");
-//const bookApointmentController = require('../controllers/bookApointment.controller');
-//profile access
-
-
-
-
-// vineet
-const checkClinicEmail = require("../middlewares/checkClinicEmail");
-const checkClinicMobileNumber = require("../middlewares/checkClinicMobileNumber");
-const checkDoctorExistence = require("../middlewares/checkDoctorExistence");
-const checkDoctorExistenceForUpdate = require("../middlewares/checkDoctorExistenceForUpdate");
-const checkClinicHospitalForgotEmail = require("../middlewares/checkClinicHospitalForgotEmail");
-const checkPatientExistence = require("../middlewares/checkPatientExistence");
-const checkStaffExistence = require("../middlewares/checkStaffExistence");
-const checkStaffExistenceForUpdate = require("../middlewares/checkStaffExistenceForUpdate");
-const checkUserExistenceForUpdate = require("../middlewares/checkUserExistenceForUpdate");
-const checkPromoCodeExistence = require("../middlewares/checkPromoCodeExistence");
-const checkPromoCodeExistenceForUpdate = require("../middlewares/checkPromoCodeExistenceForUpdate");
-const checkExistence = require("../middlewares/checkExistence");
-// vineet
-
-const { bankDetailValidator: bankDetailValidator, addUpdateBankDetailValidator: addUpdateBankDetailValidator } = require("../validators/bankDetail");
-const { updateDoctorFeeValidation: updateDoctorFeeValidation, deleteDoctorFeeValidation: deleteDoctorFeeValidation, getDoctorListValidation: getDoctorListValidation, getDoctorDetailsValidation: getDoctorDetailsValidation, listDoctorValidation: listDoctorValidation, deleteDoctorValidation: deleteDoctorValidation, addDoctorFeeValidation: addDoctorFeeValidation } = require("../validators/doctor");
-const { listStaffValidation: listStaffValidation, deleteStaffValidation: deleteStaffValidation, getStaffDetailValidation: getStaffDetailValidation } = require("../validators/staff");
-const { getDoctorsClinicValidation: getDoctorsClinicValidation, getClinicAppointmentValidation: getClinicAppointmentValidation, addSymptomValidation: addSymptomValidation, symptomListValidation: symptomListValidation, addHealthStatusValidation: addHealthStatusValidation, healthStatusListValidation: healthStatusListValidation, addExamFindingValidation: addExamFindingValidation, examFindingListValidation: examFindingListValidation, addAdviceValidation: addAdviceValidation, adviceListValidation: adviceListValidation, addFollowUpValidation: addFollowUpValidation, followupListValidation: followupListValidation, addDiagnosticValidation: addDiagnosticValidation } = require("../validators/appointment");
-const { prescriptionFooterValidation: prescriptionFooterValidation } = require("../validators/prescription");
-
-
-// const authController = require('../controllers/auth.controller');
 const doctorFeeController = require("../controllers/doctorFee.controller");
 const doctorController = require("../controllers/doctor.controller");
 const bankDetailController = require("../controllers/bankDetail.controller");
@@ -64,12 +48,6 @@ const planController = require("../controllers/plan.controller");
 const appointmentController = require("../controllers/appointment.controller");
 const prescriptionController = require("../controllers/prescription.controller");
 const profileAccessController = require("../controllers/profileAccess.controller");
-
-//krishna
-const { symtomesAdd: symtomesAdd, symtomesList: symtomesList, addpregnantWomen: addpregnantWomen } = require("../validators/symtomes");
-const { menturationCycleAdd: menturationCycleAdd, menturationCycleEdit: menturationCycleEdit } = require("../validators/menturationCycle");
-const { latestTestReportValidate: latestTestReportValidate } = require("../validators/dashboard");
-
 const symtomesController = require("../controllers/symtomes.controller");
 const pregnantWomen = require("../controllers/pregnantWomen.controller");
 const menturationCycleController = require("../controllers/menturationCycle.controller");
@@ -77,9 +55,6 @@ const laboratoryController = require("../controllers/laboratoryController.js");
 const scanDocumentController = require("../controllers/scanDocument.controller");
 const settingContentController = require("../controllers/settingContent.controller");
 const doctorSpecialityMasterController = require("../controllers/doctorSpecialityMaster.controller");
-
-
-//phase3
 const addDoctorByPatient = require("../controllers/addDoctorByPatient.controller");
 const bookApointmentController = require("../controllers/bookApointment.controller");
 const addByDoctor = require("../controllers/addByDoctor.controller");

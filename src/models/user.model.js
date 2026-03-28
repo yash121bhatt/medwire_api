@@ -1,14 +1,12 @@
-const { date } = require("joi");
-const db = require("../config/db.config");
-const { createNewUser: createNewUserQuery, findUserByEmail: findUserByEmailQuery, createNewradioUserQuery: createNewradioUserQuery, findUserByIdQuery: findUserByIdQuery, verifyOtp: verifyOtp, findMemberByIdQuery: findMemberByIdQuery, resetPassword: resetPassword, createMember: createMember, updateUser: updateUser, updatePassword: updatePassword, oldPassword: oldPassword, updateMember: updateMember, createDoctor: createDoctor, addDoctorFeeQuery: addDoctorFeeQuery, addDoctorSpeciality: addDoctorSpeciality, addDoctorDegree: addDoctorDegree, updateDoctorSpeciality: updateDoctorSpeciality, updateDoctorDegree: updateDoctorDegree, addDoctorSchedule: addDoctorSchedule, updateDoctorSchedule: updateDoctorSchedule, addDoctorAvailability: addDoctorAvailability, updateDoctorAvailability: updateDoctorAvailability } = require("../database/queries");
-const { logger } = require("../utils/logger");
-const helperFunction = require("../helper/helperFunction");
-const { transporter: transporter, mailOptions: mailOptions, autoGenPassword: autoGenPassword } = require("../helper/helper");
+const moment = require("moment");
 const requestPromise = require("request-promise");
 const jwt = require("jsonwebtoken");
+const db = require("../config/db.config");
+const { logger } = require("../utils/logger");
+const { transporter } = require("../helper/helper");
+const helperFunction = require("../helper/helperFunction");
 const helperQuery = require("../helper/helperQuery");
-const { async } = require("q");
-const moment = require("moment");
+const { createNewUser: createNewUserQuery, createNewradioUserQuery: createNewradioUserQuery, findUserByIdQuery: findUserByIdQuery, verifyOtp: verifyOtp, findMemberByIdQuery: findMemberByIdQuery, resetPassword: resetPassword, createMember: createMember, updateUser: updateUser, updatePassword: updatePassword, oldPassword: oldPassword, updateMember: updateMember, createDoctor: createDoctor, addDoctorFeeQuery: addDoctorFeeQuery, addDoctorSpeciality: addDoctorSpeciality, addDoctorDegree: addDoctorDegree, updateDoctorSpeciality: updateDoctorSpeciality, updateDoctorDegree: updateDoctorDegree, addDoctorSchedule: addDoctorSchedule, updateDoctorSchedule: updateDoctorSchedule, addDoctorAvailability: addDoctorAvailability, updateDoctorAvailability: updateDoctorAvailability } = require("../database/queries");
 
 
 class User {
@@ -21,7 +19,8 @@ class User {
         this.role_id = role_id;
     }
 
-    static findAllInsightAppointments(from_date, to_date, user_id, role_id, age_group, gender, pin_code, filter_by, appointment_date, month, year, cb) {
+    // TODO::RK
+    static findAllInsightAppointmentsOld(from_date, to_date, user_id, role_id, age_group, gender, pin_code, filter_by, appointment_date, month, year, cb) {
         var filter_condition = "";
         if (filter_by == "day") {
             if (appointment_date != "") {
@@ -87,6 +86,94 @@ class User {
             }
         });
     }
+    static findAllInsightAppointments(from_date, to_date, user_id, role_id, age_group, gender, pin_code, filter_by, appointment_date, month, year, cb) {
+        var filter_condition = "";
+        if (filter_by == "day") {
+            if (appointment_date != "") {
+                filter_condition = " where ap.appointment_date =" + "'" + appointment_date + "'";
+            }
+        }
+        if (filter_by == "month") {
+            if (month != "") {
+                filter_condition = " where MONTH(ap.appointment_date) =" + "'" + month + "'";
+            }
+        }
+        if (filter_by == "year") {
+            if (year != "") {
+                filter_condition = " where YEAR(ap.appointment_date) =" + "'" + year + "'";
+            }
+        }
+        if (from_date != "" && from_date != undefined && to_date != "" && to_date != undefined) {
+            filter_condition = " where ap.appointment_date BETWEEN " + "'" + from_date + "' AND " + "'" + to_date + "'";
+        }
+        if (gender != "" && gender != undefined) {
+            filter_condition += " and u.gender=" + "'" + gender + "'";
+        }
+        if (user_id != "" && user_id != undefined) {
+            filter_condition += " and ap.user_id=" + "'" + user_id + "'";
+        }
+        if (pin_code != "" && pin_code != undefined) {
+            filter_condition += " and u2.pin_code=" + "'" + pin_code + "'";
+        }
+        if (age_group != "" && age_group != undefined) {
+            if (age_group == "below_5") {
+                filter_condition += " and TIMESTAMPDIFF(YEAR,DATE_FORMAT(STR_TO_DATE(u.date_of_birth,'%a %M %D %Y'), '%Y-%m-%d'),CURDATE()) < 5";
+            }
+            if (age_group == "between_5_and_18") {
+                filter_condition += " and TIMESTAMPDIFF(YEAR,DATE_FORMAT(STR_TO_DATE(u.date_of_birth,'%a %M %D %Y'), '%Y-%m-%d'),CURDATE()) BETWEEN 5 AND 18";
+            }
+            if (age_group == "above_18") {
+                filter_condition += " and TIMESTAMPDIFF(YEAR,DATE_FORMAT(STR_TO_DATE(u.date_of_birth,'%a %M %D %Y'), '%Y-%m-%d'),CURDATE()) > 18";
+            }
+        }
+
+        // ✅ Fix: ORDER BY MAX(ap.id) instead of ap.id (to avoid ONLY_FULL_GROUP_BY error)
+        if (role_id == 3) {
+            var query = "SELECT COUNT(CASE WHEN u.gender = 'Male' THEN u.id END) AS total_males, " +
+                "COUNT(CASE WHEN u.gender = 'Female' THEN u.id END) AS total_females, " +
+                "COUNT(ap.id) as total_booking, u2.id as lab_id, u2.first_name as lab_name, u2.pin_code as pin_code " +
+                "FROM appointments as ap inner join users as u on ap.created_by_id = u.id " +
+                "inner join users u2 on ap.user_id = u2.id " +
+                filter_condition +
+                " and u2.role_id = 3 and ap.payment_status = 'Success' GROUP BY ap.user_id ORDER BY MAX(ap.id) DESC";
+        }
+        if (role_id == 4) {
+            var query = "SELECT COUNT(CASE WHEN u.gender = 'Male' THEN u.id END) AS total_males, " +
+                "COUNT(CASE WHEN u.gender = 'Female' THEN u.id END) AS total_females, " +
+                "COUNT(ap.id) as total_booking, COUNT(u.id) as total_patients, u2.id as radiology_id, u2.first_name as radiology_name, u2.pin_code as pin_code " +
+                "FROM appointments as ap inner join users as u on ap.created_by_id = u.id " +
+                "inner join users u2 on ap.user_id = u2.id " +
+                filter_condition +
+                " and u2.role_id = 4 and ap.payment_status = 'Success' GROUP BY ap.user_id ORDER BY MAX(ap.id) DESC";
+        }
+        if (role_id == 8) {
+            var query = "SELECT COUNT(CASE WHEN u.gender = 'Male' THEN u.id END) AS total_males, " +
+                "COUNT(CASE WHEN u.gender = 'Female' THEN u.id END) AS total_females, " +
+                "COUNT(ap.id) as total_booking, COUNT(u.id) as total_patients, u2.id as clinic_id, u2.first_name as clinic_name, u2.pin_code as pin_code " +
+                "FROM appointments as ap inner join users as u on ap.created_by_id = u.id " +
+                "inner join users u2 on ap.clinic_id = u2.id " +
+                filter_condition +
+                " and u2.role_id = 8 and ap.payment_status = 'Success' GROUP BY ap.user_id ORDER BY MAX(ap.id) DESC";
+        }
+
+        console.log(query);
+
+        db.query(query, (err, res) => {
+            if (err) {
+                logger.error(err.message);
+                cb(err, null);
+                return;
+            }
+
+            if (res) {
+                cb(null, res);
+            } else {
+                cb({ kind: "not_found" }, null);
+            }
+        });
+    }
+
+
     static radiocreate(username, email, mobile, password, user_type, role_id, adhar_card, approve_document, forgot_otp, cb) {
         db.query(createNewradioUserQuery,
             [
@@ -420,10 +507,10 @@ class User {
 
         });
     }
+
     static updateMember(first_name, mobile, date_of_birth, gender, profile_image, blood_group, id, cb) {
         if (profile_image != "") {
-            db.query(`UPDATE users SET first_name = ?, date_of_birth = ?, gender = ?, profile_image=?, blood_group=? WHERE id = ?
-            `, [first_name, date_of_birth, gender, profile_image, blood_group, id], (err, res) => {
+            db.query("UPDATE users SET first_name = ?, date_of_birth = ?, gender = ?, profile_image = ?, blood_group = ? WHERE id = ?", [first_name, date_of_birth, gender, profile_image, blood_group, id], (err) => {
                 if (err) {
                     logger.error(err.message);
                     cb(err, null);
@@ -434,8 +521,7 @@ class User {
                 });
             });
         } else {
-            db.query(`UPDATE users SET first_name = ?, date_of_birth = ?, gender = ?, blood_group=? WHERE id = ?
-                `, [first_name, date_of_birth, gender, blood_group, id], (err, res) => {
+            db.query("UPDATE users SET first_name = ?, date_of_birth = ?, gender = ?, blood_group = ? WHERE id = ?", [first_name, date_of_birth, gender, blood_group, id], (err) => {
                 if (err) {
                     logger.error(err.message);
                     cb(err, null);
@@ -447,9 +533,10 @@ class User {
             });
         }
     }
+
     static deleteMember(id, created_by_id, cb) {
         console.log(id, created_by_id);
-        db.query("DELETE FROM users WHERE id= ? AND created_by_id = ?", [id, created_by_id], (err, res) => {
+        db.query("DELETE FROM users WHERE id= ? AND created_by_id = ?", [id, created_by_id], (err) => {
             if (err) {
                 logger.error(err.message);
                 cb(err, null);
@@ -462,7 +549,7 @@ class User {
 
     }
     static oldPasswordCheck(password, id, cb) {
-        db.query(oldPassword, [password, id], (err, res) => {
+        db.query(oldPassword, [password, id], (err) => {
             if (err) {
                 logger.error(err.message);
                 cb(err, null);
@@ -474,7 +561,7 @@ class User {
         });
     }
     static updatePassword(password, id, cb) {
-        db.query(updatePassword, [password, id], (err, res) => {
+        db.query(updatePassword, [password, id], (err) => {
             if (err) {
                 logger.error(err.message);
                 cb(err, null);
@@ -486,7 +573,8 @@ class User {
         });
     }
 
-    static updateUser(username, mobile, profile_image, gender, date_of_birth, first_name, last_name, address, pin_code, opening_time, closing_time, alternate_mobile, blood_group, latitude, longitude, id, cb) {
+    // TODO::RK
+    static updateUserOld(username, mobile, profile_image, gender, date_of_birth, first_name, last_name, address, pin_code, opening_time, closing_time, alternate_mobile, blood_group, latitude, longitude, id, cb) {
         if (profile_image != "") {
             db.query(`UPDATE users SET 
                 first_name='${first_name}',
@@ -531,6 +619,89 @@ class User {
                 });
         }
     }
+    static updateUser(username, mobile, profile_image, gender, date_of_birth, first_name, last_name, address, pin_code, opening_time, closing_time, alternate_mobile, blood_group, latitude, longitude, id, cb) {
+        let sql, params;
+
+        if (profile_image && profile_image.trim() !== "") {
+            sql = `UPDATE users SET 
+            first_name = ?, 
+            last_name = ?, 
+            username = ?, 
+            profile_image = ?, 
+            gender = ?, 
+            date_of_birth = ?, 
+            address = ?, 
+            pin_code = ?, 
+            opening_time = ?, 
+            closing_time = ?, 
+            alternate_mobile = ?, 
+            blood_group = ?, 
+            latitude = ?, 
+            longitude = ?
+            WHERE id = ?`;
+
+            params = [
+                first_name,
+                last_name,
+                username,
+                profile_image,
+                gender,
+                date_of_birth,
+                address,
+                pin_code,
+                opening_time,
+                closing_time,
+                alternate_mobile,
+                blood_group,
+                latitude,
+                longitude,
+                id
+            ];
+        } else {
+            sql = `UPDATE users SET 
+            first_name = ?, 
+            last_name = ?, 
+            username = ?, 
+            gender = ?, 
+            date_of_birth = ?, 
+            address = ?, 
+            pin_code = ?, 
+            opening_time = ?, 
+            closing_time = ?, 
+            alternate_mobile = ?, 
+            blood_group = ?, 
+            latitude = ?, 
+            longitude = ?
+            WHERE id = ?`;
+
+            params = [
+                first_name,
+                last_name,
+                username,
+                gender,
+                date_of_birth,
+                address,
+                pin_code,
+                opening_time,
+                closing_time,
+                alternate_mobile,
+                blood_group,
+                latitude,
+                longitude,
+                id
+            ];
+        }
+
+        db.query(sql, params, (err) => {
+            if (err) {
+                logger.error(err.message);
+                cb(err, null);
+                return;
+            }
+            cb(null, { id });
+        });
+    }
+
 
     static dashboardChart(user_id, type, days, cb) {
         if (days == 7) {
@@ -571,6 +742,7 @@ class User {
             });
         }
     }
+
     static checkOtpVerify(email, forgot_otp, cb) {
         const userData = { email, forgot_otp };
         db.query("SELECT first_name,email,mobile,gender,user_type FROM users WHERE email= ? AND forgot_otp=?",
@@ -586,8 +758,6 @@ class User {
                 cb(null, res);
             });
     }
-
-    // vineet
 
     static addDoctorsold(clinic_id, full_name, email_id, date_of_birth, mobile_number, alternate_mobile_number, gender, experience_in_year, specialities, degress, role_id, profile_image, password, decrypted_password, cb) {
         // var user_type = 'doctor';
@@ -843,71 +1013,102 @@ class User {
                 });
 
             } else {
+                const insertQuery = `
+                                        INSERT INTO users (
+                                            added_by,
+                                            first_name,
+                                            email,
+                                            mobile,
+                                            alternate_mobile,
+                                            gender,
+                                            experience_in_year,
+                                            date_of_birth,
+                                            user_type,
+                                            role_id,
+                                            created_by_id,
+                                            password,
+                                            profile_image,
+                                            created_at,
+                                            account_verify
+                                        )
+                                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?)
+                                    `;
 
-                db.query(`INSERT INTO users(added_by,first_name,email,mobile,alternate_mobile,gender,experience_in_year,date_of_birth,user_type,role_id,created_by_id,password,profile_image,created_at,account_verify) 
-                                     VALUES('${added_by}','${full_name}','${email_id}','${mobile_number}','${alternate_mobile_number}','${gender}','${experience_in_year}','${date_of_birth}','${user_type}','5','${clinic_id}','${password}','${profile_image}',NOW(),'1')`,
-                    (err, res) => {
-                        if (err) {
-                            logger.error(err.message);
-                            console.log("plan_purchase_history update", err);
-                            return reject(err);
-                        }
-                        if (res) {
-                            var logo = process.env.APP_LOGO;
-                            var app_name = process.env.APP_NAME;
-                            var user_login_url = process.env.USER_LOGIN_URL;
-                            helperFunction.template(transporter, true);
-                            transporter.sendMail({
-                                from: process.env.MAIL_FROM_ADDRESS,
-                                to: email_id,
-                                subject: "You have been Registered by  " + created_by_name + " on MedWire",
-                                template: "new_invitation",
-                                context: { full_name, email_id, logo, app_name, created_by_name, decrypted_password, user_login_url }
-                            }, function (error, info) {
-                                if (error) {
-                                    return console.log(error);
-                                }
-                            });
+                const insertValues = [
+                    added_by,
+                    full_name,
+                    email_id,
+                    mobile_number,
+                    alternate_mobile_number,
+                    gender,
+                    experience_in_year,
+                    date_of_birth,
+                    user_type,
+                    5,
+                    clinic_id,
+                    password,
+                    profile_image,
+                    "1"
+                ];
+                db.query(insertQuery, insertValues, (err, res) => {
+                    if (err) {
+                        logger.error(err.message);
+                        console.log("plan_purchase_history update", err);
+                        return reject(err);
+                    }
+                    if (res) {
 
-                            db.query(`SELECT * FROM plan_purchase_history WHERE user_id = '${clinic_id}' and status = 'active'`, [clinic_id], (err, pphres) => {
-                                if (err) {
-                                    logger.error(err.message);
-                                    console.log("plan_purchase_history", err);
-                                }
+                        var logo = process.env.APP_LOGO;
+                        var app_name = process.env.APP_NAME;
+                        var user_login_url = process.env.USER_LOGIN_URL;
+                        helperFunction.template(transporter, true);
 
-                                if (pphres.length > 0) {
-                                    var total_limit = pphres[0].total_limit;
-                                    var new_total_limit = total_limit - 1;
+                        transporter.sendMail({
+                            from: process.env.MAIL_FROM_ADDRESS,
+                            to: email_id,
+                            subject: "You have been Registered by  " + created_by_name + " on MedWire",
+                            template: "new_invitation",
+                            context: { full_name, email_id, logo, app_name, created_by_name, decrypted_password, user_login_url }
+                        }, function (error, info) {
+                            if (error) {
+                                return console.log(error);
+                            }
+                        });
 
-                                    db.query("update plan_purchase_history set total_limit = ? where user_id = ? and status = 'active'", [new_total_limit, clinic_id], (err, res) => {
-
-
-                                        if (err) {
-                                            logger.error(err.message);
-                                            console.log("plan_purchase_history update", err);
-                                        }
-                                    });
-
-                                }
-
-                            });
-                            return resolve({
-                                id: res.insertId,
-                                full_name: full_name,
-                                date_of_birth: date_of_birth,
-                                email: email_id,
-                                mobile: parseInt(mobile_number),
-                                gender: gender,
-                                profile_image: profile_image,
-                                experience_in_year: experience_in_year,
-                                created_by_id: parseInt(clinic_id),
-                                password: password
-                            });
-                        }
-                    });
+                        db.query(`SELECT * FROM plan_purchase_history WHERE user_id = '${clinic_id}' and status = 'active'`, [clinic_id], (err, pphres) => {
+                            if (err) {
+                                logger.error(err.message);
+                                console.log("plan_purchase_history", err);
+                            }
+                            if (pphres.length > 0) {
+                                var total_limit = pphres[0].total_limit;
+                                var new_total_limit = total_limit - 1;
+                                db.query("update plan_purchase_history set total_limit = ? where user_id = ? and status = 'active'", [new_total_limit, clinic_id], (err, res) => {
+                                    if (err) {
+                                        logger.error(err.message);
+                                        console.log("plan_purchase_history update", err);
+                                    }
+                                });
+                            }
+                        });
+                        return resolve({
+                            id: res.insertId,
+                            full_name: full_name,
+                            date_of_birth: date_of_birth,
+                            email: email_id,
+                            mobile: parseInt(mobile_number),
+                            gender: gender,
+                            profile_image: profile_image,
+                            experience_in_year: experience_in_year,
+                            created_by_id: parseInt(clinic_id),
+                            password: password
+                        });
+                    }
+                });
             }
         });
     }
+
     static addClinicDoctorForAddDoctor(doctId, clinic_id) {
         return new Promise((resolve, reject) => {
             db.query("Insert into doctors_clinic(doctor_id,clinic_id) values(?,?)", [doctId, clinic_id], (err, res) => {
@@ -956,11 +1157,37 @@ class User {
         });
     }
     static findDoctorByIdAndRole(id, cb) {
-        db.query(`SELECT users.signature,users.id,users.mobile,users.alternate_mobile,users.email,
+        const oldQuery = `SELECT users.signature,users.id,users.mobile,users.alternate_mobile,users.email,
         users.profile_image,users.first_name,users.last_name,users.date_of_birth,users.gender,users.experience_in_year,GROUP_CONCAT(DISTINCT doctor_degrees.id) as degrees_ids,doctor_degrees.degree_name,GROUP_CONCAT(DISTINCT doctor_specialities.id) as speciality_ids, GROUP_CONCAT(DISTINCT doctor_specialities.speciality_name) as specialities, GROUP_CONCAT(DISTINCT doctor_degrees.degree_name) as degrees 
         FROM users inner join doctor_specialities ON users.id = doctor_specialities.doctor_id 
         inner join doctor_degrees ON users.id = doctor_degrees.doctor_id 
-        WHERE users.id = ?  and users.deleted_at IS NULL`, [id], (err, res) => {
+        WHERE users.id = ?  and users.deleted_at IS NULL`;
+        const newQuery = `SELECT
+                            users.signature,
+                            users.id,
+                            users.mobile,
+                            users.alternate_mobile,
+                            users.email,
+                            users.profile_image,
+                            users.first_name,
+                            users.last_name,
+                            users.date_of_birth,
+                            users.gender,
+                            users.experience_in_year,
+                            GROUP_CONCAT(DISTINCT doctor_degrees.id) AS degrees_ids,
+                            GROUP_CONCAT(DISTINCT doctor_degrees.degree_name) AS degrees,
+                            GROUP_CONCAT(DISTINCT doctor_specialities.id) AS speciality_ids,
+                            GROUP_CONCAT(DISTINCT doctor_specialities.speciality_name) AS specialities
+                            FROM
+                            users
+                            INNER JOIN doctor_specialities ON users.id = doctor_specialities.doctor_id
+                            INNER JOIN doctor_degrees ON users.id = doctor_degrees.doctor_id
+                            WHERE
+                            users.id = ?
+                            AND users.deleted_at IS NULL
+                            GROUP BY
+                            users.id;`;
+        db.query(newQuery, [id], (err, res) => {
             if (err) {
                 logger.error(err.message);
                 cb(err, null);
@@ -1084,9 +1311,29 @@ class User {
             }, 100);
         });
     }
+
     static findAllClinicDoctors(clinic_id, cb) {
         var staff_name = "";
-        db.query("SELECT distinct u.id,u.email,u.mobile,u.alternate_mobile,u.profile_image,u.first_name,u.adhar_card,u.date_of_birth,u.experience_in_year,u.gender,u.added_by FROM users as u left join doctors_clinic as dc on u.id = dc.doctor_id WHERE dc.clinic_id = ? and u.role_id = 5 order by dc.id desc", [clinic_id], (err, res) => {
+        const selectQuery = `SELECT distinct
+                                u.id,
+                                u.email,
+                                u.mobile,
+                                u.alternate_mobile,
+                                u.profile_image,
+                                u.first_name,
+                                u.adhar_card,
+                                u.date_of_birth,
+                                u.experience_in_year,
+                                u.gender,
+                                u.added_by 
+                                FROM
+                                users as u
+                                left join doctors_clinic as dc on u.id = dc.doctor_id 
+                                WHERE
+                                dc.clinic_id = ? 
+                                and u.role_id = 5`;
+        // const oldQuery = "SELECT distinct u.id,u.email,u.mobile,u.alternate_mobile,u.profile_image,u.first_name,u.adhar_card,u.date_of_birth,u.experience_in_year,u.gender,u.added_by FROM users as u left join doctors_clinic as dc on u.id = dc.doctor_id WHERE dc.clinic_id = ? and u.role_id = 5 order by dc.id desc"
+        db.query(selectQuery, [clinic_id], (err, res) => {
             if (err) {
                 logger.error(err.message);
                 cb(err, null);
@@ -1148,6 +1395,7 @@ class User {
             }, 100);
         });
     }
+
     static updateDoctor(staff_id, doctor_id, clinic_id, full_name, email_id, date_of_birth, mobile_number, alternate_mobile_number, gender, experience_in_year, specialities, degrees, profile_image, cb) {
         var updated_at = helperFunction.getCurrentDateTime();
         var specialities = specialities.split(",");
@@ -1721,7 +1969,8 @@ class User {
         });
     }
     static viewDoctorWeeklySchedule(doctor_id, clinic_id, cb) {
-        db.query("SELECT * FROM doctor_schedule WHERE doctor_id = ? AND clinic_id=?", [doctor_id, clinic_id], (err, res) => {
+        db.query("SELECT * FROM doctor_schedule WHERE doctor_id = ? AND clinic_id = ?", [doctor_id, clinic_id], (err, res) => {
+            console.log("---------------------- res", res);
             if (res.length > 0) {
                 let result = [];
                 for (let i = 0; i < res.length; i++) {
@@ -1785,8 +2034,6 @@ class User {
                 var arr = [doctor_id, patient_id];
             }
         }
-
-
         db.query(query, arr, async (err, res) => {
             if (err) {
                 logger.error(err.message);
@@ -1796,8 +2043,6 @@ class User {
             if (res.length > 0) {
                 cb({ kind: "already_requested" }, null);
             } else {
-
-
                 const checkMemberExistence = await helperQuery.All(`SELECT id FROM users WHERE created_by_id = '${patient_id}' and id = '${member_id}'`);
                 if (checkMemberExistence.length > 0) {
                     db.query("INSERT into profile_access(doctor_id,patient_id,member_id,status,requested_at) values(?,?,?,?,NOW())", [doctor_id, patient_id, member_id, "Pending"], async (err, res) => {
@@ -1907,18 +2152,29 @@ class User {
     }
     static profileAccessList(user_id, role_id, cb) {
         if (role_id == 5) {
-            db.query(`SELECT u1.mobile,u1.email,u1.gender,
-            u1.profile_image,u1.permanent_id as medwire_id,
-            u1.mobile,u1.pin_code,u1.first_name as patient_name,
-            pa.member_id,pa.time_interval,pa.id as request_id,
-            u.id,u.first_name as doctor_name,
-            pa.status 
-            FROM profile_access pa 
-            inner join  users u on u.id = pa.doctor_id 
-            inner join users u1 on u1.id = pa.patient_id 
-            WHERE pa.doctor_id = '${user_id}'
-            and u1.role_id=2
-            and pa.deleted_at IS NULL`, [user_id], async (err, res) => {
+            db.query(`SELECT
+                        u1.mobile,
+                        u1.email,
+                        u1.gender,
+                        u1.profile_image,
+                        u1.permanent_id as medwire_id,
+                        u1.mobile,
+                        u1.pin_code,
+                        u1.first_name as patient_name,
+                        pa.member_id,
+                        pa.time_interval,
+                        pa.id as request_id,
+                        u.id,
+                        u.first_name as doctor_name,
+                        pa.status 
+                        FROM
+                        profile_access pa
+                        inner join users u on u.id = pa.doctor_id
+                        inner join users u1 on u1.id = pa.patient_id 
+                        WHERE
+                        pa.doctor_id = '${user_id}' 
+                        and u1.role_id = 2 
+                        and pa.deleted_at IS NULL`, [user_id], async (err, res) => {
                 if (err) {
                     logger.error(err.message);
                     cb(err, null);

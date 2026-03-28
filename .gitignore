@@ -1,9 +1,12 @@
 # Ignore files related to API keys
 .env
+.env.prod
 # Ignore node_modules folder
 node_modules
 public/dicom
 public/laboratory
 public/member
+public/prescription_pdfs
+public/signature
 public/symptom
 logspublic/*.json

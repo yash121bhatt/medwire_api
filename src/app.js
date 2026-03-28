@@ -49,10 +49,8 @@ app.use(bodyparser.urlencoded({
 app.use(morgan("dev"));
 app.use(morgan("combined", { stream: httpLogStream }));
 
-const path = require("path");
-const helperFunction = require("./helper/helperFunction");
-
-// ✅ STATIC
+// const path = require("path");
+// const helperFunction = require("./helper/helperFunction");
 app.use(express.static("public"));
 
 // ✅ ROUTES
@@ -62,6 +60,26 @@ app.use("/api/laboratory", laboratoryRoute);
 
 // ✅ TEST ROUTE
 app.get("/", (req, res) => {
+
+    // let email_id = 'rk85783@mailinator.com'
+
+    // Example with templete
+    // let emailOption = {
+    //     to: email_id,
+    //     subject: "This is MedWire Invitation by ",
+    //     template: 'plan_purchase',
+    //     context: { full_name: "Rohit Kumar Mahor", email_id, logo: "#", app_name: "test", decrypted_password: "hdfhdsfhjk", user_login_url: "#", created_by_name: "Rohit" }
+    // }
+    // helperFunction.sendEmail(emailOption, true);
+
+    // Example without templete
+    // let emailOption1={
+    //     to:email_id,
+    //     subject:"This is MedWire Invitation by ",
+    //     html: "<b>Hello world?</b>"
+    // };
+    // helperFunction.sendEmail(emailOption1);
+
     res.status(200).send({
         status: "success",
         data: {

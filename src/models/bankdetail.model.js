@@ -3,7 +3,7 @@ const db = require("../config/db.config");
 const { logger } = require("../utils/logger");
 
 class BankDetail {
-    static addUpdateBankDetail(beneficiary_name,bank_name,bank_account_number,ifsc_code,account_type,clinic_id,cb) {
+    static addUpdateBankDetail(beneficiary_name, bank_name, bank_account_number, ifsc_code, account_type, clinic_id, cb) {
         db.query(`SELECT * FROM bank_detail WHERE created_by_id = '${clinic_id}'`, [clinic_id], (err, res) => {
             if (err) {
                 logger.error(err.message);
@@ -11,12 +11,12 @@ class BankDetail {
                 return;
             }
             if (res.length == 0) {
-                db.query("INSERT into bank_detail(beneficiary_name,bank_name,bank_account_number,ifsc_code,account_type,created_by_id) values(?,?,?,?,?,?)", [beneficiary_name,bank_name,bank_account_number,ifsc_code,account_type,clinic_id], (err, res) => {
+                db.query("INSERT into bank_detail(beneficiary_name,bank_name,bank_account_number,ifsc_code,account_type,created_by_id) values(?,?,?,?,?,?)", [beneficiary_name, bank_name, bank_account_number, ifsc_code, account_type, clinic_id], (err, res) => {
                     if (err) {
                         logger.error(err.message);
                         cb(err, null);
                         return;
-                    }   
+                    }
                 });
             } else {
 
@@ -41,38 +41,38 @@ class BankDetail {
                 // current seconds
                 let seconds = date_ob.getSeconds();
                 var updated_at = year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds;
-                db.query("UPDATE bank_detail SET beneficiary_name = ? ,bank_name = ?,bank_account_number = ? ,ifsc_code = ? ,updated_at = ? , account_type = ? where created_by_id = ?", [beneficiary_name,bank_name,bank_account_number,ifsc_code,updated_at,account_type,clinic_id], (err, res) => {
+                db.query("UPDATE bank_detail SET beneficiary_name = ? ,bank_name = ?,bank_account_number = ? ,ifsc_code = ? ,updated_at = ? , account_type = ? where created_by_id = ?", [beneficiary_name, bank_name, bank_account_number, ifsc_code, updated_at, account_type, clinic_id], (err, res) => {
                     if (err) {
                         logger.error(err.message);
                         cb(err, null);
                         return;
-                    }  
+                    }
                 });
-            } 
-
-            cb(null, res);
-            return;           
-        });
-    }
-
-    static getDetail(clinic_id,cb) {
-        db.query(`SELECT * FROM bank_detail WHERE created_by_id = '${clinic_id}'`,
-         [clinic_id],
-         (err, res) => {
-
-            if (err) {
-
-                logger.error(err.message);
-                cb(err, null);
-                return;
             }
 
-            if(res) {
-                cb(null, res[0]);
-                return;                
-            }            
+            cb(null, res);
+            return;
         });
     }
-    
+
+    static getDetail(clinic_id, cb) {
+        db.query(`SELECT * FROM bank_detail WHERE created_by_id = '${clinic_id}'`,
+            [clinic_id],
+            (err, res) => {
+
+                if (err) {
+
+                    logger.error(err.message);
+                    cb(err, null);
+                    return;
+                }
+
+                if (res) {
+                    cb(null, res[0]);
+                    return;
+                }
+            });
+    }
+
 }
 module.exports = BankDetail;

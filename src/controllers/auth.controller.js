@@ -3,9 +3,10 @@ const ClinicOrHospital = require("../models/clinicorhospital.model");
 const { hash: hashPassword, compare: comparePassword } = require("../utils/password");
 const { generate: generateToken } = require("../utils/token");
 const { generateOTP } = require("../utils/generateOTP.js");
-const { uniqueEmailAndMobile: uniqueEmailAndMobile } = require("../helper/helper");
+const { uniqueEmailAndMobile: uniqueEmailAndMobile, getCopyrightYear } = require("../helper/helper");
 const helperQuery = require("../helper/helperQuery");
 const { async } = require("q");
+const moment = require("moment");
 
 const { transporter: transporter } = require("../helper/helper");
 const helperFunction = require("../helper/helperFunction");
@@ -111,7 +112,7 @@ exports.radiosignup = async (req, res) => {
             if (error) {
                 console.log(error);
             }
-            // console.log('Message sent: ' + info.response +'test'+posswordt);
+            console.log("Email sent : ", info.response);
         });
         const token = generateToken(data.id);
         if (mobile) {
@@ -133,7 +134,6 @@ exports.signup = async (req, res) => {
     const { username, email, mobile, password, user_type, role_id } = req.body;
     const alternate_mobile = req.body.alternate_mobile != undefined ? req.body.alternate_mobile : null;
     const passwordt = hashPassword(password.trim());
-    //const user = new User(username, email.trim(), mobile.trim(),passwordt, user_type, role_id)
     const forgot_otp = helperFunction.generateOTP(6);
     User.create(username, email.trim(), mobile.trim(), alternate_mobile, passwordt, user_type, forgot_otp, role_id, async (err, data) => {
         if (err) {
@@ -148,27 +148,31 @@ exports.signup = async (req, res) => {
 
             const name = username;
             const logo = process.env.APP_LOGO;
-            const admin_login = process.env.ADMIN_LOGIN_URL;
             const app_name = process.env.APP_NAME;
+            const copyright_year = getCopyrightYear(process.env.APP_START_YEAR);
+
             const token = generateToken(data.id);
+            
             helperFunction.template(transporter, true);
             transporter.sendMail({
                 from: process.env.MAIL_FROM_ADDRESS,
                 to: email,
                 subject: "MedWire Confirmation Mail",
                 template: "signUpVarification",
-                context: { name, email, forgot_otp, logo, app_name }
+                context: { name, email, forgot_otp, logo, app_name, copyright_year }
             }, function (error, info) {
                 if (error) {
                     console.log(error);
                 }
-                // console.log('Message sent: ' + info.response +'test'+posswordt);
+                console.log("Message sent: " + info.response);
             });
+            
             if (mobile) {
                 var message = forgot_otp + " is your OTP for Verification of your account at MedWire. Thank you.";
                 var mobile_number = mobile;
                 await helperFunction.sendJapiSMS(mobile_number, message); // rohit
             }
+            
             res.status(200).send({
                 status_code: "200",
                 status: "success",
@@ -428,9 +432,9 @@ exports.myprofiles = (req, res) => {
     });
 
 };
+
 exports.forgotPassword = async (req, res) => {
     const { email, role_id } = req.body;
-    //const forgot_otp  = Math.floor(1000 + Math.random() * 9000);
     const forgot_otp = helperFunction.generateOTP(6);
     User.otpVerify(email, forgot_otp, role_id, async (err, data) => {
         if (err) {
@@ -448,14 +452,15 @@ exports.forgotPassword = async (req, res) => {
                     return res.status(500).send({
                         status_code: "500",
                         status: "error",
-                        //message: `A user with email address '${email}' not exist`
                         message: "User not exist"
                     });
                 }
+
                 const name = userData[0].first_name;
                 const logo = process.env.APP_LOGO;
-                const admin_login = process.env.ADMIN_LOGIN_URL;
                 const app_name = process.env.APP_NAME;
+                const copyright_year = getCopyrightYear(process.env.APP_START_YEAR);
+
                 const token = generateToken(userData[0].id);
 
                 if (userData[0].mobile) {
@@ -472,34 +477,30 @@ exports.forgotPassword = async (req, res) => {
                         to: email_id,
                         subject: "Forgot Password",
                         template: "forgotTemplate",
-                        context: { name, email_id, forgot_otp, logo, app_name }
+                        context: { name, email_id, forgot_otp, logo, app_name, copyright_year }
                     }, function (error, info) {
                         if (error) {
                             return console.log(error);
                         }
-                        console.log("Message sent: " + info.response + "test" + posswordt);
+                        console.log("Message sent: " + info.response);
                     });
                 }
-
-
                 return res.status(200).send({
                     status_code: "200",
                     status: "success",
                     token: token
                 });
-
             } catch (error) {
-
                 return res.status(500).send({
                     status_code: "500",
                     status: "error",
                     message: error.message
                 });
             }
-
         }
     });
 };
+
 exports.resetPassword = async (req, res) => {
     try {
         const { verify_token, otp, password } = req.body;
@@ -1320,9 +1321,7 @@ exports.resendOtp = async (req, res) => {
         const { verify_token } = req.body;
         const decoded = jwt.verify(verify_token, JWT_SECRET_KEY);
         if (decoded) {
-
             const userData = await helperQuery.First({ table: "users", where: "id=" + decoded.id });
-            const emailTemplate = userData.account_verify == "1" ? "signInRoleVarification" : "signUpVarification";
             if (helperFunction.isEmptyObject(userData)) {
                 console.log(userData);
                 return res.status(500).json({
@@ -1339,8 +1338,8 @@ exports.resendOtp = async (req, res) => {
             if (data) {
                 const name = userData.first_name;
                 const logo = process.env.APP_LOGO;
-                const admin_login = process.env.ADMIN_LOGIN_URL;
                 const app_name = process.env.APP_NAME;
+                const copyright_year = getCopyrightYear(process.env.APP_START_YEAR);
 
                 if (userData.mobile) {
                     var message = forgot_otp + " is your OTP for Verification of your account at MedWire. Thank you.";
@@ -1359,9 +1358,9 @@ exports.resendOtp = async (req, res) => {
                         to: email,
                         subject: "MedWire Confirmation Mail",
                         template: "signInRoleVarification",
-                        context: { name, email, forgot_otp, logo, app_name, messageMT, messageMTC: true },
+                        context: { name, email, forgot_otp, logo, app_name, messageMT, messageMTC: true, copyright_year },
                     },
-                    function (error, info) {
+                    function (error) {
                         if (error) {
                             console.log("email", error);
                         }

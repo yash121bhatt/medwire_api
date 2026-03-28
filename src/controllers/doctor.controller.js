@@ -184,7 +184,6 @@ exports.addDoctors = async (req, res) => {
         var password = autoGenPassword();
         var encryptedPassword = hashPassword(password.trim());
 
-
         if (req.body.full_name.length < 3) {
             return res.status(400).json({
                 status_code: 400,
@@ -207,7 +206,6 @@ exports.addDoctors = async (req, res) => {
             });
         }
 
-
         if (req.body.role_id != 5) {
             return res.status(400).json({
                 status_code: 400,
@@ -215,7 +213,6 @@ exports.addDoctors = async (req, res) => {
                 message: "Role id should be valid"
             });
         }
-
 
         if (req.file == undefined) {
             return res.status(400).json({
@@ -227,6 +224,7 @@ exports.addDoctors = async (req, res) => {
         } else {
             var profile_image = req.file.filename;
         }
+
         const data = await ClinicOrHospital.findByIdAndRoleforcl(req.body.clinic_id);
         if (data.kind === "not_found") {
             res.status(404).send({
@@ -366,12 +364,9 @@ exports.getDoctorDetails = (req, res) => {
                     data: data
                 });
                 return;
-
             }
-
         });
     }
-
 };
 
 // get All Doctors code by vineet shirdhonkar
@@ -774,8 +769,6 @@ exports.getDoctorsClinic = (req, res) => {
             });
             return;
         }
-
-
         if (data) {
             User.findAllClinics(doctor_id, (err, data) => {
                 if (err) {
@@ -786,7 +779,6 @@ exports.getDoctorsClinic = (req, res) => {
                     });
                     return;
                 }
-
                 if (data.length > 0) {
                     res.status(200).send({
                         status_code: 200,
@@ -795,7 +787,6 @@ exports.getDoctorsClinic = (req, res) => {
                         data: data
                     });
                     return;
-
                 } else {
                     res.status(200).send({
                         status_code: 200,
@@ -888,7 +879,8 @@ exports.addDoctorAvailability = (req, res) => {
     });
 };
 
-exports.viewDoctorAvailability = (req, res) => {
+// TODO::RK
+exports.viewDoctorAvailabilityOld = (req, res) => {
     const { doctor_id, clinic_id, date } = req.body;
     var valid = helperFunction.customValidater(req, { doctor_id, clinic_id, date });
     if (valid) {
@@ -926,6 +918,57 @@ exports.viewDoctorAvailability = (req, res) => {
         }
     });
 };
+exports.viewDoctorAvailability = (req, res) => {
+    const { doctor_id, clinic_id, date } = req.body;
+    var valid = helperFunction.customValidater(req, { doctor_id, clinic_id, date });
+    if (valid) {
+        return res.status(500).json(valid);
+    }
+
+    User.viewDoctorAvailability(doctor_id, clinic_id, date, async (err, data) => {
+        if (err) {
+            res.status(500).send({
+                status_code: 500,
+                status: "error",
+                message: "Something Went Wrong"
+            });
+            return;
+        }
+
+        if (data) {
+            console.log(date);
+            const Ddate = helperFunction.dateFormat(date, "yyyy-mm-dd");
+            console.log(Ddate);
+
+            let bookedSlots = [];
+
+            // ✅ yahan sirf ye fix kiya gaya hai ↓
+            let St = await helperQuery.All(`
+                SELECT * 
+                FROM appointments 
+                WHERE doctor_id ='${doctor_id}' 
+                AND DATE_FORMAT(appointment_date, '%Y-%m-%d') = DATE_FORMAT('${Ddate}', '%Y-%m-%d') 
+                AND status != 'Cancelled'
+            `);
+
+            if (St.length > 0) {
+                St.map((item) => {
+                    const Stime = item.from_time ?? "00:00";
+                    bookedSlots.push({ Stime });
+                });
+            }
+
+            res.status(200).send({
+                status_code: 200,
+                status: "success",
+                message: "Doctor availability fetch Successfully",
+                result: data,
+                bookedSlots: bookedSlots
+            });
+        }
+    });
+};
+
 
 exports.viewDoctorWeeklySchedule = (req, res) => {
     const { doctor_id, clinic_id } = req.body;
@@ -955,7 +998,6 @@ exports.viewDoctorWeeklySchedule = (req, res) => {
 
 
 // vineet
-
 exports.profileAccessRequest = async (req, res) => {
     const { doctor_id, patient_id, member_id } = req.body;
     var valid = helperFunction.customValidater(req, { doctor_id, patient_id });
@@ -965,7 +1007,6 @@ exports.profileAccessRequest = async (req, res) => {
 
     const memberData = await User.checkPatientMemberExistence(patient_id, member_id);
     const length = memberData.length;
-
 
     User.requestProfileAccess(doctor_id, patient_id, member_id, length, async (err, data) => {
         if (err) {
@@ -985,8 +1026,6 @@ exports.profileAccessRequest = async (req, res) => {
             return;
         }
         if (data) {
-
-
             res.status(200).send({
                 status_code: 200,
                 status: "success",

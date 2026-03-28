@@ -14,6 +14,32 @@ const {
     createCommissions,
     createAppointments,
     createSystemNotifications,
+    createProfileAccess,
+    createPreNotification,
+    createPlanPurchaseHistory,
+    createDoctorSpecialities,
+    createDoctorDegrees,
+    createSpecialityMaster,
+    createDoctorFees,
+    createUsersPatient,
+    createRole,
+    createBankDetail,
+    createNotifications,
+    createPrescriptions,
+    createHistoryNotepad,
+    createDoctorScheduleDate,
+    createDoctorSchedule,
+    createMenturationCycle,
+    createRadioLabDoctors,
+    createTestCategories,
+    createLabTests,
+    createPackages,
+    createPromoCode,
+    createUserCarts,
+    createUserDoctors,
+    createPregnantWomen,
+    createUserBaby,
+    createUserBabyVaccination,
 } = require("../queries");
 
 const tableCreationQueries = [
@@ -29,6 +55,32 @@ const tableCreationQueries = [
     { name: "commissions", query: createCommissions },
     { name: "appointments", query: createAppointments },
     { name: "system_notifications", query: createSystemNotifications },
+    { name: "profile_access", query: createProfileAccess },
+    { name: "pre_notification", query: createPreNotification },
+    { name: "plan_purchase_history", query: createPlanPurchaseHistory },
+    { name: "doctor_specialities", query: createDoctorSpecialities },
+    { name: "doctor_degrees", query: createDoctorDegrees },
+    { name: "doctor_speciality_master", query: createSpecialityMaster },
+    { name: "doctor_fees", query: createDoctorFees },
+    { name: "users_patient", query: createUsersPatient },
+    { name: "role", query: createRole },
+    { name: "bank_detail", query: createBankDetail },
+    { name: "notifications", query: createNotifications },
+    { name: "prescriptions", query: createPrescriptions },
+    { name: "history_notepad", query: createHistoryNotepad },
+    { name: "doctor_schedule_date", query: createDoctorScheduleDate },
+    { name: "doctor_schedule", query: createDoctorSchedule },
+    { name: "menturation_cycle", query: createMenturationCycle },
+    { name: "radio_lab_doctors", query: createRadioLabDoctors },
+    { name: "test_categories", query: createTestCategories },
+    { name: "lab_tests", query: createLabTests },
+    { name: "packages", query: createPackages },
+    { name: "promo_code", query: createPromoCode },
+    { name: "user_carts", query: createUserCarts },
+    { name: "user_doctors", query: createUserDoctors },
+    { name: "pregnant_women", query: createPregnantWomen },
+    { name: "user_baby", query: createUserBaby },
+    { name: "user_baby_vaccination", query: createUserBabyVaccination },
 ];
 
 (async () => {
@@ -41,7 +93,7 @@ const tableCreationQueries = [
 
     try {
         for (const { name, query } of tableCreationQueries) {
-            await new Promise((resolve, reject) => {
+            await new Promise((resolve) => {
                 dbConnection.query(query, (err, result) => {
                     if (err) {
                         // --- ERROR CASE ---

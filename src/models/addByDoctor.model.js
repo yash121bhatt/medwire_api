@@ -37,20 +37,32 @@ class addByDoctor {
     static showDoctorlabRadio({ doctor_id, role_id }) {
         const roleId = role_id != undefined && role_id == 4 ? role_id : 3;
         return new Promise((resolve, reject) => {
-            db.query(`SELECT rld.id,rld.status,
-            d.id as doctor_id,d.first_name as doctor_name,
-            rl.id as lab_Id,rl.first_name,rl.email,rl.mobile,rl.pin_code,rl.mobile,rl.address,rl.profile_image 
-            FROM radio_lab_doctors rld 
-            INNER JOIN users d ON d.id=rld.doctor_id
-            INNER JOIN users rl ON rl.id=rld.user_id
-            WHERE rl.role_id = '${roleId}' AND rld.doctor_id='${doctor_id}'`,
-                [doctor_id],
-                (err, res) => {
-                    if (err) {
-                        return reject(err);
-                    }
-                    return resolve(res);
-                });
+            const findQuery = `SELECT
+                                rld.id,
+                                rld.status,
+                                d.id as doctor_id,
+                                d.first_name as doctor_name,
+                                rl.id as lab_Id,
+                                rl.first_name,
+                                rl.email,
+                                rl.mobile,
+                                rl.pin_code,
+                                rl.mobile,
+                                rl.address,
+                                rl.profile_image 
+                                FROM
+                                radio_lab_doctors rld
+                                INNER JOIN users d ON d.id = rld.doctor_id
+                                INNER JOIN users rl ON rl.id = rld.user_id 
+                                WHERE
+                                rl.role_id = '${roleId}' 
+                                AND rld.doctor_id = '${doctor_id}'`;
+            db.query(findQuery, [doctor_id], (err, res) => {
+                if (err) {
+                    return reject(err);
+                }
+                return resolve(res);
+            });
         });
     }
     // add lab/radio list by role_id 

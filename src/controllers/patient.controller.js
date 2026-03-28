@@ -11,7 +11,7 @@ const helperQuery = require("../helper/helperQuery");
 exports.addPatient = async (req, res) => {
     const { staff_id, user_id, alternate_mobile_number, full_name, email_id, date_of_birth, search_key, sex, role_id, pin_code, address, enquiry_date } = req.body;
     var profile_image = "";
-    
+
     var valid = helperFunction.customValidater(req, { user_id, full_name, date_of_birth, search_key, role_id, enquiry_date });
     if (valid) {
         return res.status(500).json(valid);
@@ -143,11 +143,11 @@ exports.addPatient = async (req, res) => {
 
                                 var added_by = (staff_id) ? staff_id : null;
                                 const user = {
-                                    user_name:req.body.full_name,
+                                    user_name: req.body.full_name,
                                     email: req.body.email_id,
                                     password: password
                                 };
-                                console.log("useer",user);
+                                console.log("useer", user);
                                 Patient.add(added_by, alternate_mobile_number, full_name, email_id, dob, mobile_number, sex, role_id, pin_code, address, created_by_id, suggested_by, suggested_by_id, enquiry_date, profile_image, encryptedPassword, async (err, data) => {
                                     if (err) {
                                         res.status(500).send({
@@ -170,7 +170,7 @@ exports.addPatient = async (req, res) => {
                                         }
 
                                         var context = "You have been registered by " + user_detail[0].first_name + " on MedWire. Now you can avail all the benefits by login in the MedWire app.";
-                                        
+
                                         const credential = true;
                                         const login = process.env.USER_LOGIN_URL;
                                         const mailOptions = {
@@ -178,7 +178,7 @@ exports.addPatient = async (req, res) => {
                                             to: req.body.email_id,
                                             template: "createPatientAccountByLab",
                                             subject: "You have been Registered by " + user_detail[0].first_name + " on MedWire",
-                                            context: { context, user, credential: true,login}
+                                            context: { context, user, credential: true, login }
                                         };
 
                                         helperFunction.template(transporter, true);
@@ -228,18 +228,18 @@ exports.addPatient = async (req, res) => {
 
                             var context = "You have been registered by " + user_detail[0].first_name + " on MedWire. Now you can avail all the benefits by login in the MedWire app.";
                             const user = {
-                                user_name:req.body.full_name,
+                                user_name: req.body.full_name,
                                 email: req.body.email_id,
                                 password: password
                             };
-                            console.log("useer",user);
+                            console.log("useer", user);
                             const login = process.env.USER_LOGIN_URL;
                             const mailOptions = {
                                 from: process.env.MAIL_FROM_ADDRESS,
                                 to: req.body.email_id,
                                 template: "createPatientAccountByLab",
                                 subject: "You have been Registered by " + user_detail[0].first_name + " on MedWire",
-                                context: { context, user, credential: false,login}
+                                context: { context, user, credential: false, login }
                             };
                             helperFunction.template(transporter, true);
                             transporter.sendMail(mailOptions,
@@ -366,7 +366,7 @@ exports.addForClinic = async (req, res) => {
                     });
                     return;
                 } else {
-                    
+
                     Patient.search(req.body.search_key, async (pErr, pData) => {
                         var added_by = (staff_id) ? staff_id : null;
 
@@ -404,7 +404,7 @@ exports.addForClinic = async (req, res) => {
                                 var alternate_mobile_number = req.body.alternate_mobile_number;
                                 var role_id = 2;
 
-                                
+
 
                                 Patient.addForClinic(added_by, alternate_mobile_number, full_name, email_id, dob, mobile_number, sex, role_id, pin_code, address, created_by_id, suggested_by, suggested_by_id, enquiry_date, profile_image, encryptedPassword, async (err, data) => {
                                     if (err) {
@@ -429,7 +429,7 @@ exports.addForClinic = async (req, res) => {
 
                                         var context = "You have been registered by " + user_detail[0].first_name + " on MedWire. Now you can avail all the benefits by login in the MedWire app.";
                                         const user = {
-                                            user_name:full_name,
+                                            user_name: full_name,
                                             email: email_id,
                                             password: password
                                         };
@@ -440,7 +440,7 @@ exports.addForClinic = async (req, res) => {
                                             to: req.body.email_id,
                                             template: "createPatientAccountByLab",
                                             subject: "You have been Registered by " + user_detail[0].first_name + " on MedWire",
-                                            context: { context, user, credential: true,login}
+                                            context: { context, user, credential: true, login }
                                         };
 
                                         helperFunction.template(transporter, true);
@@ -465,24 +465,24 @@ exports.addForClinic = async (req, res) => {
                             }
 
                         }
-                        
+
 
                         if (pData) {
                             var context = "You have been registered by " + full_name + " on MedWire. Now you can avail all the benefits by login in the MedWire app.";
                             const user = {
-                                user_name:full_name
+                                user_name: full_name
                             };
                             const login = process.env.USER_LOGIN_URL;
                             const mailOptions = {
                                 to: req.body.email_id,
                                 template: "createPatientAccountByLab",
                                 subject: "You have been Registered by " + full_name + " on MedWire",
-                                context: { context, user, credential: true,login}
+                                context: { context, user, credential: true, login }
                             };
-                            helperFunction.sendEmail(mailOptions,true);
+                            helperFunction.sendEmail(mailOptions, true);
 
-                            var suggested_id = req.body.suggested_by_id!=undefined && req.body.suggested_by_id!=req.body.user_id?req.body.suggested_by_id:null;
-                            db.query("Insert into users_patient(patient_id,user_id,suggested_by_id,added_by) values(?,?,?,?)", [req.body.patient_id, created_by_id,suggested_id,added_by], (err, res2) => {
+                            var suggested_id = req.body.suggested_by_id != undefined && req.body.suggested_by_id != req.body.user_id ? req.body.suggested_by_id : null;
+                            db.query("Insert into users_patient(patient_id,user_id,suggested_by_id,added_by) values(?,?,?,?)", [req.body.patient_id, created_by_id, suggested_id, added_by], (err, res2) => {
 
                                 if (err) {
                                     logger.error(err.message);
@@ -583,7 +583,7 @@ exports.getAllPatients = (req, res) => {
             return;
         }
         if (data) {
-            Patient.findAll(user_id,role_id, (err, data1) => {
+            Patient.findAll(user_id, role_id, (err, data1) => {
                 if (err) {
                     if (err.kind === "not_found") {
                         res.status(200).send({
@@ -611,21 +611,21 @@ exports.getAllPatients = (req, res) => {
                     return;
                 }
             });
-            
+
         }
 
     });
 };
 // get all Patients code by vineet shirdhonkar
 
-exports.getAllPatientsClinic = async(req, res) => {
+exports.getAllPatientsClinic = async (req, res) => {
     try {
         const { user_id, role_id, staff_id } = req.body;
         var valid = helperFunction.customValidater(req, { user_id, role_id });
         if (valid) {
             return res.status(500).json(valid);
         }
-        const data1 =await Patient.findAllClinicData(user_id,role_id);
+        const data1 = await Patient.findAllClinicData(user_id, role_id);
         if (data1.kind === "not_found") {
             res.status(200).send({
                 status_code: 200,
@@ -635,7 +635,7 @@ exports.getAllPatientsClinic = async(req, res) => {
             });
             return;
         }
-        if (data1.length>0) {
+        if (data1.length > 0) {
             res.status(200).send({
                 status_code: 200,
                 status: "success",

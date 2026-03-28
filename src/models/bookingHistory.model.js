@@ -1,5 +1,5 @@
 const db = require("../config/db.config");
-class bookingHistory{
+class bookingHistory {
     //radio/lab
     static patientBillingHistoryLabRadio({ role_id, user_id }) {
         return new Promise((resolve, reject) => {
@@ -32,9 +32,9 @@ class bookingHistory{
                 });
         });
     }
-    static clinicStaffAppointmenHistory(user_id,added_by){
-        return new Promise((resolve,reject)=>{
-         db.query(`SELECT 
+    static clinicStaffAppointmenHistory(user_id, added_by) {
+        return new Promise((resolve, reject) => {
+            db.query(`SELECT 
          ap.id as appointment_id,ap.appointment_date,ap.from_time as time_slot,
          ap.reason_of_reschedule,ap.appointments_user_type,
          ap.status,ap.reason,ap.total_amount, ap.grand_total,
@@ -48,18 +48,18 @@ class bookingHistory{
          WHERE c.id='${user_id}' AND u.added_by='${added_by}'
          AND ap.payment_status!='Aborted'
          order by ap.id`,
-         (err,res)=>{
-             if (err) {
-              return reject(err);   
-             }
-             return resolve(res); 
-         });
-        }); 
+                (err, res) => {
+                    if (err) {
+                        return reject(err);
+                    }
+                    return resolve(res);
+                });
+        });
     }
     //clinic and doctor
-    static clinicAppointmenHistory(user_id){
-        return new Promise((resolve,reject)=>{
-         db.query(`SELECT 
+    static clinicAppointmenHistory(user_id) {
+        return new Promise((resolve, reject) => {
+            db.query(`SELECT 
          ap.id as appointment_id,ap.appointment_date,ap.from_time as time_slot,ap.appointments_user_type,
          ap.reason_of_reschedule,ap.created_at,ap.updated_at,ap.payment_txt_id,ap.payment_status,
          ap.status,ap.reason,ap.total_amount, ap.grand_total,
@@ -73,18 +73,18 @@ class bookingHistory{
          WHERE c.id='${user_id}'
          AND ap.payment_status='Success'
          order by ap.id DESC`,
-         (err,res)=>{
-             if (err) {
-              return reject(err);   
-             }
-             return resolve(res); 
-         });
-        }); 
+                (err, res) => {
+                    if (err) {
+                        return reject(err);
+                    }
+                    return resolve(res);
+                });
+        });
     }
-    
-    static clinicBookingHistory(user_id){
-       return new Promise((resolve,reject)=>{
-        db.query(`SELECT 
+
+    static clinicBookingHistory(user_id) {
+        return new Promise((resolve, reject) => {
+            db.query(`SELECT 
         ap.id as appointment_id,ap.appointment_date,ap.from_time as time_slot,
         ap.reason_of_reschedule,ap.consulting_fee,ap.created_at,ap.updated_at,ap.appointments_user_type,
         ap.status,ap.reason,ap.total_amount, ap.grand_total,ap.payment_txt_id,ap.payment_status,
@@ -99,18 +99,18 @@ class bookingHistory{
         WHERE c.id='${user_id}'
         AND ap.payment_status='Success'
         order by ap.id DESC`,
-        (err,res)=>{
-            if (err) {
-             return reject(err);   
-            }
-            return resolve(res); 
+                (err, res) => {
+                    if (err) {
+                        return reject(err);
+                    }
+                    return resolve(res);
+                });
         });
-       }); 
     }
 
-    static patientBillingHistoryClinic(user_id){
-        return new Promise((resolve,reject)=>{
-         db.query(`SELECT 
+    static patientBillingHistoryClinic(user_id) {
+        return new Promise((resolve, reject) => {
+            db.query(`SELECT 
          ap.id as appointment_id,ap.appointment_date,ap.from_time as time_slot,ap.appointments_user_type,
          ap.reason_of_reschedule,ap.consulting_fee,ap.created_at,ap.updated_at,
          ap.status,ap.reason,ap.total_amount, ap.grand_total,ap.payment_txt_id,ap.payment_status,
@@ -125,18 +125,18 @@ class bookingHistory{
          WHERE u.id='${user_id}'
          AND ap.payment_status='Success'
          order by ap.id DESC`,
-         (err,res)=>{
-             if (err) {
-              return reject(err);   
-             }
-             return resolve(res); 
-         });
-        }); 
+                (err, res) => {
+                    if (err) {
+                        return reject(err);
+                    }
+                    return resolve(res);
+                });
+        });
     }
-    
-    static patientMemberBillingHistoryClinic(user_id){
-        return new Promise((resolve,reject)=>{
-         db.query(`SELECT 
+
+    static patientMemberBillingHistoryClinic(user_id) {
+        return new Promise((resolve, reject) => {
+            db.query(`SELECT 
          ap.id as appointment_id,ap.appointment_date,ap.from_time as time_slot,ap.appointments_user_type,
          ap.reason_of_reschedule,ap.consulting_fee,ap.created_at,ap.updated_at,
          ap.status,ap.reason,ap.total_amount, ap.grand_total,ap.payment_txt_id,ap.payment_status,
@@ -151,13 +151,13 @@ class bookingHistory{
          WHERE u.created_by_id='${user_id}'
          AND ap.payment_status!='Aborted'
          order by ap.id DESC`,
-         (err,res)=>{
-             if (err) {
-              return reject(err);   
-             }
-             return resolve(res); 
-         });
-        }); 
+                (err, res) => {
+                    if (err) {
+                        return reject(err);
+                    }
+                    return resolve(res);
+                });
+        });
     }
 }
 module.exports = bookingHistory;
