@@ -13,8 +13,8 @@ const app = express();
 
 // ✅ CORS CONFIG (TOP PE HONA CHAHIYE)
 const allowedOrigins = [
-    process.env.ADMIN_URL,
-    process.env.PORTAL_URL
+    "https://medwire-admin.vercel.app",
+    "https://medwire-portal.vercel.app"
 ];
 
 const corsOptions = {
