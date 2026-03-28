@@ -6,4 +6,4 @@ public/dicom
 public/laboratory
 public/member
 public/symptom
-logs
+logspublic/*.json
