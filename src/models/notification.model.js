@@ -7,7 +7,7 @@ const moment = require("moment");
 class Notification {
     static getMenturationCycle() {
         return new Promise((resolve, reject) => {
-            var query = "SELECT * FROM `menturation_cycle` INNER JOIN `users` ON `users`.`id` = `menturation_cycle`.`user_id`  ORDER BY `menturation_cycle`.`m_id` DESC";
+            var query = "SELECT * FROM `menturation_cycle` INNER JOIN `users` ON `users`.`id` = `menturation_cycle`.`user_id`  ORDER BY `menturation_cycle`.`id` DESC";
             db.query(query, (err, res) => {
                 if (err) {
                     return reject(err);
@@ -203,7 +203,7 @@ class Notification {
                 cb(null, res);
             });
     }
-    
+
     static add(added_by, notification_type, user_id, notification_for, promo_code_id, doctor_id, test_id, notification_sent_by, patient_pin_code, n_patient_ids, notification_title, notification_date_time, description, cb) {
         db.query("INSERT INTO notifications(added_by,type,created_by_id,notification_for,promo_code_id,doctor_id,test_id,notification_sent_by,patient_pin_code,patient_ids,notification_title,notification_date_time,description, created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,NOW())",
             [
