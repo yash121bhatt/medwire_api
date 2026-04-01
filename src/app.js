@@ -10,7 +10,7 @@ const laboratoryRoute = require("./routes/laboratory.route");
 const { httpLogStream } = require("./utils/logger");
 
 const app = express();
-app.use(cors({
+const corsOptions = {
     origin: [
         "https://medwire-admin.vercel.app",
         "https://medwire-portal.vercel.app"
@@ -18,7 +18,12 @@ app.use(cors({
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "x-access-token"],
     credentials: true
-}));
+};
+
+app.use(cors(corsOptions));
+
+// 🔥 THIS LINE IS MUST
+app.options("*", cors(corsOptions));
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({
     extended: true
