@@ -10,21 +10,21 @@ const laboratoryRoute = require("./routes/laboratory.route");
 const { httpLogStream } = require("./utils/logger");
 
 const app = express();
-app.use(bodyparser.json());
-app.use(bodyparser.urlencoded({
-    extended: true
-}));
-app.use(morgan("dev"));
-app.use(morgan("combined", { stream: httpLogStream }));
 app.use(cors({
     origin: [
         "https://medwire-admin.vercel.app",
         "https://medwire-portal.vercel.app"
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    allowedHeaders: ["Content-Type", "Authorization", "x-access-token"],
     credentials: true
 }));
+app.use(bodyparser.json());
+app.use(bodyparser.urlencoded({
+    extended: true
+}));
+app.use(morgan("dev"));
+app.use(morgan("combined", { stream: httpLogStream }));
 app.use(express.static("public"));
 
 app.use("/api/auth", authRoute);
