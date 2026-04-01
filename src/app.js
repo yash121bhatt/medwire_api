@@ -16,7 +16,15 @@ app.use(bodyparser.urlencoded({
 }));
 app.use(morgan("dev"));
 app.use(morgan("combined", { stream: httpLogStream }));
-app.use(cors());
+app.use(cors({
+    origin: [
+        "https://medwire-admin.vercel.app",
+        "https://medwire-portal.vercel.app"
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true
+}));
 app.use(express.static("public"));
 
 app.use("/api/auth", authRoute);
@@ -27,7 +35,7 @@ app.get("/", (req, res) => {
 
     // const path = require("path");
     // const helperFunction = require("./helper/helperFunction");
-    
+
     // let email_id = 'rk85783@mailinator.com'
 
     // Example with templete
