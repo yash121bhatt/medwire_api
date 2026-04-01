@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "302959484029",
+    "project_id": "medwire-8bd32",
+    "storage_bucket": "medwire-8bd32.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:302959484029:android:b7ed3c2669ea0fbf4a2514",
+        "android_client_info": {
+          "package_name": "dev.khct.medwire"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "302959484029-avhgr8t26h3l2vglfihiah7jr5ep7vje.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBYf1ObE5myfZIC1_I6zIYLETSu6mFQVo0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "302959484029-avhgr8t26h3l2vglfihiah7jr5ep7vje.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

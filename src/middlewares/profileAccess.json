@@ -1,0 +1,9 @@
+{
+    "updateUser":true,
+    "update_profile":true,
+    "update_staffe":true,
+    "test":true,
+    "profile":true,
+    "dashboardChart":true
+
+}
